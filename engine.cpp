@@ -20,15 +20,12 @@
 #include "SDL2/SDL_vulkan.h"
 #include "SDL2/SDL_video.h"
 #include "SDL2/SDL_version.h"
-#include "SDL2/SDL_types.h"
 #include "SDL2/SDL_touch.h"
 #include "SDL2/SDL_timer.h"
 #include "SDL2/SDL_thread.h"
-#include "SDL2/SDL_syswm.h"
 #include "SDL2/SDL_system.h"
 #include "SDL2/SDL_surface.h"
 #include "SDL2/SDL_stdinc.h"
-#include "SDL2/SDL_shape.h"
 #include "SDL2/SDL_sensor.h"
 #include "SDL2/SDL_scancode.h"
 #include "SDL2/SDL_render.h"
@@ -43,11 +40,13 @@
 #include "SDL2/SDL_keyboard.h"
 #include "SDL2/SDL_filesystem.h"
 #include "SDL2/SDL_events.h"
-#include "SDL2/SDL_config.h"
 #include "SDL2/SDL_clipboard.h"
 #include "SDL2/SDL_blendmode.h"
 #include "SDL2/SDL_error.h"
 #include "SDL2/SDL_bits.h"
+#include "SDL3/SDL_image.h"
+#include "SDL3/SDL_mixer.h"
+#include "SDL3/SDL_ttf.h"
 #define null NULL
 
 /**
@@ -1150,16 +1149,35 @@ namespace SDLGame
         public:
             SDL_Surface *surface;
             Uint32 flags;
-            Surface(const char *bmp_img_path)
-            {
-                surface = SDL_LoadBMP(bmp_img_path);
-                rect = Rect(0, 0, surface->w, surface->h);
+            Surface(){
+                flags=0;
+                surface = SDL_CreateRGBSurface(flags, 0, 0, 0, 0, 0, 0, 0);
             }
-            Surface(int width, int height, Uint32 _flags)
+            Surface(int width, int height, Uint32 _flags=0)
             {
                 flags = _flags;
                 surface = SDL_CreateRGBSurface(flags, width, height, 0, 0, 0, 0, 0);
             }
+
+            Surface(const Surface& oth) {
+                flags = oth.flags;
+                surface = SDL_ConvertSurface(oth.surface, oth.surface->format, 0);
+            }
+
+            Surface(SDL_Surface* oth){
+                flags=oth->flags;
+                surface = SDL_ConvertSurface(oth, oth->format, 0);
+            }
+
+            Surface& operator=(const Surface& other) {
+                if (this != &other) {
+                    SDL_FreeSurface(surface);
+                    flags = other.flags;
+                    surface = SDL_ConvertSurface(other.surface, other.surface->format, 0);
+                }
+                return *this;
+            }
+
             Rect &getRect()
             {
                 return rect;
@@ -1193,8 +1211,21 @@ namespace SDLGame
             {
                 return rect.getHeight();
             }
+            ~Surface(){
+                SDL_FreeSurface(surface);
+            }
         };
     }
 
-    namespace 
+    using Surface = SDLGame::surface::Surface;
+    //not yet, this only possible after install SDL3 then we should have the all image format load
+    namespace image
+    {
+        Surface load(const char* img_path){
+            Surface res(0,0);
+            res.surface = IMG_Load(img_path);
+
+        }
+    }
+
 };
