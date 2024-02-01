@@ -5,9 +5,7 @@
  * @brief this file tried to replicate all classes and function that they have in pygame but implement for SDL2 in C++
  * if you spot or have problem while using this engine, please let me know through email
  * 
- * REQUIREMENT: SDL2 installed to your mingw directory and SDL2_image.h file from extension pack in this link:
- * https://github.com/libsdl-org/SDL_image/tree/main/include/SDL3_image
- * download the .h file and post it in 2 include folder where SDL.h sits, one directly in mingw, one in x32 folder i believe
+ * REQUIREMENT: SDL2 installed to your mingw directory
  * 
  * all pixel format is consider RGBA32
  * 
@@ -50,7 +48,6 @@
 #include "SDL2/SDL_blendmode.h"
 #include "SDL2/SDL_error.h"
 #include "SDL2/SDL_bits.h"
-#include "SDL2/SDL_image.h"
 #define null NULL
 /**
  * @brief values of key, only for event keydown or up, not yet for pressing or not;
@@ -734,6 +731,7 @@ public:
  * @brief class for color, all values range from [0,255]
 */
 class Color{
+public:
     Uint8 r,g,b,a;
     Color(){
         r=0;g=0;b=0;
@@ -766,14 +764,12 @@ public:
     Uint32 flags;
     Color mask;
     Surface(const char* bmp_img_path){
-        surface = SDL_LoadBMP(img_path);
-        size = Vector2(surface->w,surface->h);
+        surface = SDL_LoadBMP(bmp_img_path);
         rect = Rect(0,0,surface->w,surface->h);
     }
     Surface(int width,int height, Uint32 _flags){
         flags = _flags;
         surface = SDL_CreateRGBSurface(flags,width,height,0,0,0,0,0);
-        size = Vector2(width,height);
     }
     Rect& getRect(){
         return rect;
@@ -785,7 +781,7 @@ public:
     }
     void fill(const Color& color, Rect rect = Rect()){
         if(rect==Rect()) rect=Rect(0,0,surface->w,surface->h);
-        SDL_FillRect(surface, rect.toSDL_Rect(), color.toSDL_Color());
+        SDL_FillRect(surface, &rect.toSDL_Rect(), color.toSDL_Color());
     }
     template<class T>
     void scroll(T offset_x, T offset_y){
@@ -798,14 +794,15 @@ public:
         mask = Color(r,g,b,a);
     }
     Vector2 get_size() const {
-        return rect.size;
+        return rect.getSize();
     }
     double getWidth() const {
-        return size.x;
+        return rect.getWidth();
     }
     double getHeight() const {
-        return size.y;
+        return rect.getHeight();
     }
+    
 };
 
 /**
