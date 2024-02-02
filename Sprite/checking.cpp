@@ -1,49 +1,79 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <vector>
+#include <algorithm>
 
-class Sprite {
+using namespace std;
+
+SDL_Texture* loadImage(const string& file)
+{
+    SDL_Texture* texture = IMG_LoadTexture(renderer, file.c_str());
+    if (!texture)
+    {
+        cerr << "Error loading image: " << IMG_GetError() << endl;
+    }
+    return texture;
+}
+
+//creating Sprite Class
+class Sprite
+{
 public:
-    Sprite(const char* imagePath, int x, int y, int width, int height) {
-        texture = loadTexture(imagePath);
-        position.x = x;
-        position.y = y;
-        this->width = width;
-        this->height = height;
+    Sprite() = default;
+    Sprite(SDL_Renderer* renderer, const string& file)
+        : renderer(renderer), texture(loadImage(file)) {}
+
+    void render(int x, int y)
+    {
+        SDL_Rect dest = { x, y, width, height };
+        SDL_RenderCopy(renderer, texture, nullptr, &dest);
     }
 
-    void draw(SDL_Renderer* renderer) {
-        SDL_Rect destRect = { position.x, position.y, width, height };
-        SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    int getWidth() { return width; }
+    int getHeight() { return height; }
+
+private:
+    SDL_Renderer* renderer = nullptr;
+    SDL_Texture* texture = nullptr;
+    int width = 0;
+    int height = 0;
+};
+
+
+//creating Sprite's function
+class SpriteGroup
+{
+public:
+    void add(Sprite* sprite)
+    {
+        sprites.push_back(sprite);
     }
 
-    void updatePosition(int x, int y) {
-        position.x = x;
-        position.y = y;
+    void kill(Sprite* sprite)
+    {
+        sprites.erase(remove(sprites.begin(), sprites.end(), sprite), sprites.end());
     }
 
-    ~Sprite() {
-        SDL_DestroyTexture(texture);
+    void remove(Sprite* sprite)
+    {
+        sprites.erase(remove(sprites.begin(), sprites.end(), sprite), sprites.end());
+    }
+
+    bool alive(Sprite* sprite)
+    {
+        return find(sprites.begin(), sprites.end(), sprite) != sprites.end();
+    }
+
+    void render()
+    {
+        for (Sprite* sprite : sprites)
+        {
+            sprite->render(sprite->getWidth() * spriteX, sprite->getHeight() * spriteY);
+        }
     }
 
 private:
-    SDL_Texture* loadTexture(const char* imagePath) {
-        SDL_Surface* loadedSurface = IMG_Load(imagePath);
-        if (loadedSurface == NULL) {
-            printf("Unable to load image %s! SDL_image Error: %s\n", imagePath, IMG_GetError());
-            return NULL;
-        }
-
-        SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-        if (newTexture == NULL) {
-            printf("Unable to create texture from %s! SDL Error: %s\n", imagePath, SDL_GetError());
-        }
-
-        SDL_FreeSurface(loadedSurface);
-        return newTexture;
-    }
-
-    SDL_Point position;
-    int width;
-    int height;
-    SDL_Texture* texture;
+    vector<Sprite*> sprites;
+    float spriteX = 0;
+    float spriteY = 0;
 };
