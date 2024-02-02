@@ -282,7 +282,7 @@ namespace SDLGame
         };
 
     };
-    
+
     namespace math
     {
         double degree_to_radian(double deg)
@@ -979,7 +979,7 @@ namespace SDLGame
             }
         };
     };
-    
+
     namespace color
     {
         /**
@@ -1027,10 +1027,10 @@ namespace SDLGame
             }
         };
     }
-    
+
     using Rect = SDLGame::rect::Rect;
     using Color = SDLGame::color::Color;
-    //may be not done yet but good enough
+    // may be not done yet but good enough
     namespace surface
     {
         class Surface
@@ -1041,28 +1041,33 @@ namespace SDLGame
         public:
             SDL_Surface *surface;
             Uint32 flags;
-            Surface(){
-                flags=0;
+            Surface()
+            {
+                flags = 0;
                 surface = SDL_CreateRGBSurface(flags, 0, 0, 0, 0, 0, 0, 0);
             }
-            Surface(int width, int height, Uint32 _flags=0)
+            Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
                 surface = SDL_CreateRGBSurface(flags, width, height, 0, 0, 0, 0, 0);
             }
 
-            Surface(const Surface& oth) {
+            Surface(const Surface &oth)
+            {
                 flags = oth.flags;
                 surface = SDL_ConvertSurface(oth.surface, oth.surface->format, 0);
             }
 
-            Surface(SDL_Surface* oth){
-                flags=oth->flags;
+            Surface(SDL_Surface *oth)
+            {
+                flags = oth->flags;
                 surface = SDL_ConvertSurface(oth, oth->format, 0);
             }
 
-            Surface& operator=(const Surface& other) {
-                if (this != &other) {
+            Surface &operator=(const Surface &other)
+            {
+                if (this != &other)
+                {
                     SDL_FreeSurface(surface);
                     flags = other.flags;
                     surface = SDL_ConvertSurface(other.surface, other.surface->format, 0);
@@ -1103,21 +1108,59 @@ namespace SDLGame
             {
                 return rect.getHeight();
             }
-            ~Surface(){
+            ~Surface()
+            {
                 SDL_FreeSurface(surface);
             }
         };
     }
 
     using Surface = SDLGame::surface::Surface;
-    //not yet, this only possible after install SDL3 then we should have the all image format load
+    // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
-        Surface load(const char* img_path){
-            Surface res(0,0);
-            res.surface = IMG_Load(img_path);
-
+        Surface load(const char *img_path)
+        {
+            return Surface(IMG_Load(img_path));
         }
     }
 
+    namespace key
+    {
+        const Uint8 *keyState;
+        /**
+         * @brief assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
+        */
+        std::vector<bool> get_pressed()
+        {
+            int numKeys;
+            keyState = SDL_GetKeyboardState(&numKeys);
+            std::vector<bool> keys(numKeys);
+            for (int i = 0; i < numKeys; ++i)
+            {
+                keys[i] = keyState[i];
+            }
+            return keys;
+        }
+    }
+    namespace mouse
+    {
+        Vector2 get_pos(){
+            int x,y;
+            SDL_GetMouseState(&x,&y);
+            return Vector2(x,y);
+        }
+        std::vector<bool> get_mouse_pressed() {
+            int numButtons = 32;
+            Uint32 buttonState = SDL_GetMouseState(NULL, NULL);
+
+            std::vector<bool> buttons(numButtons);
+            for (int i = 0; i < numButtons; ++i) {
+                buttons[i] = buttonState & (1 << i);
+            }
+
+            return buttons;
+        }
+
+    }
 };
