@@ -194,6 +194,7 @@ namespace SDLGame
     /*Variable here*/
     bool isInit = false;
 
+    //TODO: not done, ot yet call init for everything, sprcificly: window, renderer, mixer, image? ...
     void init()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -210,7 +211,7 @@ namespace SDLGame
         }
     }
     bool get_init() { return isInit; }
-
+    //TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
     void quit(SDL_Window *window, SDL_Renderer *renderer, std::vector<SDL_Texture *> textures)
     {
         for (SDL_Texture *tex : textures)
@@ -1087,8 +1088,10 @@ namespace SDLGame
             }
             void fill(const Color &color, Rect rect = Rect())
             {
-                if (rect == Rect())
+                if (rect == Rect()){
                     rect = Rect(0, 0, surface->w, surface->h);
+                    SDL_RenderClear(SDLGame::display::renderer);
+                }
                 SDL_FillRect(surface, &rect.toSDL_Rect(), color.toUint32Color(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32)));
             }
             template <class T>
@@ -1127,7 +1130,9 @@ namespace SDLGame
 
     namespace key
     {
-        const Uint8 *keyState;
+        namespace {
+            const Uint8 *keyState;
+        }
         /**
          * @brief assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
         */
@@ -1143,14 +1148,21 @@ namespace SDLGame
             return keys;
         }
     }
+
     namespace mouse
     {
+        // this weird shiet called anonymous namespace, which can only access within the same namespace unit
+        // best for not mess up these var some how
+        namespace {
+            Vector2 last_mouse_pos = Vector2(-1,-1);
+            bool isVisible = true;
+        }
         Vector2 get_pos(){
             int x,y;
             SDL_GetMouseState(&x,&y);
             return Vector2(x,y);
         }
-        std::vector<bool> get_mouse_pressed() {
+        std::vector<bool> get_pressed() {
             int numButtons = 32;
             Uint32 buttonState = SDL_GetMouseState(NULL, NULL);
 
@@ -1158,9 +1170,71 @@ namespace SDLGame
             for (int i = 0; i < numButtons; ++i) {
                 buttons[i] = buttonState & (1 << i);
             }
-
             return buttons;
         }
+        Vector2 get_rel() {
+            if(last_mouse_pos == Vector2(-1,-1)) return Vector2(0,0);
+            int x,y;
+            SDL_GetMouseState(&x,&y);
+            Vector2 res = Vector2(x,y) - last_mouse_pos;
+            last_mouse_pos = Vector2(x,y);
+            return res;
+        }
+        void set_visible(int enable){
+            isVisible = SDL_ShowCursor(enable);
+        }
+        bool get_visible(){
+            return isVisible;
+        }
+    }
 
+    namespace draw
+    {
+        /**
+         * @brief for now, that's it
+        */
+        void rect(Surface& surface, Color& color, Rect& rect, int width=0)
+        {
+
+        }
+    }
+
+    namespace display
+    {
+        SDL_Window* window = nullptr;
+        SDL_Renderer* renderer = nullptr;
+        bool isInit = false;
+        void init(){};
+        void set_mode(int width = 0, int height = 0, Uint32 flags = 0)
+        {
+            if(width==0 or height==0){
+                SDL_DisplayMode DM;
+                SDL_GetDesktopDisplayMode(0,&DM);
+                width = DM.w; height = DM.h;
+            }
+            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+            renderer = SDL_CreateRenderer(window, -1, 0);
+        }
+        void set_caption(const char* title)
+        {
+            SDL_SetWindowTitle(window, title);
+        }
+        SDL_Window* get_window(){
+            return window;
+        }
+        SDL_Renderer* get_renderer(){
+            return renderer;
+        }
+        void quit()
+        {
+            if(window) SDL_DestroyWindow(window);
+            if(renderer) SDL_DestroyRenderer(renderer);
+        }
+        void flip(){
+            if(renderer and window) SDL_RenderPresent(renderer);
+            else{
+                printf("Display have not set mode");
+            }
+        }
     }
 };
