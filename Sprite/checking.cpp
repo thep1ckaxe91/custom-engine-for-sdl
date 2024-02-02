@@ -3,32 +3,34 @@
 #include <vector>
 #include <memory>
 
+using namespace std;
+
 class Sprite;
 
 class SpriteGroup
 {
 public:
-    void add(std::shared_ptr<Sprite> sprite);
-    void kill(std::shared_ptr<Sprite> sprite);
-    void remove(std::shared_ptr<Sprite> sprite);
-    bool alive(std::shared_ptr<Sprite> sprite) const;
+    void add(:shared_ptr<Sprite> sprite);
+    void kill(:shared_ptr<Sprite> sprite);
+    void remove(:shared_ptr<Sprite> sprite);
+    bool alive(:shared_ptr<Sprite> sprite) const;
     void update();
     void draw() const;
 
 private:
-    std::vector<std::shared_ptr<Sprite>> sprites;
+    :vector<:shared_ptr<Sprite>> sprites;
     float spriteX = 0;
     float spriteY = 0;
 };
 
-std::shared_ptr<SDL_Surface> loadImage(const std::string& file);
+:shared_ptr<SDL_Surface> loadImage(const :string& file);
 
 
 
 class Sprite
 {
 public:
-    Sprite(SDL_Renderer* renderer, const std::string& file);
+    Sprite(SDL_Renderer* renderer, const :string& file);
 
     virtual void update() {}
     virtual void draw() const {}
@@ -38,25 +40,25 @@ public:
 
 private:
     SDL_Renderer* renderer;
-    std::shared_ptr<SDL_Surface> surface;
-    std::shared_ptr<SDL_Texture> texture;
+    :shared_ptr<SDL_Surface> surface;
+    :shared_ptr<SDL_Texture> texture;
     int width;
     int height;
 };
 
 //creating funcs
 
-Sprite::Sprite(SDL_Renderer* renderer, const std::string& file)
+Sprite::Sprite(SDL_Renderer* renderer, const :string& file)
     : renderer(renderer)
 {
     surface = loadImage(file);
     if (!surface)
     {
-        std::cerr << "Error loading image: " << SDL_GetError() << std::endl;
+        :cerr << "Error loading image: " << SDL_GetError() << :endl;
         return;
     }
 
-    texture = std::shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, surface.get()), SDL_DestroyTexture);
+    texture = :shared_ptr<SDL_Texture>(SDL_CreateTextureFromSurface(renderer, surface.get()), SDL_DestroyTexture);
     SDL_QueryTexture(texture.get(), nullptr, nullptr, &width, &height);
 }
 
@@ -64,7 +66,39 @@ void Sprite::update()
 {
 }
 
-//explain :
+/*
+explain:
+This is a virtual function that is intended to be overridden by derived classes to provide custom behavior. It is empty in the base Sprite class because it does not have any specific behavior to implement.
+
+For example, you might create a derived class called MovingSprite that inherits from Sprite and overrides the update() function to implement movement behavior :
+class MovingSprite : public Sprite
+{
+public:
+    MovingSprite(SDL_Renderer* renderer, const :string& file, double x, double y, double speed);
+
+    void update() override;
+
+private:
+    double x;
+    double y;
+    double speed;
+};
+
+MovingSprite::MovingSprite(SDL_Renderer* renderer, const :string& file, double x, double y, double speed)
+    : Sprite(renderer, file), x(x), y(y), speed(speed)
+{
+}
+
+void MovingSprite::update()
+{
+    x += speed;
+    y += speed;
+    Sprite::setPosition(x, y);
+}
+
+ask me if you have any questions
+
+*/
 
 
 void Sprite::draw() const
@@ -83,36 +117,36 @@ int Sprite::getHeight() const
     return height;
 }
 
-std::shared_ptr<SDL_Surface> loadImage(const std::string& file)
+:shared_ptr<SDL_Surface> loadImage(const :string& file)
 {
     SDL_Surface* surface = IMG_Load(file.c_str());
     if (!surface)
     {
-        std::cerr << "Error loading image: " << IMG_GetError() << std::endl;
+        :cerr << "Error loading image: " << IMG_GetError() << :endl;
         return nullptr;
     }
 
-    return std::shared_ptr<SDL_Surface>(surface, SDL_FreeSurface);
+    return :shared_ptr<SDL_Surface>(surface, SDL_FreeSurface);
 }
 
-void SpriteGroup::add(std::shared_ptr<Sprite> sprite)
+void SpriteGroup::add(:shared_ptr<Sprite> sprite)
 {
     sprites.push_back(sprite);
 }
 
-void SpriteGroup::kill(std::shared_ptr<Sprite> sprite)
+void SpriteGroup::kill(:shared_ptr<Sprite> sprite)
 {
-    sprites.erase(std::remove(sprites.begin(), sprites.end(), sprite), sprites.end());
+    sprites.erase(:remove(sprites.begin(), sprites.end(), sprite), sprites.end());
 }
 
-void SpriteGroup::remove(std::shared_ptr<Sprite> sprite)
+void SpriteGroup::remove(:shared_ptr<Sprite> sprite)
 {
-    sprites.erase(std::remove(sprites.begin(), sprites.end(), sprite), sprites.end());
+    sprites.erase(:remove(sprites.begin(), sprites.end(), sprite), sprites.end());
 }
 
-bool SpriteGroup::alive(std::shared_ptr<Sprite> sprite) const
+bool SpriteGroup::alive(:shared_ptr<Sprite> sprite) const
 {
-    return std::find(sprites.begin(), sprites.end(), sprite) != sprites.end();
+    return :find(sprites.begin(), sprites.end(), sprite) != sprites.end();
 }
 
 void SpriteGroup::update()
