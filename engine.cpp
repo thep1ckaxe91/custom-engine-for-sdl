@@ -1,8 +1,8 @@
 /**
- * @authors thep1ckaxe, and many authors from SDL2's developers
+ * @authors thep1ckaxe, Ngô Hoan Tài and many authors from SDL2's developers
  * email: ThePickaxe91@gmail.com
  *
- * @brief this file tried to replicate all classes and function that they have in pygame but implement for SDL2 in C++
+ *  this file tried to replicate all classes and function that they have in pygame but implement for SDL2 in C++
  * if you spot or have problem while using this engine, please let me know through email
  *
  * REQUIREMENT: SDL2 installed to your mingw directory
@@ -50,7 +50,7 @@
 #define null NULL
 
 /**
- * @brief this namespace replace pygame module, also replicate the way everything is just from pygame. ish
+ *  this namespace replace pygame module, also replicate the way everything is just from pygame. ish
  */
 namespace SDLGame
 {
@@ -200,6 +200,16 @@ namespace SDLGame
     const Uint32 POPUP_MENU = SDL_WINDOW_POPUP_MENU;
     const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
 
+    /*event type here*/
+    const Uint32 QUIT = SDL_QUIT;
+    const Uint32 KEYUP = SDL_KEYUP;
+    const Uint32 KEYDOWN = SDL_KEYDOWN;
+    const Uint32 MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN;
+    const Uint32 MOUSEBUTTONUP = SDL_MOUSEBUTTONUP;
+    const Uint32 MOUSEMOTION = SDL_MOUSEMOTION;
+    const Uint32 MOUSEWHEEL = SDL_MOUSEWHEEL;
+    const Uint32 USEREVENT = SDL_USEREVENT;
+
     /*Variable here*/
     bool isInit = false;
 
@@ -255,14 +265,14 @@ namespace SDLGame
         }
         
         /**
-         * @brief return a Surface object that have reference SDL_surface to the window surface
+         *  return a Surface object that have reference SDL_surface to the window surface
         */
         Surface& get_surface(){
             Surface res = Surface(SDL_GetWindowSurface(window));
             return res;
         }
         /**
-         * @brief if set to true, the mouse will be confine to the window
+         *  if set to true, the mouse will be confine to the window
          * this function get or set the state of mouse being confine or not
          *
          */
@@ -280,7 +290,7 @@ namespace SDLGame
         }
 
         /**
-         * @brief get and set the borderless state of the active window;
+         *  get and set the borderless state of the active window;
          */
         bool borderless(int enable = -1)
         {
@@ -401,7 +411,7 @@ namespace SDLGame
         }
 
         /**
-         * @brief a class for 2D vector, also can represent a point on a 2d surface
+         *  a class for 2D vector, also can represent a point on a 2d surface
          * since the simplicity of 2d vector, we dont need get and set function
          *
          */
@@ -505,7 +515,7 @@ namespace SDLGame
                 return Vector2(x / this->magnitude(), y / this->magnitude());
             }
             /**
-             * @brief normalize the vector
+             *  normalize the vector
              */
             void normalize_ip()
             {
@@ -533,7 +543,7 @@ namespace SDLGame
                 return Vector2(x * cos(angleInRadians) - y * sin(angleInRadians), x * sin(angleInRadians) + y * cos(angleInRadians));
             }
             /**
-             * @brief make the vector rotate deg degrees counter-clockwise
+             *  make the vector rotate deg degrees counter-clockwise
              */
             Vector2 rotate_ip(double deg)
             {
@@ -576,7 +586,7 @@ namespace SDLGame
     namespace rect
     {
         /**
-         * @brief this is a class represent a Rectangle in SDL2, the coordination
+         *  this is a class represent a Rectangle in SDL2, the coordination
          * in sdl2 is x axis points to the right and y axis points downward
          * it's a little unintuitive, but you'll sure have the hang of it and why it should be like that
          *
@@ -756,7 +766,7 @@ namespace SDLGame
             }
 
             /**
-             * @brief instead of a new one, this just move the rect that called this function
+             *  instead of a new one, this just move the rect that called this function
              */
             template <class T>
             void move_ip(T offset_x, T offset_y)
@@ -772,7 +782,7 @@ namespace SDLGame
                 return this->move(offset.x, offset.y);
             }
             /**
-             * @brief instead of a new one, this just move the rect that called this function
+             *  instead of a new one, this just move the rect that called this function
              */
             void move_ip(const Vector2 &offset)
             {
@@ -810,7 +820,7 @@ namespace SDLGame
                 return this->inflate(offset.x, offset.y);
             }
             /**
-             * @brief resize current rectangle with given offset, the topleft of the rectangle is remain still
+             *  resize current rectangle with given offset, the topleft of the rectangle is remain still
              */
             template <class T>
             void inflate_ip(T offset_w, T offset_h)
@@ -823,7 +833,7 @@ namespace SDLGame
             }
 
             /**
-             * @brief to update the current rectangle that call the function
+             *  to update the current rectangle that call the function
              */
             template <class T>
             void update(T _left, T _top, T _w, T _h)
@@ -916,7 +926,7 @@ namespace SDLGame
                 midright = Vector2(right, centery);
             }
             /**
-             * @brief return a new rectangle that fit another rect but keep the aspect ratio of the caller
+             *  return a new rectangle that fit another rect but keep the aspect ratio of the caller
              * the position of the rect that return is the position of the caller
              */
             Rect fit(const Rect &oth) const
@@ -1069,7 +1079,7 @@ namespace SDLGame
             Vector2 getMidRight() const { return midright; }
 
             /**
-             * @brief return a SDL_Rect object from this rect
+             *  return a SDL_Rect object from this rect
              */
             SDL_Rect toSDL_Rect() const
             {
@@ -1086,7 +1096,7 @@ namespace SDLGame
     namespace color
     {
         /**
-         * @brief class for color, all values range from [0,255]
+         *  class for color, all values range from [0,255]
          */
         class Color
         {
@@ -1235,7 +1245,7 @@ namespace SDLGame
             const Uint8 *keyState;
         }
         /**
-         * @brief assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
+         *  assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
          */
         std::vector<bool> get_pressed()
         {
@@ -1298,7 +1308,7 @@ namespace SDLGame
     }
 
     /**
-     * @brief for the optimization purposes, draw function that affect dirrectly to window now
+     *  for the optimization purposes, draw function that affect dirrectly to window now
      * will have a window_ prefix, for example, for draw a rect to window, the funcion name is window_rect
      * every other draw function without the window_ prefix still use CPU to draw, not GPU 
     */
@@ -1321,5 +1331,99 @@ namespace SDLGame
         void line(Surface){
 
         }
+    }
+    using Event = SDLGame::event::Event;
+    namespace event
+    {
+        /**
+         *  class represent a event like keyboard input or mouse click (anything happening in the game)
+        */
+        class Event
+        {
+        private:
+            std::map<std::string,Uint32> dict;
+        public:
+            Uint32 type;
+            Uint32 timestamp;
+            Event(){}
+            Event(SDL_Event e){
+                type = e.type;
+                /**
+                 * @todo: leave these here in case need, now type only is good enough
+                */
+                // if(e.type == SDL_WINDOWEVENT)
+                // {
+                //     timestamp = e.window.timestamp;
+                //     dict["windowID"] = e.window.windowID;    /**< The associated window */
+                //     dict["event"] = e.window.event;
+                //     dict["padding1"] = e.window.padding1;
+                //     dict["padding2"] = e.window.padding2;
+                //     dict["padding3"] = e.window.padding3;
+                //     dict["data1"] = e.window.data1;
+                //     dict["data2"] = e.window.data2; 
+                // }
+                // else
+                if(e.type == SDL_KEYDOWN or e.type == SDL_KEYUP)
+                {
+                    timestamp = e.key.timestamp;
+                    dict["key"] = e.key.keysym.sym;
+                }
+                else if(e.type == SDL_QUIT)
+                {
+                    //lol, just here to write const event
+                }
+                else
+                if(e.type == SDL_MOUSEWHEEL)
+                {
+                    timestamp = e.wheel.timestamp;
+                    dict["x"] = e.wheel.x;
+                    dict["y"] = e.wheel.y;
+                }
+                else if(e.type == SDL_MOUSEBUTTONUP or e.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    timestamp = e.button.timestamp;
+                    dict["button"] = e.button.button;
+                    dict["x"] = e.button.x;
+                    dict["y"] = e.button.y;
+                }
+                else if(e.type == SDL_MOUSEMOTION)
+                {
+                    timestamp = e.motion.timestamp;
+                    dict["x"] = e.motion.x;
+                    dict["y"] = e.motion.y;
+                    dict["xrel"] = e.motion.xrel;
+                    dict["yrel"] = e.motion.yrel;
+                }
+                // else if(e.type == SDL_TEXTINPUT)
+                // {
+                    
+                // }
+
+            }
+            Uint32& operator [] (std::string& key)
+            {
+                if(dict.find(key)!=dict.end()){
+                    return dict[key];
+                }
+                else{
+                    throw std::invalid_argument("There's no such key: "+key);
+                }
+            }
+        };
+        std::vector<SDLGame::event::Event> current_events;
+        std::vector<SDLGame::event::Event>& get()
+        {
+            SDL_PumpEvents();
+            current_events.clear();
+            SDL_Event e;
+            while(SDL_PollEvent(&e)) current_events.push_back(Event(e));
+            return current_events;
+        }
+    }
+    /**please only use this for user event*/
+    void post(Uint32 event_type)
+    {
+        SDL_Event tmp = {event_type};
+        SDL_PushEvent(&tmp);
     }
 };
