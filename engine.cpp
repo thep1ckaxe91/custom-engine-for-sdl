@@ -9,6 +9,8 @@
  *
  * all pixel format is consider RGBA32
  *
+ * @warning this is not thread-safe, recommend only sigle threading
+ *
  * @copyright if you want to use this file, please contact for permission, after that, feel free to use and modify this file
  */
 
@@ -248,6 +250,7 @@ namespace SDLGame
     {
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
+        Surface win_surf;
         bool isInit = false;
 
         SDL_Window *set_mode(int width = 0, int height = 0, Uint32 flags = 0)
@@ -263,13 +266,14 @@ namespace SDLGame
             renderer = SDL_CreateRenderer(window, -1, 0);
             return window;
         }
-        
+
         /**
          *  return a Surface object that have reference SDL_surface to the window surface
-        */
-        Surface& get_surface(){
-            Surface res = Surface(SDL_GetWindowSurface(window));
-            return res;
+         */
+        Surface &get_surface()
+        {
+            win_surf = Surface(SDL_GetWindowSurface(window));
+            return &win_surf;
         }
         /**
          *  if set to true, the mouse will be confine to the window
@@ -328,7 +332,6 @@ namespace SDLGame
             }
         }
     }
-
 
     namespace time
     {
@@ -581,7 +584,6 @@ namespace SDLGame
             }
         };
     }
-
 
     namespace rect
     {
@@ -1130,6 +1132,7 @@ namespace SDLGame
                 SDL_Color res = {r, g, b, a};
                 return res;
             }
+            /**return Uint32 kind of color*/
             Uint32 toUint32Color(const SDL_PixelFormat *format) const
             {
                 return SDL_MapRGBA(format, r, g, b, a);
@@ -1196,13 +1199,10 @@ namespace SDLGame
                     area = Rect(0, 0, source.surface->w, source.surface->h);
                 SDL_BlitSurface(source.surface, &area.toSDL_Rect(), surface, &destrect.toSDL_Rect());
             }
-            void fill(const Color &color, Rect rect = Rect())
+            void fill(const Color &color, Rect area = Rect())
             {
-                if (rect == Rect())
-                {
-                    rect = Rect(0, 0, surface->w, surface->h);
-                    SDL_RenderClear(SDLGame::display::renderer);
-                }
+                if (area == Rect())
+                    area = Rect(0, 0, surface->w, surface->h);
                 SDL_FillRect(surface, &rect.toSDL_Rect(), color.toUint32Color(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32)));
             }
             template <class T>
@@ -1310,8 +1310,8 @@ namespace SDLGame
     /**
      *  for the optimization purposes, draw function that affect dirrectly to window now
      * will have a window_ prefix, for example, for draw a rect to window, the funcion name is window_rect
-     * every other draw function without the window_ prefix still use CPU to draw, not GPU 
-    */
+     * every other draw function without the window_ prefix still use CPU to draw, not GPU
+     */
     namespace draw
     {
         void window_rect(Surface &surface, Color &color, Rect &rect, int width = 0)
@@ -1327,9 +1327,86 @@ namespace SDLGame
             }
             SDL_RenderPresent(display::renderer);
         }
+        void set_pixel(Surface &surface, int x, int y, Uint32 pixel)
+        {
+            Uint32 *target_pixel = (Uint32 *)((Uint8 *)surface.surface->pixels + y * surface.surface->pitch + x * sizeof(*target_pixel));
+            *target_pixel = pixel;
+        }
 
-        void line(Surface){
+        // Bresenham's line algorithm
+        void line(Surface &surface, int x1, int y1, int x2, int y2, Color color)
+        {
+            int dx = abs(x2 - x1);
+            int dy = abs(y2 - y1);
+            int sx = (x1 < x2) ? 1 : -1;
+            int sy = (y1 < y2) ? 1 : -1;
+            int err = dx - dy;
+            SDL_LockSurface(surface.surface);
+            while (true)
+            {
+                set_pixel(surface, x1, y1, color.toUint32Color());
 
+                if (x1 == x2 && y1 == y2)
+                {
+                    break;
+                }
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x1 += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y1 += sy;
+                }
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+        void draw_ellipse(Surface &surface, int centerX, int centerY, int radiusX, int radiusY, Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
+            {
+                int x = centerX + radiusX * cos(angle);
+                int y = centerY + radiusY * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+
+        void draw_arc(Surface &surface, int centerX, int centerY, int radius, double startAngle, double endAngle, Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = startAngle; angle < endAngle; angle += 0.01)
+            {
+                int x = centerX + radius * cos(angle);
+                int y = centerY + radius * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+        void draw_circle(Surface &surface, int centerX, int centerY, int radius, Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
+            {
+                int x = centerX + radius * cos(angle);
+                int y = centerY + radius * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+
+        void draw_polygon(Surface& surface, std::vector<std::pair<int,int>> points, Color color)
+        {
+            if(points.size()<3) throw std::invalid_argument("can't draw polygon with only 2 vertices or less");
+            for(int i=0;i<int(points.size())-1;i++){
+                SDLGame::draw::line(surface, points[i].first, points[i].second, points[i+1].first, points[i+1].second,color);
+            }
+            SDLGame::draw::line(surface,points[0].first,points[0].second, points[points.size()-1].first, points[points.size()-1].second, color);
         }
     }
     using Event = SDLGame::event::Event;
@@ -1337,20 +1414,24 @@ namespace SDLGame
     {
         /**
          *  class represent a event like keyboard input or mouse click (anything happening in the game)
-        */
+         */
         class Event
         {
         private:
-            std::map<std::string,Uint32> dict;
+            std::map<std::string, Uint32> dict;
+
         public:
             Uint32 type;
             Uint32 timestamp;
-            Event(){}
-            Event(SDL_Event e){
+            SDL_Event tmp_e;
+            Event() {}
+            Event(SDL_Event e)
+            {
+                tmp_e = e;
                 type = e.type;
                 /**
                  * @todo: leave these here in case need, now type only is good enough
-                */
+                 */
                 // if(e.type == SDL_WINDOWEVENT)
                 // {
                 //     timestamp = e.window.timestamp;
@@ -1360,33 +1441,32 @@ namespace SDLGame
                 //     dict["padding2"] = e.window.padding2;
                 //     dict["padding3"] = e.window.padding3;
                 //     dict["data1"] = e.window.data1;
-                //     dict["data2"] = e.window.data2; 
+                //     dict["data2"] = e.window.data2;
                 // }
                 // else
-                if(e.type == SDL_KEYDOWN or e.type == SDL_KEYUP)
+                if (e.type == SDL_KEYDOWN or e.type == SDL_KEYUP)
                 {
                     timestamp = e.key.timestamp;
                     dict["key"] = e.key.keysym.sym;
                 }
-                else if(e.type == SDL_QUIT)
+                else if (e.type == SDL_QUIT)
                 {
-                    //lol, just here to write const event
+                    // lol, just here to write const event
                 }
-                else
-                if(e.type == SDL_MOUSEWHEEL)
+                else if (e.type == SDL_MOUSEWHEEL)
                 {
                     timestamp = e.wheel.timestamp;
                     dict["x"] = e.wheel.x;
                     dict["y"] = e.wheel.y;
                 }
-                else if(e.type == SDL_MOUSEBUTTONUP or e.type == SDL_MOUSEBUTTONDOWN)
+                else if (e.type == SDL_MOUSEBUTTONUP or e.type == SDL_MOUSEBUTTONDOWN)
                 {
                     timestamp = e.button.timestamp;
                     dict["button"] = e.button.button;
                     dict["x"] = e.button.x;
                     dict["y"] = e.button.y;
                 }
-                else if(e.type == SDL_MOUSEMOTION)
+                else if (e.type == SDL_MOUSEMOTION)
                 {
                     timestamp = e.motion.timestamp;
                     dict["x"] = e.motion.x;
@@ -1396,34 +1476,38 @@ namespace SDLGame
                 }
                 // else if(e.type == SDL_TEXTINPUT)
                 // {
-                    
-                // }
 
+                // }
             }
-            Uint32& operator [] (std::string& key)
+            Uint32 &operator[](std::string &key)
             {
-                if(dict.find(key)!=dict.end()){
+                if (dict.find(key) != dict.end())
+                {
                     return dict[key];
                 }
-                else{
-                    throw std::invalid_argument("There's no such key: "+key);
+                else
+                {
+                    throw std::invalid_argument("There's no such key: " + key);
                 }
             }
         };
         std::vector<SDLGame::event::Event> current_events;
-        std::vector<SDLGame::event::Event>& get()
+        std::vector<SDLGame::event::Event> &get()
         {
             SDL_PumpEvents();
             current_events.clear();
             SDL_Event e;
-            while(SDL_PollEvent(&e)) current_events.push_back(Event(e));
+            while (SDL_PollEvent(&e))
+                current_events.push_back(Event(e));
             return current_events;
         }
+        Event tmp;
+        /**please only use this for user event*/
+        void post(Uint32 event_type)
+        {
+            tmp.tmp_e.type = event_type;
+            SDL_PushEvent(&tmp.tmp_e);
+        }
     }
-    /**please only use this for user event*/
-    void post(Uint32 event_type)
-    {
-        SDL_Event tmp = {event_type};
-        SDL_PushEvent(&tmp);
-    }
+
 };
