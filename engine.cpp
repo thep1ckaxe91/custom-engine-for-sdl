@@ -191,10 +191,22 @@ namespace SDLGame
     const int K_RSHIFT = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_RSHIFT);
     const int K_RALT = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_RALT);
 
+    /*window flag here*/
+    const Uint32 FULLSCREEN = SDL_WINDOW_FULLSCREEN;
+    const Uint32 NO_FRAME = SDL_WINDOW_BORDERLESS;
+    const Uint32 RESIZABLE = SDL_WINDOW_RESIZABLE;
+    const Uint32 HIDDEN = SDL_WINDOW_HIDDEN;
+    const Uint32 SKIP_TASK_BAR = SDL_WINDOW_SKIP_TASKBAR;
+    const Uint32 POPUP_MENU = SDL_WINDOW_POPUP_MENU;
+    const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
+
     /*Variable here*/
     bool isInit = false;
 
-    //TODO: not done, ot yet call init for everything, sprcificly: window, renderer, mixer, image? ...
+    using Surface = SDLGame::surface::Surface;
+    using Vector2 = SDLGame::math::Vector2;
+    using Rect = SDLGame::rect::Rect;
+    using Color = SDLGame::color::Color;
     void init()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -211,7 +223,7 @@ namespace SDLGame
         }
     }
     bool get_init() { return isInit; }
-    //TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
+    // TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
     void quit(SDL_Window *window, SDL_Renderer *renderer, std::vector<SDL_Texture *> textures)
     {
         for (SDL_Texture *tex : textures)
@@ -221,6 +233,92 @@ namespace SDLGame
         SDL_Quit();
         exit(0);
     }
+
+    namespace display
+    {
+        SDL_Window *window = nullptr;
+        SDL_Renderer *renderer = nullptr;
+        bool isInit = false;
+
+        SDL_Window *set_mode(int width = 0, int height = 0, Uint32 flags = 0)
+        {
+            if (width == 0 or height == 0)
+            {
+                SDL_DisplayMode DM;
+                SDL_GetDesktopDisplayMode(0, &DM);
+                width = DM.w;
+                height = DM.h;
+            }
+            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+            renderer = SDL_CreateRenderer(window, -1, 0);
+            return window;
+        }
+        
+        /**
+         * @brief return a Surface object that have reference SDL_surface to the window surface
+        */
+        Surface& get_surface(){
+            Surface res = Surface(SDL_GetWindowSurface(window));
+            return res;
+        }
+        /**
+         * @brief if set to true, the mouse will be confine to the window
+         * this function get or set the state of mouse being confine or not
+         *
+         */
+        bool grab(int enable = -1)
+        {
+            if (enable == -1)
+                return SDL_GetWindowGrab(window);
+            SDL_SetWindowGrab(window, (enable ? SDL_TRUE : SDL_FALSE));
+            return enable;
+        }
+
+        void set_icon(const Surface &icon)
+        {
+            SDL_SetWindowIcon(window, icon.surface);
+        }
+
+        /**
+         * @brief get and set the borderless state of the active window;
+         */
+        bool borderless(int enable = -1)
+        {
+            if (enable == -1)
+                return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS);
+            SDL_SetWindowBordered(window, (enable ? SDL_FALSE : SDL_TRUE));
+            return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS) > 0;
+        }
+        void set_caption(const char *title)
+        {
+            SDL_SetWindowTitle(window, title);
+        }
+        SDL_Window *get_window()
+        {
+            return window;
+        }
+        SDL_Renderer *get_renderer()
+        {
+            return renderer;
+        }
+        void quit()
+        {
+            if (window)
+                SDL_DestroyWindow(window);
+            if (renderer)
+                SDL_DestroyRenderer(renderer);
+        }
+        void flip()
+        {
+            if (renderer and window)
+                SDL_RenderPresent(renderer);
+            else
+            {
+                printf("Display have not set mode");
+            }
+        }
+    }
+
 
     namespace time
     {
@@ -474,7 +572,6 @@ namespace SDLGame
         };
     }
 
-    using Vector2 = SDLGame::math::Vector2;
 
     namespace rect
     {
@@ -629,6 +726,11 @@ namespace SDLGame
                 if (this == &oth)
                     return true;
                 return abs(x - oth.getLeft()) <= epsilon and abs(y - oth.getTop()) <= epsilon and abs(w - oth.getWidth()) <= epsilon and abs(h - oth.getHeight()) <= epsilon;
+            }
+            SDL_FRect to_SDL_FRect() const
+            {
+                SDL_FRect res = {(float)x, (float)y, (float)w, (float)h};
+                return res;
             }
             template <class T>
             Rect move(T offset_x, T offset_y) const
@@ -1029,8 +1131,6 @@ namespace SDLGame
         };
     }
 
-    using Rect = SDLGame::rect::Rect;
-    using Color = SDLGame::color::Color;
     // may be not done yet but good enough
     namespace surface
     {
@@ -1088,7 +1188,8 @@ namespace SDLGame
             }
             void fill(const Color &color, Rect rect = Rect())
             {
-                if (rect == Rect()){
+                if (rect == Rect())
+                {
                     rect = Rect(0, 0, surface->w, surface->h);
                     SDL_RenderClear(SDLGame::display::renderer);
                 }
@@ -1118,7 +1219,6 @@ namespace SDLGame
         };
     }
 
-    using Surface = SDLGame::surface::Surface;
     // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
@@ -1130,12 +1230,13 @@ namespace SDLGame
 
     namespace key
     {
-        namespace {
+        namespace
+        {
             const Uint8 *keyState;
         }
         /**
          * @brief assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
-        */
+         */
         std::vector<bool> get_pressed()
         {
             int numKeys;
@@ -1153,88 +1254,72 @@ namespace SDLGame
     {
         // this weird shiet called anonymous namespace, which can only access within the same namespace unit
         // best for not mess up these var some how
-        namespace {
-            Vector2 last_mouse_pos = Vector2(-1,-1);
+        namespace
+        {
+            Vector2 last_mouse_pos = Vector2(-1, -1);
             bool isVisible = true;
         }
-        Vector2 get_pos(){
-            int x,y;
-            SDL_GetMouseState(&x,&y);
-            return Vector2(x,y);
+        Vector2 get_pos()
+        {
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            return Vector2(x, y);
         }
-        std::vector<bool> get_pressed() {
+        std::vector<bool> get_pressed()
+        {
             int numButtons = 32;
             Uint32 buttonState = SDL_GetMouseState(NULL, NULL);
 
             std::vector<bool> buttons(numButtons);
-            for (int i = 0; i < numButtons; ++i) {
+            for (int i = 0; i < numButtons; ++i)
+            {
                 buttons[i] = buttonState & (1 << i);
             }
             return buttons;
         }
-        Vector2 get_rel() {
-            if(last_mouse_pos == Vector2(-1,-1)) return Vector2(0,0);
-            int x,y;
-            SDL_GetMouseState(&x,&y);
-            Vector2 res = Vector2(x,y) - last_mouse_pos;
-            last_mouse_pos = Vector2(x,y);
+        Vector2 get_rel()
+        {
+            if (last_mouse_pos == Vector2(-1, -1))
+                return Vector2(0, 0);
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            Vector2 res = Vector2(x, y) - last_mouse_pos;
+            last_mouse_pos = Vector2(x, y);
             return res;
         }
-        void set_visible(int enable){
+        void set_visible(int enable)
+        {
             isVisible = SDL_ShowCursor(enable);
         }
-        bool get_visible(){
+        bool get_visible()
+        {
             return isVisible;
         }
     }
 
+    /**
+     * @brief for the optimization purposes, draw function that affect dirrectly to window now
+     * will have a window_ prefix, for example, for draw a rect to window, the funcion name is window_rect
+     * every other draw function without the window_ prefix still use CPU to draw, not GPU 
+    */
     namespace draw
     {
-        /**
-         * @brief for now, that's it
-        */
-        void rect(Surface& surface, Color& color, Rect& rect, int width=0)
+        void window_rect(Surface &surface, Color &color, Rect &rect, int width = 0)
         {
-
-        }
-    }
-
-    namespace display
-    {
-        SDL_Window* window = nullptr;
-        SDL_Renderer* renderer = nullptr;
-        bool isInit = false;
-        void init(){};
-        void set_mode(int width = 0, int height = 0, Uint32 flags = 0)
-        {
-            if(width==0 or height==0){
-                SDL_DisplayMode DM;
-                SDL_GetDesktopDisplayMode(0,&DM);
-                width = DM.w; height = DM.h;
+            SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
+            if (width == 0)
+            {
+                SDL_RenderFillRectF(display::renderer, &rect.to_SDL_FRect());
             }
-            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-            renderer = SDL_CreateRenderer(window, -1, 0);
-        }
-        void set_caption(const char* title)
-        {
-            SDL_SetWindowTitle(window, title);
-        }
-        SDL_Window* get_window(){
-            return window;
-        }
-        SDL_Renderer* get_renderer(){
-            return renderer;
-        }
-        void quit()
-        {
-            if(window) SDL_DestroyWindow(window);
-            if(renderer) SDL_DestroyRenderer(renderer);
-        }
-        void flip(){
-            if(renderer and window) SDL_RenderPresent(renderer);
-            else{
-                printf("Display have not set mode");
+            else
+            {
+                SDL_RenderDrawRectF(display::renderer, &rect.to_SDL_FRect());
             }
+            SDL_RenderPresent(display::renderer);
+        }
+
+        void line(Surface){
+
         }
     }
 };
