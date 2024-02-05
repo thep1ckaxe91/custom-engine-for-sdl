@@ -1148,6 +1148,10 @@ namespace SDLGame
                 height = DM.h;
             }
             window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+            if(!window){
+                printf("Failed to create a window object\n");
+            }
+            
             renderer = SDL_CreateRenderer(window, -1, 0);
             return window;
         }
