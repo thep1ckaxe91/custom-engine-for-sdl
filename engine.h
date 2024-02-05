@@ -905,17 +905,17 @@ namespace SDLGame
             template <class T>
             void setLeft(T _x)
             {
-                move_ip(_x - x, 0);
+                move_ip(_x - x, T(0));
             }
             template <class T>
             void setRight(T _x)
             {
-                move_ip(_x - right, 0);
+                move_ip(_x - right, T(0));
             }
             template <class T>
             void setBottom(T _y)
             {
-                move_ip(_y - bottom, 0);
+                move_ip(_y - bottom, T(0));
             }
             template <class T>
             void setCenter(T _x, T _y)
