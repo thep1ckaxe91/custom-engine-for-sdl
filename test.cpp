@@ -7,12 +7,31 @@ using Event = SDLGame::event::Event;
 using Rect = SDLGame::rect::Rect;
 using Vector2 = SDLGame::math::Vector2;
 using Surface = SDLGame::surface::Surface;
+using Color = SDLGame::color::Color;
 const int WIDTH=1280, HEIGHT = 720;
 
+class Player
+{
+    Vector2 pos = Vector2();
+    Vector2 player_size = Vector2(20,20);
+    Vector2 direction = Vector2(0,0);
+    double speed = 10;
+    double jump_speed = 10;
+    Rect player_rect = Rect();
+    Color color = Color(0,255,0);
+    Player(Vector2 _pos = Vector2(0,0),Vector2 _size = Vector2(50,50),Color _color = Color(0,255,0));
+    {
+        pos = _pos;
+        size = _size;
+        color = _color;
+    }
+    void draw(Surface& window){
+        SDLGame::draw::window_rect(window,color,player_rect);
+    }
+    void update(){
 
-Vector2 pos = Vector2();
-Vector2 play_size = Vector2(20,20);
-
+    }
+};
 void draw()
 {
 
@@ -21,12 +40,12 @@ void draw()
 void update()
 {
     std::vector<bool> keys = SDLGame::key::get_pressed();
-    for
+    if(keys[SDLGame::K_a])
 }
 
 int main(int argc, char* argv[]){
     SDLGame::init();
-    SDLGame::display::set_mode(WIDTH,HEIGHT,SDLGame::SKIP_TASK_BAR);
+    Surface window = SDLGame::display::set_mode(WIDTH,HEIGHT,SDLGame::SKIP_TASK_BAR);
     SDLGame::time::Clock clock = SDLGame::time::Clock();
     /**
      * @warning ATTENTION: ALWAYS CAP FPS, other wise the program will be to fast and lag your computer

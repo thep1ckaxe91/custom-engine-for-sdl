@@ -1138,7 +1138,7 @@ namespace SDLGame
         SDLGame::surface::Surface win_surf;
         bool isInit = false;
 
-        SDL_Window *set_mode(int width = 0, int height = 0, Uint32 flags = 0)
+        SDLGame::surface::Surface& set_mode(int width = 0, int height = 0, Uint32 flags = 0)
         {
             if (width == 0 or height == 0)
             {
@@ -1151,9 +1151,9 @@ namespace SDLGame
             if(!window){
                 printf("Failed to create a window object\n");
             }
-            
             renderer = SDL_CreateRenderer(window, -1, 0);
-            return window;
+            win_surf.surface = SDL_GetWindowSurface(window);
+            return win_surf;
         }
 
         /**
@@ -1418,7 +1418,7 @@ namespace SDLGame
      */
     namespace draw
     {
-        void window_rect(SDLGame::surface::Surface &surface, SDLGame::color::Color &color, SDLGame::rect::Rect &rect, int width = 0)
+        void window_rect(SDLGame::surface::Surface &surface, SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
         {
             SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
             SDL_FRect tmp = rect.to_SDL_FRect();
