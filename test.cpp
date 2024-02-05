@@ -21,12 +21,14 @@ public:
     double g_force = 1;
     Rect player_rect;
     Color color;
+    
     Player(){
         pos = Vector2(0,0);
         player_size = Vector2(50,50);
-
+        player_rect = Rect(pos,player_size);
+        color = Color(0,255,0);
     }
-    Player(Vector2 _pos = Vector2(0, 0), Vector2 _size = Vector2(50, 50), Color _color = Color(0, 255, 0));
+    Player(Vector2 _pos = Vector2(0, 0), Vector2 _size = Vector2(50, 50), Color _color = Color(0, 255, 0))
     {
         pos = _pos;
         player_size = _size;
@@ -53,7 +55,7 @@ public:
         }
         dir.y += g_force;
 
-        player_rect.x += dir.x * speed;
+        player_rect.move_ip(dir.x * speed,double(0));
         if (player_rect.getRight() > WIDTH)
         {
             player_rect.setRight(WIDTH);
@@ -62,8 +64,8 @@ public:
         {
             player_rect.setLeft(0);
         }
-        player_rect.y += dir.y;
-        if (player_rect.getBottom > HEIGHT)
+        player_rect.move_ip(0.0,dir.y);
+        if (player_rect.getBottom() > HEIGHT)
         {
             player_rect.setBottom(HEIGHT);
         }
@@ -74,7 +76,7 @@ public:
 Player player;
 void draw()
 {
-    
+
 }
 
 void update()

@@ -900,22 +900,22 @@ namespace SDLGame
             template <class T>
             void setTop(T _y)
             {
-                move_ip(0, _y - y);
+                move_ip(T(0),T( _y - y));
             }
             template <class T>
             void setLeft(T _x)
             {
-                move_ip(_x - x, T(0));
+                move_ip(T(_x - x), T(0));
             }
             template <class T>
             void setRight(T _x)
             {
-                move_ip(_x - right, T(0));
+                move_ip(T(_x - right), T(0));
             }
             template <class T>
             void setBottom(T _y)
             {
-                move_ip(_y - bottom, T(0));
+                move_ip(T(_y - bottom), T(0));
             }
             template <class T>
             void setCenter(T _x, T _y)
