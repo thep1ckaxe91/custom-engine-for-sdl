@@ -215,10 +215,6 @@ namespace SDLGame
     /*Variable here*/
     bool isInit = false;
 
-    using Surface = SDLGame::surface::Surface;
-    using Vector2 = SDLGame::math::Vector2;
-    using Rect = SDLGame::rect::Rect;
-    using Color = SDLGame::color::Color;
     void init()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -235,103 +231,6 @@ namespace SDLGame
         }
     }
     bool get_init() { return isInit; }
-    // TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
-    void quit(SDL_Window *window, SDL_Renderer *renderer, std::vector<SDL_Texture *> textures)
-    {
-        for (SDL_Texture *tex : textures)
-            SDL_DestroyTexture(tex);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        exit(0);
-    }
-
-    namespace display
-    {
-        SDL_Window *window = nullptr;
-        SDL_Renderer *renderer = nullptr;
-        Surface win_surf;
-        bool isInit = false;
-
-        SDL_Window *set_mode(int width = 0, int height = 0, Uint32 flags = 0)
-        {
-            if (width == 0 or height == 0)
-            {
-                SDL_DisplayMode DM;
-                SDL_GetDesktopDisplayMode(0, &DM);
-                width = DM.w;
-                height = DM.h;
-            }
-            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-            renderer = SDL_CreateRenderer(window, -1, 0);
-            return window;
-        }
-
-        /**
-         *  return a Surface object that have reference SDL_surface to the window surface
-         */
-        Surface &get_surface()
-        {
-            win_surf = Surface(SDL_GetWindowSurface(window));
-            return &win_surf;
-        }
-        /**
-         *  if set to true, the mouse will be confine to the window
-         * this function get or set the state of mouse being confine or not
-         *
-         */
-        bool grab(int enable = -1)
-        {
-            if (enable == -1)
-                return SDL_GetWindowGrab(window);
-            SDL_SetWindowGrab(window, (enable ? SDL_TRUE : SDL_FALSE));
-            return enable;
-        }
-
-        void set_icon(const Surface &icon)
-        {
-            SDL_SetWindowIcon(window, icon.surface);
-        }
-
-        /**
-         *  get and set the borderless state of the active window;
-         */
-        bool borderless(int enable = -1)
-        {
-            if (enable == -1)
-                return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS);
-            SDL_SetWindowBordered(window, (enable ? SDL_FALSE : SDL_TRUE));
-            return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS) > 0;
-        }
-        void set_caption(const char *title)
-        {
-            SDL_SetWindowTitle(window, title);
-        }
-        SDL_Window *get_window()
-        {
-            return window;
-        }
-        SDL_Renderer *get_renderer()
-        {
-            return renderer;
-        }
-        void quit()
-        {
-            if (window)
-                SDL_DestroyWindow(window);
-            if (renderer)
-                SDL_DestroyRenderer(renderer);
-        }
-        void flip()
-        {
-            if (renderer and window)
-                SDL_RenderPresent(renderer);
-            else
-            {
-                printf("Display have not set mode");
-            }
-        }
-    }
 
     namespace time
     {
@@ -404,13 +303,6 @@ namespace SDLGame
         double radian_to_degree(double rad)
         {
             return rad * 180.0 / M_PI;
-        }
-
-        template <class T>
-        Vector2 operator*(const T &scalar, const Vector2 &v)
-        {
-            static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
-            return Vector2(scalar * v.x, scalar * v.y);
         }
 
         /**
@@ -494,7 +386,7 @@ namespace SDLGame
             template <class T>
             Vector2 operator*(const T &scalar) const
             {
-                std::static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
+                static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
                 return Vector2(scalar * x, scalar * y);
             }
 
@@ -583,6 +475,13 @@ namespace SDLGame
                 return "Vector2<" + std::to_string(x) + " , " + std::to_string(y) + ">";
             }
         };
+    
+        template <class T>
+        SDLGame::math::Vector2 operator*(const T &scalar, const Vector2 &v)
+        {
+            static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
+            return Vector2(scalar * v.x, scalar * v.y);
+        }
     }
 
     namespace rect
@@ -606,8 +505,8 @@ namespace SDLGame
             double x, y, left, top, bottom, right;
             double w, h, width, height;
             double centerx, centery;
-            Vector2 center, topleft, bottomleft, topright, bottomright, midtop, midleft, midbottom, midright;
-            Vector2 size;
+            SDLGame::math::Vector2 center, topleft, bottomleft, topright, bottomright, midtop, midleft, midbottom, midright;
+            SDLGame::math::Vector2 size;
             double epsilon = 1e-6;
 
         public:
@@ -625,21 +524,21 @@ namespace SDLGame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                size = Vector2(w, h);
+                size = SDLGame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = Vector2(centerx, centery);
-                topleft = Vector2(left, top);
-                bottomleft = Vector2(left, bottom);
-                bottomright = Vector2(right, bottom);
-                topright = Vector2(right, top);
-                midtop = Vector2(centerx, top);
-                midleft = Vector2(left, centery);
-                midbottom = Vector2(centerx, bottom);
-                midright = Vector2(right, centery);
+                center = SDLGame::math::Vector2(centerx, centery);
+                topleft = SDLGame::math::Vector2(left, top);
+                bottomleft = SDLGame::math::Vector2(left, bottom);
+                bottomright = SDLGame::math::Vector2(right, bottom);
+                topright = SDLGame::math::Vector2(right, top);
+                midtop = SDLGame::math::Vector2(centerx, top);
+                midleft = SDLGame::math::Vector2(left, centery);
+                midbottom = SDLGame::math::Vector2(centerx, bottom);
+                midright = SDLGame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(T _left, T _top, const Vector2 &_size)
+            Rect(T _left, T _top, const SDLGame::math::Vector2 &_size)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = _left;
@@ -651,18 +550,18 @@ namespace SDLGame
                 size = _size;
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = Vector2(centerx, centery);
-                topleft = Vector2(left, top);
-                bottomleft = Vector2(left, bottom);
-                bottomright = Vector2(right, bottom);
-                topright = Vector2(right, top);
-                midtop = Vector2(centerx, top);
-                midleft = Vector2(left, centery);
-                midbottom = Vector2(centerx, bottom);
-                midright = Vector2(right, centery);
+                center = SDLGame::math::Vector2(centerx, centery);
+                topleft = SDLGame::math::Vector2(left, top);
+                bottomleft = SDLGame::math::Vector2(left, bottom);
+                bottomright = SDLGame::math::Vector2(right, bottom);
+                topright = SDLGame::math::Vector2(right, top);
+                midtop = SDLGame::math::Vector2(centerx, top);
+                midleft = SDLGame::math::Vector2(left, centery);
+                midbottom = SDLGame::math::Vector2(centerx, bottom);
+                midright = SDLGame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(const Vector2 &pos, T _w, T _h)
+            Rect(const SDLGame::math::Vector2 &pos, T _w, T _h)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = pos.x;
@@ -671,18 +570,18 @@ namespace SDLGame
                 h = height = _y;
                 bottom = top + h;
                 right = left + w;
-                size = Vector2(w, h);
+                size = SDLGame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = Vector2(centerx, centery);
-                topleft = Vector2(left, top);
-                bottomleft = Vector2(left, bottom);
-                bottomright = Vector2(right, bottom);
-                topright = Vector2(right, top);
-                midtop = Vector2(centerx, top);
-                midleft = Vector2(left, centery);
-                midbottom = Vector2(centerx, bottom);
-                midright = Vector2(right, centery);
+                center = SDLGame::math::Vector2(centerx, centery);
+                topleft = SDLGame::math::Vector2(left, top);
+                bottomleft = SDLGame::math::Vector2(left, bottom);
+                bottomright = SDLGame::math::Vector2(right, bottom);
+                topright = SDLGame::math::Vector2(right, top);
+                midtop = SDLGame::math::Vector2(centerx, top);
+                midleft = SDLGame::math::Vector2(left, centery);
+                midbottom = SDLGame::math::Vector2(centerx, bottom);
+                midright = SDLGame::math::Vector2(right, centery);
             }
             Rect(const Vector2 &pos, const Vector2 &_size)
             {
@@ -1133,9 +1032,9 @@ namespace SDLGame
                 return res;
             }
             /**return Uint32 kind of color*/
-            Uint32 toUint32Color(const SDL_PixelFormat *format) const
+            Uint32 toUint32Color() const
             {
-                return SDL_MapRGBA(format, r, g, b, a);
+                return SDL_MapRGBA(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), r, g, b, a);
             }
             std::string toString()
             {
@@ -1229,12 +1128,99 @@ namespace SDLGame
         };
     }
 
+    namespace display
+    {
+        SDL_Window *window = nullptr;
+        SDL_Renderer *renderer = nullptr;
+        SDLGame::surface::Surface win_surf;
+        bool isInit = false;
+
+        SDL_Window *set_mode(int width = 0, int height = 0, Uint32 flags = 0)
+        {
+            if (width == 0 or height == 0)
+            {
+                SDL_DisplayMode DM;
+                SDL_GetDesktopDisplayMode(0, &DM);
+                width = DM.w;
+                height = DM.h;
+            }
+            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+            renderer = SDL_CreateRenderer(window, -1, 0);
+            return window;
+        }
+
+        /**
+         *  return a Surface object that have reference SDL_surface to the window surface
+         */
+        SDLGame::surface::Surface &get_surface()
+        {
+            win_surf = Surface(SDL_GetWindowSurface(window));
+            return &win_surf;
+        }
+        /**
+         *  if set to true, the mouse will be confine to the window
+         * this function get or set the state of mouse being confine or not
+         *
+         */
+        bool grab(int enable = -1)
+        {
+            if (enable == -1)
+                return SDL_GetWindowGrab(window);
+            SDL_SetWindowGrab(window, (enable ? SDL_TRUE : SDL_FALSE));
+            return enable;
+        }
+
+        void set_icon(const SDLGame::surface::Surface &icon)
+        {
+            SDL_SetWindowIcon(window, icon.surface);
+        }
+
+        /**
+         *  get and set the borderless state of the active window;
+         */
+        bool borderless(int enable = -1)
+        {
+            if (enable == -1)
+                return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS);
+            SDL_SetWindowBordered(window, (enable ? SDL_FALSE : SDL_TRUE));
+            return (SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS) > 0;
+        }
+        void set_caption(const char *title)
+        {
+            SDL_SetWindowTitle(window, title);
+        }
+        SDL_Window *get_window()
+        {
+            return window;
+        }
+        SDL_Renderer *get_renderer()
+        {
+            return renderer;
+        }
+        void quit()
+        {
+            if (window)
+                SDL_DestroyWindow(window);
+            if (renderer)
+                SDL_DestroyRenderer(renderer);
+        }
+        void flip()
+        {
+            if (renderer and window)
+                SDL_RenderPresent(renderer);
+            else
+            {
+                printf("Display have not set mode");
+            }
+        }
+    }
+
     // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
-        Surface load(const char *img_path)
+        SDLGame::surface::Surface load(const char *img_path)
         {
-            return Surface(IMG_Load(img_path));
+            return SDLGame::surface::Surface(IMG_Load(img_path));
         }
     }
 
@@ -1307,109 +1293,6 @@ namespace SDLGame
         }
     }
 
-    /**
-     *  for the optimization purposes, draw function that affect dirrectly to window now
-     * will have a window_ prefix, for example, for draw a rect to window, the funcion name is window_rect
-     * every other draw function without the window_ prefix still use CPU to draw, not GPU
-     */
-    namespace draw
-    {
-        void window_rect(Surface &surface, Color &color, Rect &rect, int width = 0)
-        {
-            SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
-            if (width == 0)
-            {
-                SDL_RenderFillRectF(display::renderer, &rect.to_SDL_FRect());
-            }
-            else
-            {
-                SDL_RenderDrawRectF(display::renderer, &rect.to_SDL_FRect());
-            }
-            SDL_RenderPresent(display::renderer);
-        }
-        void set_pixel(Surface &surface, int x, int y, Uint32 pixel)
-        {
-            Uint32 *target_pixel = (Uint32 *)((Uint8 *)surface.surface->pixels + y * surface.surface->pitch + x * sizeof(*target_pixel));
-            *target_pixel = pixel;
-        }
-
-        // Bresenham's line algorithm
-        void line(Surface &surface, int x1, int y1, int x2, int y2, Color color)
-        {
-            int dx = abs(x2 - x1);
-            int dy = abs(y2 - y1);
-            int sx = (x1 < x2) ? 1 : -1;
-            int sy = (y1 < y2) ? 1 : -1;
-            int err = dx - dy;
-            SDL_LockSurface(surface.surface);
-            while (true)
-            {
-                set_pixel(surface, x1, y1, color.toUint32Color());
-
-                if (x1 == x2 && y1 == y2)
-                {
-                    break;
-                }
-
-                int e2 = 2 * err;
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x1 += sx;
-                }
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y1 += sy;
-                }
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-        void draw_ellipse(Surface &surface, int centerX, int centerY, int radiusX, int radiusY, Color color)
-        {
-            SDL_LockSurface(surface.surface);
-            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
-            {
-                int x = centerX + radiusX * cos(angle);
-                int y = centerY + radiusY * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-
-        void draw_arc(Surface &surface, int centerX, int centerY, int radius, double startAngle, double endAngle, Color color)
-        {
-            SDL_LockSurface(surface.surface);
-            for (double angle = startAngle; angle < endAngle; angle += 0.01)
-            {
-                int x = centerX + radius * cos(angle);
-                int y = centerY + radius * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-        void draw_circle(Surface &surface, int centerX, int centerY, int radius, Color color)
-        {
-            SDL_LockSurface(surface.surface);
-            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
-            {
-                int x = centerX + radius * cos(angle);
-                int y = centerY + radius * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-
-        void draw_polygon(Surface& surface, std::vector<std::pair<int,int>> points, Color color)
-        {
-            if(points.size()<3) throw std::invalid_argument("can't draw polygon with only 2 vertices or less");
-            for(int i=0;i<int(points.size())-1;i++){
-                SDLGame::draw::line(surface, points[i].first, points[i].second, points[i+1].first, points[i+1].second,color);
-            }
-            SDLGame::draw::line(surface,points[0].first,points[0].second, points[points.size()-1].first, points[points.size()-1].second, color);
-        }
-    }
-    using Event = SDLGame::event::Event;
     namespace event
     {
         /**
@@ -1491,8 +1374,8 @@ namespace SDLGame
                 }
             }
         };
-        std::vector<SDLGame::event::Event> current_events;
-        std::vector<SDLGame::event::Event> &get()
+        std::vector<Event> current_events;
+        std::vector<Event> &get()
         {
             SDL_PumpEvents();
             current_events.clear();
@@ -1507,6 +1390,122 @@ namespace SDLGame
         {
             tmp.tmp_e.type = event_type;
             SDL_PushEvent(&tmp.tmp_e);
+        }
+    }
+
+    // TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
+    void quit()
+    {
+        // for (SDL_Texture *tex : textures)
+        //     SDL_DestroyTexture(tex);
+        SDL_DestroyRenderer(SDLGame::display::renderer);
+        SDL_DestroyWindow(SDLGame::display::window);
+        SDL_Quit();
+        exit(0);
+    }
+
+    /**
+     *  for the optimization purposes, draw function that affect dirrectly to window now
+     * will have a window_ prefix, for example, for draw a rect to window, the funcion name is window_rect
+     * every other draw function without the window_ prefix still use CPU to draw, not GPU
+     */
+    namespace draw
+    {
+        void window_rect(SDLGame::surface::Surface &surface, SDLGame::color::Color &color, SDLGame::rect::Rect &rect, int width = 0)
+        {
+            SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
+            if (width == 0)
+            {
+                SDL_RenderFillRectF(display::renderer, &rect.to_SDL_FRect());
+            }
+            else
+            {
+                SDL_RenderDrawRectF(display::renderer, &rect.to_SDL_FRect());
+            }
+            SDL_RenderPresent(display::renderer);
+        }
+        void set_pixel(SDLGame::surface::Surface &surface, int x, int y, Uint32 pixel)
+        {
+            Uint32 *target_pixel = (Uint32 *)((Uint8 *)surface.surface->pixels + y * surface.surface->pitch + x * sizeof(*target_pixel));
+            *target_pixel = pixel;
+        }
+
+        // Bresenham's line algorithm
+        void line(SDLGame::surface::Surface &surface, int x1, int y1, int x2, int y2, SDLGame::color::Color color)
+        {
+            int dx = abs(x2 - x1);
+            int dy = abs(y2 - y1);
+            int sx = (x1 < x2) ? 1 : -1;
+            int sy = (y1 < y2) ? 1 : -1;
+            int err = dx - dy;
+            SDL_LockSurface(surface.surface);
+            while (true)
+            {
+                set_pixel(surface, x1, y1, color.toUint32Color());
+
+                if (x1 == x2 && y1 == y2)
+                {
+                    break;
+                }
+
+                int e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x1 += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y1 += sy;
+                }
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+        void draw_ellipse(SDLGame::surface::Surface &surface, int centerX, int centerY, int radiusX, int radiusY, SDLGame::color::Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
+            {
+                int x = centerX + radiusX * cos(angle);
+                int y = centerY + radiusY * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+
+        void draw_arc(SDLGame::surface::Surface &surface, int centerX, int centerY, int radius, double startAngle, double endAngle, SDLGame::color::Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = startAngle; angle < endAngle; angle += 0.01)
+            {
+                int x = centerX + radius * cos(angle);
+                int y = centerY + radius * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+        void draw_circle(SDLGame::surface::Surface &surface, int centerX, int centerY, int radius, SDLGame::color::Color color)
+        {
+            SDL_LockSurface(surface.surface);
+            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
+            {
+                int x = centerX + radius * cos(angle);
+                int y = centerY + radius * sin(angle);
+                set_pixel(surface, x, y, color.toUint32Color());
+            }
+            SDL_UnlockSurface(surface.surface);
+        }
+
+        void draw_polygon(SDLGame::surface::Surface &surface, std::vector<std::pair<int, int>> points, SDLGame::color::Color color)
+        {
+            if (points.size() < 3)
+                throw std::invalid_argument("can't draw polygon with only 2 vertices or less");
+            for (int i = 0; i < int(points.size()) - 1; i++)
+            {
+                SDLGame::draw::line(surface, points[i].first, points[i].second, points[i + 1].first, points[i + 1].second, color);
+            }
+            SDLGame::draw::line(surface, points[0].first, points[0].second, points[points.size() - 1].first, points[points.size() - 1].second, color);
         }
     }
 
