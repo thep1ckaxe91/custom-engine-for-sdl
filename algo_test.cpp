@@ -19,7 +19,7 @@ private:
 public:
     double speed = 10;
     double jump_speed = 10;
-    double g_force = 1;
+    double g_force = 0.2;
     Rect player_rect;
     Color color;
 
@@ -28,24 +28,33 @@ public:
         pos = _pos;
         player_size = _size;
         color = _color;
+        player_rect = Rect(pos,player_size);
     }
-    void draw()
+    void draw(Surface& window)
     {
-        SDLGame::draw::window_rect(color, player_rect);
+        SDLGame::draw::rect(window,color, player_rect);
     }
     void update()
     {
-        auto keys = SDLGame::key::get_pressed();
+        std::vector<bool> keys = SDLGame::key::get_pressed();
+        for(int i=0;i<keys.size();i++){
+            if(keys[i]){
+                std::cout << char(i) << "is pressing\n";
+            }
+        }
         if (keys[SDLGame::K_a])
         {
+            printf("A is pressed");
             dir.x = -1;
         }
         if (keys[SDLGame::K_d])
         {
+            printf("D is pressed");
             dir.x = 1;
         }
         if (keys[SDLGame::K_w])
         {
+            printf("W is pressed");
             dir.y = -jump_speed;
         }
         dir.y += g_force;
@@ -62,18 +71,18 @@ public:
         player_rect.move_ip(0.0,dir.y);
         if (player_rect.getBottom() > HEIGHT)
         {
-            player_rect.setBottom(HEIGHT);
+            player_rect.setTop(HEIGHT-player_size.y);
+            dir.y = 0;
         }
-
     }
 };
 
-Player player = Player(Vector2(50,50));
+Player player = Player(Vector2(50,50), Vector2(50,50), Color(255,0,0));
 void draw(Surface& window)
 {
     window.fill(Color(255,255,255));
-    // player.draw();
-    // SDLGame::draw::window_rect(Color(0,255,0), player.player_rect,0);
+    player.draw(window);
+    // SDLGame::draw::rect(window,Color(0,255,0), Rect(30,30,20,20));
 }
 
 void update()
@@ -85,7 +94,10 @@ int main(int argc, char *argv[])
 {
     bool debugging = true;
     SDLGame::init();
-    Surface window = SDLGame::display::set_mode(WIDTH, HEIGHT, SDLGame::SKIP_TASK_BAR | SDLGame:);
+    Surface window = SDLGame::display::set_mode(
+        WIDTH, HEIGHT,
+        SDLGame::SKIP_TASK_BAR | SDLGame::RENDERER_ACCELERATED
+    );
     SDLGame::time::Clock clock = SDLGame::time::Clock();
 
     printf("window address: %p\n",window.surface);
@@ -107,7 +119,7 @@ int main(int argc, char *argv[])
         }
         update();
         draw(window);
-        clock.tick(10);
+        clock.tick(60);
         SDLGame::display::flip();
         SDLGame::display::set_caption(std::to_string(clock.get_fps()).c_str());
     }

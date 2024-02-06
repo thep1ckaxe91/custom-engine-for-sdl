@@ -100,32 +100,33 @@ namespace SDLGame
     const int K_CARET = '^';
     const int K_UNDERSCORE = '_';
     const int K_BACKQUOTE = '`';
-    const int K_a = 'a';
-    const int K_b = 'b';
-    const int K_c = 'c';
-    const int K_d = 'd';
-    const int K_e = 'e';
-    const int K_f = 'f';
-    const int K_g = 'g';
-    const int K_h = 'h';
-    const int K_i = 'i';
-    const int K_j = 'j';
-    const int K_k = 'k';
-    const int K_l = 'l';
-    const int K_m = 'm';
-    const int K_n = 'n';
-    const int K_o = 'o';
-    const int K_p = 'p';
-    const int K_q = 'q';
-    const int K_r = 'r';
-    const int K_s = 's';
-    const int K_t = 't';
-    const int K_u = 'u';
-    const int K_v = 'v';
-    const int K_w = 'w';
-    const int K_x = 'x';
-    const int K_y = 'y';
-    const int K_z = 'z';
+    const int K_a = SDLK_a;
+    const int K_b = SDLK_b;
+    const int K_c = SDLK_c;
+    const int K_d = SDLK_d;
+    const int K_e = SDLK_e;
+    const int K_f = SDLK_f;
+    const int K_g = SDLK_g;
+    const int K_h = SDLK_h;
+    const int K_i = SDLK_i;
+    const int K_j = SDLK_j;
+    const int K_k = SDLK_k;
+    const int K_l = SDLK_l;
+    const int K_m = SDLK_m;
+    const int K_n = SDLK_n;
+    const int K_o = SDLK_o;
+    const int K_p = SDLK_p;
+    const int K_q = SDLK_q;
+    const int K_r = SDLK_r;
+    const int K_s = SDLK_s;
+    const int K_t = SDLK_t;
+    const int K_u = SDLK_u;
+    const int K_v = SDLK_v;
+    const int K_w = SDLK_w;
+    const int K_x = SDLK_x;
+    const int K_y = SDLK_y;
+    const int K_z = SDLK_z;
+
     const int K_CAPSLOCK = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_CAPSLOCK);
     const int K_F1 = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_F1);
     const int K_F2 = SDL_SCANCODE_TO_KEYCODE(SDL_SCANCODE_F2);
@@ -201,6 +202,8 @@ namespace SDLGame
     const Uint32 SKIP_TASK_BAR = SDL_WINDOW_SKIP_TASKBAR;
     const Uint32 POPUP_MENU = SDL_WINDOW_POPUP_MENU;
     const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
+    const Uint32 RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED;
+    const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER;
     // const Uint32 DOUBLE_BUFF = SDL_WINDOW_;
 
     /*event type here*/
@@ -1101,7 +1104,33 @@ namespace SDLGame
                 SDL_Rect tmp = rect.toSDL_Rect();
                 SDL_BlitSurface(source.surface, &tmp, surface, &tmp);
             }
-            void fill(SDLGame::color::Color color, SDLGame::rect::Rect area = SDLGame::rect::Rect());
+            void fill(SDLGame::color::Color color, SDLGame::rect::Rect area = SDLGame::rect::Rect()){
+                if (area == SDLGame::rect::Rect()){
+                    area = SDLGame::rect::Rect(0, 0, surface->w, surface->h);
+                }
+                // if(surface == SDL_GetWindowSurface(SDLGame::display::window)){
+                //     if(surface == null){
+                //         printf("Failed to get window surface\nErr: %s",SDL_GetError());
+                //     }
+                //     // printf("surface got filled: %p\n",surface);
+                //     if(SDL_RenderClear(SDLGame::display::renderer)){
+                //         printf("Failed to clear the renderer\nError: %s",SDL_GetError());
+                //     }
+                //     SDL_Rect tmp = rect.toSDL_Rect();
+                //     SDL_SetRenderDrawColor(SDLGame::display::renderer,color.r,color.g,color.b,color.a);
+                //     if(SDL_RenderFillRect(SDLGame::display::renderer, &tmp)){
+                //         printf("Failed to fill the surface with renderer\nError: %s",SDL_GetError());
+                //     }
+                // }
+                // else{
+                    SDL_Rect tmp = area.toSDL_Rect();
+                    int err;
+
+                    if(SDL_FillRect(surface, &tmp, color.toUint32Color())){
+                        printf("Failed to fill the surface with cpu\nError: %s",SDL_GetError());
+                    }
+                // }
+            }
             template <class T>
             void scroll(T offset_x, T offset_y)
             {
@@ -1119,17 +1148,18 @@ namespace SDLGame
             {
                 return rect.getHeight();
             }
-            ~Surface()
-            {
-                try{
-                    if(surface!=nullptr)
-                        SDL_FreeSurface(surface);
-                    surface = nullptr;
-                }
-                catch(...){
+            // free surface keep segmentation fault so i ditch it
+            // ~Surface()
+            // {
+            //     try{
+            //         if(surface!=nullptr)
+            //             SDL_FreeSurface(surface);
+            //         surface = nullptr;
+            //     }
+            //     catch(...){
 
-                }
-            }
+            //     }
+            // }
         };
     }
 
@@ -1224,42 +1254,13 @@ namespace SDLGame
         void flip()
         {
             if (renderer != NULL and window != NULL){
-                SDL_RenderPresent(renderer);
+                // SDL_RenderPresent(renderer);
                 if(SDL_UpdateWindowSurface(SDLGame::display::window))
                     printf("Failed to update the window surface\nErr: %s", SDL_GetError());
             }
             else
             {
                 printf("Display have not set mode\nErr: window ptr: %p \n renderer ptr: %p \n",window,renderer);
-            }
-        }
-    }
-
-    void SDLGame::surface::Surface::fill(SDLGame::color::Color color, SDLGame::rect::Rect area)
-    {
-        if (area == SDLGame::rect::Rect()){
-            area = SDLGame::rect::Rect(0, 0, surface->w, surface->h);
-        }
-        if(surface == SDL_GetWindowSurface(SDLGame::display::window)){
-            if(surface == null){
-                printf("Failed to get window surface\nErr: %s",SDL_GetError());
-            }
-            printf("surface got filled: %p\n",surface);
-            if(SDL_RenderClear(SDLGame::display::renderer)){
-                printf("Failed to clear the renderer\nError: %s",SDL_GetError());
-            }
-            SDL_Rect tmp = rect.toSDL_Rect();
-            SDL_SetRenderDrawColor(SDLGame::display::renderer,color.r,color.g,color.b,color.a);
-            if(SDL_RenderFillRect(SDLGame::display::renderer, &tmp)){
-                printf("Failed to fill the surface with renderer\nError: %s",SDL_GetError());
-            }
-        }
-        else{
-            SDL_Rect tmp = rect.toSDL_Rect();
-            int err;
-
-            if(SDL_FillRect(surface, &tmp, color.toUint32Color())){
-                printf("Failed to fill the surface with cpu\nError: %s",SDL_GetError());
             }
         }
     }
@@ -1278,15 +1279,17 @@ namespace SDLGame
         namespace
         {
             const Uint8 *keyState;
+            std::vector<bool> keys;
         }
         /**
          *  assume that you called the SDL_PumpEvents function before calling this, this funciton should work fine
          */
-        std::vector<bool> get_pressed()
+        std::vector<bool>& get_pressed()
         {
             int numKeys;
+            SDL_PumpEvents();
             keyState = SDL_GetKeyboardState(&numKeys);
-            std::vector<bool> keys(numKeys);
+            if(keys.size()==0) keys.resize(numKeys);
             for (int i = 0; i < numKeys; ++i)
             {
                 keys[i] = keyState[i];
@@ -1461,20 +1464,28 @@ namespace SDLGame
      */
     namespace draw
     {
-        void window_rect(SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
-        {
-            SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
-            SDL_FRect tmp = rect.to_SDL_FRect();
-            if (width == 0)
-            {
-                SDL_RenderFillRectF(display::renderer, &tmp);
+        // void window_rect(SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
+        // {
+        //     SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
+        //     SDL_FRect tmp = rect.to_SDL_FRect();
+        //     if (width == 0)
+        //     {
+        //         SDL_RenderFillRectF(display::renderer, &tmp);
+        //     }
+        //     else
+        //     {
+        //         SDL_RenderDrawRectF(display::renderer, &tmp);
+        //     }
+        //     SDL_RenderPresent(display::renderer);
+        // }
+        void rect(SDLGame::surface::Surface& surface, SDLGame::color::Color color, SDLGame::rect::Rect rect, int width=0){
+            if(width==0){
+                SDL_Rect tmp = rect.toSDL_Rect();
+                SDL_FillRect(surface.surface,&tmp, color.toUint32Color());
             }
-            else
-            {
-                SDL_RenderDrawRectF(display::renderer, &tmp);
-            }
-            SDL_RenderPresent(display::renderer);
+            
         }
+
         void set_pixel(SDLGame::surface::Surface &surface, int x, int y, Uint32 pixel)
         {
             Uint32 *target_pixel = (Uint32 *)((Uint8 *)surface.surface->pixels + y * surface.surface->pitch + x * sizeof(*target_pixel));
