@@ -201,6 +201,7 @@ namespace SDLGame
     const Uint32 SKIP_TASK_BAR = SDL_WINDOW_SKIP_TASKBAR;
     const Uint32 POPUP_MENU = SDL_WINDOW_POPUP_MENU;
     const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
+    // const Uint32 DOUBLE_BUFF = SDL_WINDOW_;
 
     /*event type here*/
     const Uint32 QUIT = SDL_QUIT;
@@ -1053,7 +1054,7 @@ namespace SDLGame
         private:
             SDLGame::rect::Rect rect;
         public:
-            SDL_Surface *surface;
+            SDL_Surface *surface = nullptr;
             Uint32 flags;
             Surface()
             {
@@ -1069,13 +1070,13 @@ namespace SDLGame
             Surface(const Surface &oth)
             {
                 flags = oth.flags;
-                surface = SDL_ConvertSurface(oth.surface, oth.surface->format, 0);
+                surface = oth.surface;
             }
 
             Surface(SDL_Surface *oth)
             {
                 flags = oth->flags;
-                surface = SDL_ConvertSurface(oth, oth->format, 0);
+                surface = oth;
             }
 
             Surface &operator=(const Surface &other)
@@ -1084,7 +1085,7 @@ namespace SDLGame
                 {
                     SDL_FreeSurface(surface);
                     flags = other.flags;
-                    surface = SDL_ConvertSurface(other.surface, other.surface->format, 0);
+                    surface = other.surface;
                 }
                 return *this;
             }
@@ -1100,13 +1101,7 @@ namespace SDLGame
                 SDL_Rect tmp = rect.toSDL_Rect();
                 SDL_BlitSurface(source.surface, &tmp, surface, &tmp);
             }
-            void fill(const SDLGame::color::Color &color, SDLGame::rect::Rect area = SDLGame::rect::Rect())
-            {
-                if (area == SDLGame::rect::Rect())
-                    area = SDLGame::rect::Rect(0, 0, surface->w, surface->h);
-                SDL_Rect tmp = rect.toSDL_Rect();
-                SDL_FillRect(surface, &tmp, color.toUint32Color());
-            }
+            void fill(SDLGame::color::Color color, SDLGame::rect::Rect area = SDLGame::rect::Rect());
             template <class T>
             void scroll(T offset_x, T offset_y)
             {
@@ -1126,7 +1121,14 @@ namespace SDLGame
             }
             ~Surface()
             {
-                SDL_FreeSurface(surface);
+                try{
+                    if(surface!=nullptr)
+                        SDL_FreeSurface(surface);
+                    surface = nullptr;
+                }
+                catch(...){
+
+                }
             }
         };
     }
@@ -1148,11 +1150,19 @@ namespace SDLGame
                 height = DM.h;
             }
             window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-            if(!window){
-                printf("Failed to create a window object\n");
+            if(window == nullptr){
+                printf("Failed to create a window object\nErr: %s",SDL_GetError());
             }
             renderer = SDL_CreateRenderer(window, -1, 0);
+            if(renderer == nullptr){
+                printf("Failed to create a renderer\nErr: %s",SDL_GetError());
+            }
+            
             win_surf.surface = SDL_GetWindowSurface(window);
+
+            if(win_surf.surface == null){
+                printf("Can't get window surface\nErr: %s",SDL_GetError());
+            }
             return win_surf;
         }
 
@@ -1213,11 +1223,43 @@ namespace SDLGame
         }
         void flip()
         {
-            if (renderer and window)
+            if (renderer != NULL and window != NULL){
                 SDL_RenderPresent(renderer);
+                if(SDL_UpdateWindowSurface(SDLGame::display::window))
+                    printf("Failed to update the window surface\nErr: %s", SDL_GetError());
+            }
             else
             {
-                printf("Display have not set mode");
+                printf("Display have not set mode\nErr: window ptr: %p \n renderer ptr: %p \n",window,renderer);
+            }
+        }
+    }
+
+    void SDLGame::surface::Surface::fill(SDLGame::color::Color color, SDLGame::rect::Rect area)
+    {
+        if (area == SDLGame::rect::Rect()){
+            area = SDLGame::rect::Rect(0, 0, surface->w, surface->h);
+        }
+        if(surface == SDL_GetWindowSurface(SDLGame::display::window)){
+            if(surface == null){
+                printf("Failed to get window surface\nErr: %s",SDL_GetError());
+            }
+            printf("surface got filled: %p\n",surface);
+            if(SDL_RenderClear(SDLGame::display::renderer)){
+                printf("Failed to clear the renderer\nError: %s",SDL_GetError());
+            }
+            SDL_Rect tmp = rect.toSDL_Rect();
+            SDL_SetRenderDrawColor(SDLGame::display::renderer,color.r,color.g,color.b,color.a);
+            if(SDL_RenderFillRect(SDLGame::display::renderer, &tmp)){
+                printf("Failed to fill the surface with renderer\nError: %s",SDL_GetError());
+            }
+        }
+        else{
+            SDL_Rect tmp = rect.toSDL_Rect();
+            int err;
+
+            if(SDL_FillRect(surface, &tmp, color.toUint32Color())){
+                printf("Failed to fill the surface with cpu\nError: %s",SDL_GetError());
             }
         }
     }
@@ -1405,6 +1447,7 @@ namespace SDLGame
     {
         // for (SDL_Texture *tex : textures)
         //     SDL_DestroyTexture(tex);
+        SDL_DestroyWindowSurface(SDLGame::display::window);
         SDL_DestroyRenderer(SDLGame::display::renderer);
         SDL_DestroyWindow(SDLGame::display::window);
         SDL_Quit();
@@ -1418,7 +1461,7 @@ namespace SDLGame
      */
     namespace draw
     {
-        void window_rect(SDLGame::surface::Surface &surface, SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
+        void window_rect(SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
         {
             SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
             SDL_FRect tmp = rect.to_SDL_FRect();
