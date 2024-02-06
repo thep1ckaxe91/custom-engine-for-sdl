@@ -37,24 +37,20 @@ public:
     void update()
     {
         std::vector<bool> keys = SDLGame::key::get_pressed();
-        for(int i=0;i<keys.size();i++){
-            if(keys[i]){
-                std::cout << char(i) << "is pressing\n";
-            }
-        }
         if (keys[SDLGame::K_a])
         {
-            printf("A is pressed");
+            // printf("A is pressed");
             dir.x = -1;
         }
-        if (keys[SDLGame::K_d])
+        else if (keys[SDLGame::K_d])
         {
-            printf("D is pressed");
+            // printf("D is pressed");
             dir.x = 1;
         }
+        else dir.x = 0;
         if (keys[SDLGame::K_w])
         {
-            printf("W is pressed");
+            // printf("W is pressed");
             dir.y = -jump_speed;
         }
         dir.y += g_force;
