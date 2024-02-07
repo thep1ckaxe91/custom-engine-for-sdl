@@ -3,7 +3,7 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "C:/Program Files (x86)/cpeditor/mingw64/bin/g++.exe",
+            "command": "${fileDirname}\\mingw64\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
@@ -16,7 +16,7 @@
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
-                "cwd": "C:/Program Files (x86)/cpeditor/mingw64/bin"
+                "cwd": "${fileDirname}\\mingw64\\bin"
             },
             "problemMatcher": [
                 "$gcc"
