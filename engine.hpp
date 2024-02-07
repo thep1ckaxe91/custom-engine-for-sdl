@@ -193,7 +193,6 @@ namespace SDLGame
     const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
     const Uint32 RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED;
     // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
-    // const Uint32 DOUBLE_BUFF = SDL_WINDOW_;
 
     /*event type here*/
     const Uint32 QUIT = SDL_QUIT;
@@ -862,7 +861,7 @@ namespace SDLGame
             /**
              * @return return whether the caller collide with any of the rect in the list
              */
-            bool collidelist(std::vector<Rect> &rect_list) const
+            bool collidelist(std::vector<Rect&> &rect_list) const
             {
                 for (Rect &rect : rect_list)
                     if (this->colliderect(rect))
@@ -1560,4 +1559,34 @@ namespace SDLGame
         }
     }
 
+    namespace sprite
+    {
+        class Sprite;
+        class Group{
+            std::vector<std::shared_ptr<Sprite>> sprite_list;
+            std::vector<std::shared_ptr<Sprite>>& sprites(){
+                return sprite_list;
+            }
+            void add(std::shared_ptr<Sprite> sprite){
+                sprite_list.push_back(sprite);
+            }
+            void add(std::vector<std::shared_ptr<Sprite>>& sprites){
+                sprite_list.emplace_back();
+            }
+            void remove(std::vector<std::shared_ptr<Sprite>>& sprite){
+                
+            }
+        };
+
+        class Sprite{
+            std::vector<std::shared_ptr<Group>> group_list;
+            virtual void update() = 0;
+            void add(std::vector<Group&> groups);
+            void remove(std::vector<Group&> groups);
+            void kill();
+            bool alive();
+            std::vector<std::shared_ptr<Group>>& groups();
+        };
+
+    }
 };
