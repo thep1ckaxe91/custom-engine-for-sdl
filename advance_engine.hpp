@@ -2,15 +2,16 @@
  * @authors thep1ckaxe, Ngô Hoan Tài and many authors from SDL2's developers
  * email: ThePickaxe91@gmail.com
  *
- *  this file tried to replicate all classes and function that they have in pygame but implement for SDL2 in C++
- * if you spot or have problem while using this engine, please let me know through email
- *
+ * @brief this is also a replicate for pygame in c++, but due to some exploitation, redoing and still testing
+ * 
  * REQUIREMENT: SDL2 installed to your mingw directory
  *
  * all pixel format is consider RGBA32
  *
  * @warning this is not thread-safe, recommend only sigle threading
  *
+ * 
+ * 
  * @copyright if you want to use this file, please contact for permission, after that, feel free to use and modify this file
  */
 
@@ -50,10 +51,6 @@
 #include "SDL3/SDL_mixer.h"
 #include "SDL3/SDL_ttf.h"
 #define null NULL
-
-/**
- *  this namespace replace pygame module, also replicate the way everything is just from pygame. ish
- */
 namespace SDLGame
 {
     const int K_a = SDL_SCANCODE_A;
@@ -1040,84 +1037,92 @@ namespace SDLGame
     // may be not done yet but good enough
     namespace surface
     {
+        /**
+         * @brief since the problem mostly related to the heavy draw and surface manage in pygame
+         * this module is mostly focus optimiszing the surface class, the texture pointer should be null if the surface is represent window
+         * after set_mode is called
+        */
         class Surface
         {
         private:
             SDLGame::rect::Rect rect;
         public:
-            SDL_Surface *surface = nullptr;
-            Uint32 flags;
+            SDL_Texture *texture = nullptr;
+            Uint32 flags = 0 ;
             Surface()
             {
                 flags = 0;
-                surface = SDL_CreateRGBSurface(flags, 0, 0, 0, 0, 0, 0, 0);
+                texture = SDL_CreateTexture(SDLGame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,0,0);
             }
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
-                surface = SDL_CreateRGBSurface(flags, width, height, 0, 0, 0, 0, 0);
+                texture = SDL_CreateTexture(SDLGame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,width,height);
+                rect = SDLGame::rect::Rect(0,0,width,height);
             }
-
             Surface(const Surface &oth)
             {
                 flags = oth.flags;
-                surface = oth.surface;
+                texture = oth.texture;
+                rect = oth.getRect();
             }
 
-            Surface(SDL_Surface *oth)
+            Surface(SDL_Texture *oth)
             {
-                flags = oth->flags;
-                surface = oth;
+                texture = oth;
+                int w,h;
+                SDL_QueryTexture(texture,NULL,NULL,&w,&h);
+                rect = SDLGame::rect::Rect(0,0,w,h);
             }
-
+            Surface(SDL_Surface *surf){
+                texture = SDL_CreateTextureFromSurface(SDLGame::display::renderer,surf);    
+            }
             Surface &operator=(const Surface &other)
             {
                 if (this != &other)
                 {
-                    SDL_FreeSurface(surface);
+                    SDL_DestroyTexture(texture);
                     flags = other.flags;
-                    surface = other.surface;
+                    texture = other.texture;
                 }
                 return *this;
             }
-
-            SDLGame::rect::Rect &getRect()
+            /**
+             * Return a copy of the surface rect
+            */
+            SDLGame::rect::Rect getRect() const
             {
                 return rect;
             }
-            void blit(const Surface &source, const SDLGame::rect::Rect &destrect, SDLGame::rect::Rect area = SDLGame::rect::Rect())
+            void blit(const Surface &source, SDLGame::rect::Rect destrect, SDLGame::rect::Rect area = SDLGame::rect::Rect())
             {
-                if (area == SDLGame::rect::Rect())
-                    area = SDLGame::rect::Rect(0, 0, source.surface->w, source.surface->h);
+                if (area == SDLGame::rect::Rect()){
+                    area = SDLGame::rect::Rect(0.0,0.0, source.getWidth(), source.getHeight());
+                }
+                if(destrect == SDLGame::rect::Rect()){
+                    destrect = SDLGame::rect::Rect(0.0,0.0, rect.getWidth(), rect.getHeight());
+                }
                 SDL_Rect tmp = rect.toSDL_Rect();
-                SDL_BlitSurface(source.surface, &tmp, surface, &tmp);
+                SDL_SetRenderTarget(SDLGame::display::renderer, texture);
+                SDL_Rect srcrect = area.toSDL_Rect();
+                SDL_FRect dstrect = destrect.to_SDL_FRect();
+                if(SDL_RenderCopyF(SDLGame::display::renderer,source.texture,&srcrect,&dstrect)){
+                    printf("Error copy texture onto another\nErr:%s",SDL_GetError());
+                }
+                SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
             }
             void fill(SDLGame::color::Color color, SDLGame::rect::Rect area = SDLGame::rect::Rect()){
-                if (area == SDLGame::rect::Rect()){
-                    area = SDLGame::rect::Rect(0, 0, surface->w, surface->h);
+                if(area == SDLGame::rect::Rect()){
+                    area = SDLGame::rect::Rect(0.0,0.0,rect.getWidth(),rect.getHeight());
                 }
-                // if(surface == SDL_GetWindowSurface(SDLGame::display::window)){
-                //     if(surface == null){
-                //         printf("Failed to get window surface\nErr: %s",SDL_GetError());
-                //     }
-                //     // printf("surface got filled: %p\n",surface);
-                //     if(SDL_RenderClear(SDLGame::display::renderer)){
-                //         printf("Failed to clear the renderer\nError: %s",SDL_GetError());
-                //     }
-                //     SDL_Rect tmp = rect.toSDL_Rect();
-                //     SDL_SetRenderDrawColor(SDLGame::display::renderer,color.r,color.g,color.b,color.a);
-                //     if(SDL_RenderFillRect(SDLGame::display::renderer, &tmp)){
-                //         printf("Failed to fill the surface with renderer\nError: %s",SDL_GetError());
-                //     }
-                // }
-                // else{
-                    SDL_Rect tmp = area.toSDL_Rect();
-                    int err;
-
-                    if(SDL_FillRect(surface, &tmp, color.toUint32Color())){
-                        printf("Failed to fill the surface with cpu\nError: %s",SDL_GetError());
-                    }
-                // }
+                SDL_SetRenderTarget(SDLGame::display::renderer,texture);
+                if(SDL_SetRenderDrawColor(SDLGame::display::renderer,color.r,color.g,color.b,color.a)){
+                    printf("Failed to set draw color\nErr:%s",SDL_GetError());
+                }
+                if(SDL_RenderClear(SDLGame::display::renderer)){
+                    printf("Failed to clear the render target\nErr:%s",SDL_GetError());
+                }
+                SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
             }
             template <class T>
             void scroll(T offset_x, T offset_y)
@@ -1136,18 +1141,10 @@ namespace SDLGame
             {
                 return rect.getHeight();
             }
-            // free surface keep segmentation fault so i ditch it
-            // ~Surface()
-            // {
-            //     try{
-            //         if(surface!=nullptr)
-            //             SDL_FreeSurface(surface);
-            //         surface = nullptr;
-            //     }
-            //     catch(...){
-
-            //     }
-            // }
+            ~Surface()
+            {
+                if(texture!=NULL) SDL_DestroyTexture(texture);
+            }
         };
     }
 
@@ -1176,20 +1173,16 @@ namespace SDLGame
                 printf("Failed to create a renderer\nErr: %s",SDL_GetError());
             }
             
-            win_surf.surface = SDL_GetWindowSurface(window);
-
-            if(win_surf.surface == null){
-                printf("Can't get window surface\nErr: %s",SDL_GetError());
-            }
+            win_surf.texture = null; //THIS IS INTENDED!
             return win_surf;
         }
 
         /**
-         *  return a Surface object that have reference SDL_surface to the window surface
+         *  return a Surface object that have reference SDL_surface to the window surface (NOT GARUANTEE IN ADVANCE ENGINE)
          */
         SDLGame::surface::Surface &get_surface()
         {
-            win_surf = SDLGame::surface::Surface(SDL_GetWindowSurface(window));
+            win_surf.texture = NULL;
             return win_surf;
         }
         /**
@@ -1205,9 +1198,10 @@ namespace SDLGame
             return enable;
         }
 
-        void set_icon(const SDLGame::surface::Surface &icon)
+        void set_icon(const char* icon_path)
         {
-            SDL_SetWindowIcon(window, icon.surface);
+            SDL_Surface* icon = IMG_Load(icon_path);
+            SDL_SetWindowIcon(window, icon);
         }
 
         /**
@@ -1452,99 +1446,48 @@ namespace SDLGame
      */
     namespace draw
     {
-        // void window_rect(SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
-        // {
-        //     SDL_SetRenderDrawColor(display::renderer, color.r, color.g, color.b, color.a);
-        //     SDL_FRect tmp = rect.to_SDL_FRect();
-        //     if (width == 0)
-        //     {
-        //         SDL_RenderFillRectF(display::renderer, &tmp);
-        //     }
-        //     else
-        //     {
-        //         SDL_RenderDrawRectF(display::renderer, &tmp);
-        //     }
-        //     SDL_RenderPresent(display::renderer);
-        // }
+        /**
+         * width determine how far the border will expand to the INSIDE
+        */
         void rect(SDLGame::surface::Surface& surface, SDLGame::color::Color color, SDLGame::rect::Rect rect, int width=0){
             if(width==0){
-                SDL_Rect tmp = rect.toSDL_Rect();
-                SDL_FillRect(surface.surface,&tmp, color.toUint32Color());
+                SDL_FRect tmp = rect.to_SDL_FRect();
+                SDL_SetRenderTarget(SDLGame::display::renderer,surface.texture);
+                SDL_RenderFillRectF(SDLGame::display::renderer,&tmp);
+                SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
             }
-            
+            else if(width>0){
+                SDL_FRect tmp = rect.to_SDL_FRect();
+                SDL_SetRenderTarget(SDLGame::display::renderer,surface.texture);
+                SDL_FRect top = rect.inflate(width-rect.getHeight(),0.0).to_SDL_FRect();
+                SDL_FRect left = rect.inflate(0.0,width-rect.getWidth()).to_SDL_FRect();
+                SDL_FRect bottom = rect.inflate(width-rect.getHeight(),0.0).move(0.0,rect.getHeight()-width).to_SDL_FRect();
+                SDL_FRect right = rect.inflate(0.0,width-rect.getWidth()).move(rect.getWidth()-width,0.0).to_SDL_FRect();
+                SDL_RenderFillRectF(SDLGame::display::renderer,&top);
+                SDL_RenderFillRectF(SDLGame::display::renderer,&left);
+                SDL_RenderFillRectF(SDLGame::display::renderer,&bottom);
+                SDL_RenderFillRectF(SDLGame::display::renderer,&right);
+                SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
+            }
         }
 
-        void set_pixel(SDLGame::surface::Surface &surface, int x, int y, Uint32 pixel)
+        template<class T>
+        void line(SDLGame::surface::Surface &surface, T x1, T y1, T x2, T y2, SDLGame::color::Color color)
         {
-            Uint32 *target_pixel = (Uint32 *)((Uint8 *)surface.surface->pixels + y * surface.surface->pitch + x * sizeof(*target_pixel));
-            *target_pixel = pixel;
-        }
-
-        // Bresenham's line algorithm
-        void line(SDLGame::surface::Surface &surface, int x1, int y1, int x2, int y2, SDLGame::color::Color color)
-        {
-            int dx = abs(x2 - x1);
-            int dy = abs(y2 - y1);
-            int sx = (x1 < x2) ? 1 : -1;
-            int sy = (y1 < y2) ? 1 : -1;
-            int err = dx - dy;
-            SDL_LockSurface(surface.surface);
-            while (true)
-            {
-                set_pixel(surface, x1, y1, color.toUint32Color());
-
-                if (x1 == x2 && y1 == y2)
-                {
-                    break;
-                }
-
-                int e2 = 2 * err;
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x1 += sx;
-                }
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y1 += sy;
-                }
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-        void draw_ellipse(SDLGame::surface::Surface &surface, int centerX, int centerY, int radiusX, int radiusY, SDLGame::color::Color color)
-        {
-            SDL_LockSurface(surface.surface);
-            for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
-            {
-                int x = centerX + radiusX * cos(angle);
-                int y = centerY + radiusY * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
-            }
-            SDL_UnlockSurface(surface.surface);
-        }
-
-        void draw_arc(SDLGame::surface::Surface &surface, int centerX, int centerY, int radius, double startAngle, double endAngle, SDLGame::color::Color color)
-        {
-            SDL_LockSurface(surface.surface);
-            for (double angle = startAngle; angle < endAngle; angle += 0.01)
-            {
-                int x = centerX + radius * cos(angle);
-                int y = centerY + radius * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
-            }
-            SDL_UnlockSurface(surface.surface);
+            SDL_SetRenderTarget(SDLGame::display::renderer,surface.texture);
+            SDL_RenderDrawLineF(SDLGame::display::renderer,x1,y1,x2,y2);
+            SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
         }
         void draw_circle(SDLGame::surface::Surface &surface, int centerX, int centerY, int radius, SDLGame::color::Color color)
         {
-            SDL_LockSurface(surface.surface);
+            SDL_SetRenderTarget(SDLGame::display::renderer,surface.texture);
             for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
             {
-                int x = centerX + radius * cos(angle);
-                int y = centerY + radius * sin(angle);
-                set_pixel(surface, x, y, color.toUint32Color());
+                float x = centerX + radius * cos(angle);
+                float y = centerY + radius * sin(angle);
+                SDL_RenderDrawPointF(SDLGame::display::renderer,x,y);
             }
-            SDL_UnlockSurface(surface.surface);
+            SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
         }
 
         void draw_polygon(SDLGame::surface::Surface &surface, std::vector<std::pair<int, int>> points, SDLGame::color::Color color)
@@ -1557,6 +1500,38 @@ namespace SDLGame
             }
             SDLGame::draw::line(surface, points[0].first, points[0].second, points[points.size() - 1].first, points[points.size() - 1].second, color);
         }
+    }
+
+    namespace transform
+    {
+        SDLGame::surface::Surface flip(SDLGame::surface::Surface& surface, bool flip_x, bool flip_y){
+            SDLGame::surface::Surface res = SDLGame::surface::Surface(surface.getWidth(),surface.getHeight());
+            SDL_SetRenderTarget(SDLGame::display::renderer,res.texture);
+            if(flip_x) if(SDL_RenderCopyExF(SDLGame::display::renderer,surface.texture,NULL,NULL,NULL,NULL,SDL_FLIP_HORIZONTAL)) printf("Failed to flip x\n");
+            if(flip_y) if(SDL_RenderCopyExF(SDLGame::display::renderer,surface.texture,NULL,NULL,NULL,NULL,SDL_FLIP_VERTICAL)) printf("Failed to flip y\n");
+            SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
+            return res;
+        }
+        SDLGame::surface::Surface scale(SDLGame::surface::Surface& surface, SDLGame::math::Vector2 size){
+            SDLGame::surface::Surface res = SDLGame::surface::Surface(size.x, size.y);
+            SDL_SetRenderTarget(SDLGame::display::renderer,res.texture);
+            SDL_RenderCopyF(SDLGame::display::renderer,surface.texture,NULL,NULL);
+            SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
+        }
+
+        
+        /**
+         * return a surface that rotated a certain angle with passed center
+         * angle unit is degrees
+         * TODO: calculate the new size for the res surface
+        */
+        SDLGame::surface::Surface rotate(SDLGame::surface::Surface& surface, double angle, SDLGame::math::Vector2 center){
+            SDLGame::surface::Surface res = SDLGame::surface::Surface(surface.getWidth(),surface.getHeight());
+            SDL_SetRenderTarget(SDLGame::display::renderer,res.texture);
+            SDL_FPoint tmp = {center.x,center.y};
+            SDL_RenderCopyExF(SDLGame::display::renderer,surface.texture,NULL,NULL,angle,&tmp,SDL_FLIP_NONE);
+            SDL_SetRenderTarget(SDLGame::display::renderer,NULL);
+        }        
     }
 
     namespace sprite
