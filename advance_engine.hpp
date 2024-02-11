@@ -208,6 +208,7 @@ namespace SDLGame
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         {
             printf("Error initializing SDL: %s\n", SDL_GetError());
+            exit(0);
             isInit = false;
             return;
         }
@@ -217,9 +218,15 @@ namespace SDLGame
             isInit = true;
             return;
         }
+        if(IMG_Init(IMG_INIT_AVIF|IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_WEBP|IMG_INIT_TIF)){
+            printf("Failed to init any image flags\n");
+            exit(0);
+        }
     }
     bool get_init() { return isInit; }
-
+    std::string get_abs_path(){
+        return std::string(SDL_GetBasePath());
+    }
     namespace time
     {
         /**
@@ -530,7 +537,7 @@ namespace SDLGame
                 midright = SDLGame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(T _left, T _top, const SDLGame::math::Vector2 &_size)
+            Rect(T _left, T _top, SDLGame::math::Vector2 _size)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = _left;
@@ -553,7 +560,7 @@ namespace SDLGame
                 midright = SDLGame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(const SDLGame::math::Vector2 &pos, T _w, T _h)
+            Rect(SDLGame::math::Vector2 pos, T _w, T _h)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = pos.x;
@@ -575,7 +582,7 @@ namespace SDLGame
                 midbottom = SDLGame::math::Vector2(centerx, bottom);
                 midright = SDLGame::math::Vector2(right, centery);
             }
-            Rect(const SDLGame::math::Vector2 &pos, const SDLGame::math::Vector2 &_size)
+            Rect(SDLGame::math::Vector2 pos, SDLGame::math::Vector2 _size)
             {
                 x = left = pos.x;
                 y = top = pos.y;
@@ -974,7 +981,7 @@ namespace SDLGame
             /**
              *  return a SDL_Rect object from this rect
              */
-            SDL_Rect toSDL_Rect() const
+            SDL_Rect to_SDL_Rect() const
             {
                 SDL_Rect res = {(int)x, (int)y, (int)w, (int)h};
                 return res;
@@ -1034,8 +1041,16 @@ namespace SDLGame
             }
         };
     }
-
-    // may be not done yet but good enough
+    namespace surface{
+        class Surface;
+    }
+    
+    namespace display{
+        extern SDL_Window *window;
+        extern SDL_Renderer *renderer;
+        extern bool isInit;
+    }
+    
     namespace surface
     {
         /**
@@ -1059,7 +1074,10 @@ namespace SDLGame
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
-                texture = SDL_CreateTexture(SDLGame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
+                if(texture = SDL_CreateTexture(SDLGame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height)){
+                    printf("Failed to create texture\nErr:%s\n",SDL_GetError());
+                    exit(0);
+                }
                 rect = SDLGame::rect::Rect(0, 0, width, height);
             }
             Surface(const Surface &oth)
@@ -1079,6 +1097,12 @@ namespace SDLGame
             Surface(SDL_Surface *surf)
             {
                 texture = SDL_CreateTextureFromSurface(SDLGame::display::renderer, surf);
+                // printf("tex: %p | surf: %p\n",texture,surf);
+                if(texture == NULL){
+                    printf("Failed to create texture form surface\nErr:%s\n",SDL_GetError());
+                    exit(0);
+                }
+                rect = SDLGame::rect::Rect(0,0,surf->w,surf->h);
             }
             Surface &operator=(const Surface &other)
             {
@@ -1087,6 +1111,7 @@ namespace SDLGame
                     SDL_DestroyTexture(texture);
                     flags = other.flags;
                     texture = other.texture;
+                    rect = other.getRect();
                 }
                 return *this;
             }
@@ -1097,23 +1122,23 @@ namespace SDLGame
             {
                 return rect;
             }
-            void blit(const Surface &source, SDLGame::rect::Rect destrect, SDLGame::rect::Rect area = SDLGame::rect::Rect())
+            void blit(const Surface &source, SDLGame::math::Vector2 pos, SDLGame::math::Vector2 size = SDLGame::math::Vector2(-1,-1), SDLGame::rect::Rect area = SDLGame::rect::Rect())
             {
                 if (area == SDLGame::rect::Rect())
                 {
                     area = SDLGame::rect::Rect(0.0, 0.0, source.getWidth(), source.getHeight());
                 }
-                if (destrect == SDLGame::rect::Rect())
-                {
-                    destrect = SDLGame::rect::Rect(0.0, 0.0, rect.getWidth(), rect.getHeight());
-                }
-                SDL_Rect tmp = rect.toSDL_Rect();
+                SDLGame::rect::Rect destrect = SDLGame::rect::Rect(
+                    pos.x, pos.y,
+                    (size.x == -1.0 ? source.getWidth() : size.x),(size.y == -1.0 ? source.getHeight() : size.y)
+                );
                 SDL_SetRenderTarget(SDLGame::display::renderer, texture);
-                SDL_Rect srcrect = area.toSDL_Rect();
+                SDL_Rect srcrect = area.to_SDL_Rect();
                 SDL_FRect dstrect = destrect.to_SDL_FRect();
                 if (SDL_RenderCopyF(SDLGame::display::renderer, source.texture, &srcrect, &dstrect))
                 {
-                    printf("Error copy texture onto another\nErr:%s", SDL_GetError());
+                    printf("Error copy texture onto another\nErr:%s\n", SDL_GetError());
+                    exit(0);
                 }
                 SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
             }
@@ -1126,11 +1151,13 @@ namespace SDLGame
                 SDL_SetRenderTarget(SDLGame::display::renderer, texture);
                 if (SDL_SetRenderDrawColor(SDLGame::display::renderer, color.r, color.g, color.b, color.a))
                 {
-                    printf("Failed to set draw color\nErr:%s", SDL_GetError());
+                    printf("Failed to set draw color\nErr:%s\n", SDL_GetError());
+                    exit(0);
                 }
                 if (SDL_RenderClear(SDLGame::display::renderer))
                 {
-                    printf("Failed to clear the render target\nErr:%s", SDL_GetError());
+                    printf("Failed to clear the render target\nErr:%s\n", SDL_GetError());
+                    exit(0);
                 }
                 SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
             }
@@ -1178,12 +1205,14 @@ namespace SDLGame
             window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
             if (window == nullptr)
             {
-                printf("Failed to create a window object\nErr: %s", SDL_GetError());
+                printf("Failed to create a window object\nErr: %s\n", SDL_GetError());
+                exit(0);
             }
             renderer = SDL_CreateRenderer(window, -1, 0);
             if (renderer == nullptr)
             {
-                printf("Failed to create a renderer\nErr: %s", SDL_GetError());
+                printf("Failed to create a renderer\nErr: %s\n", SDL_GetError());
+                exit(0);
             }
 
             win_surf.texture = null; // THIS IS INTENDED!
@@ -1248,25 +1277,30 @@ namespace SDLGame
         }
         void flip()
         {
-            if (renderer != NULL and window != NULL)
-            {
-                // SDL_RenderPresent(renderer);
-                if (SDL_UpdateWindowSurface(SDLGame::display::window))
-                    printf("Failed to update the window surface\nErr: %s", SDL_GetError());
-            }
-            else
-            {
-                printf("Display have not set mode\nErr: window ptr: %p \n renderer ptr: %p \n", window, renderer);
-            }
+            if(SDL_GetRenderTarget(renderer)) SDL_SetRenderTarget(renderer,NULL);
+            SDL_RenderPresent(renderer);
         }
     }
 
     // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
-        SDLGame::surface::Surface load(const char *img_path)
+        SDL_Surface *tmp;
+        SDLGame::surface::Surface load(std::string path)
         {
-            return SDLGame::surface::Surface(IMG_Load(img_path));
+            const char* img_path = path.c_str();
+            SDL_RWops *ops = SDL_RWFromFile(img_path,"rb");
+            if(ops==NULL){
+                printf("Failed to RW from file\nErr:%s\n",SDL_GetError());
+                exit(0);
+            }
+            tmp = IMG_Load_RW(ops,SDL_FALSE);
+            if(!tmp){
+                printf("Failed to load image\n");
+                exit(0);
+            }
+            SDL_RWclose(ops);
+            return SDLGame::surface::Surface(tmp);
         }
     }
 
@@ -1527,10 +1561,10 @@ namespace SDLGame
             SDLGame::surface::Surface res = SDLGame::surface::Surface(surface.getWidth(), surface.getHeight());
             SDL_SetRenderTarget(SDLGame::display::renderer, res.texture);
             if (flip_x)
-                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, NULL, NULL, SDL_FLIP_HORIZONTAL))
+                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, 0, NULL, SDL_FLIP_HORIZONTAL))
                     printf("Failed to flip x\n");
             if (flip_y)
-                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, NULL, NULL, SDL_FLIP_VERTICAL))
+                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, 0, NULL, SDL_FLIP_VERTICAL))
                     printf("Failed to flip y\n");
             SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
             return res;
@@ -1565,7 +1599,7 @@ namespace SDLGame
                 std::max({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}) - std::min({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}),
                 std::max({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}) - std::min({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}));
             SDL_SetRenderTarget(SDLGame::display::renderer, res.texture);
-            SDL_FPoint tmp = {center.x, center.y};
+            SDL_FPoint tmp = {float(center.x), float(center.y)};
             SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, angle, &tmp, SDL_FLIP_NONE);
             SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
             return res;
