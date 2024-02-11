@@ -266,7 +266,9 @@ namespace SDLGame
                     elapsedTimes.pop_front();
                 return elapsedTime;
             }
-
+            double delta_time() const {
+                return elapsedTimes.back()/1000;
+            }
             double get_fps() const
             {
                 double res = 0;
