@@ -51,7 +51,7 @@
 #include "SDL3/SDL_mixer.h"
 #include "SDL3/SDL_ttf.h"
 #define null NULL
-namespace SDLGame
+namespace sdlgame
 {
     const int K_a = SDL_SCANCODE_A;
     const int K_b = SDL_SCANCODE_B;
@@ -180,6 +180,7 @@ namespace SDLGame
     const int K_VOLUMEDOWN = SDL_SCANCODE_VOLUMEDOWN;
 
     /*window flag here*/
+
     const Uint32 FULLSCREEN = SDL_WINDOW_FULLSCREEN;
     const Uint32 NO_FRAME = SDL_WINDOW_BORDERLESS;
     const Uint32 RESIZABLE = SDL_WINDOW_RESIZABLE;
@@ -190,7 +191,10 @@ namespace SDLGame
     const Uint32 RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED;
     // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
 
+    /*Texture flags ?*/
+
     /*event type here*/
+
     const Uint32 QUIT = SDL_QUIT;
     const Uint32 KEYUP = SDL_KEYUP;
     const Uint32 KEYDOWN = SDL_KEYDOWN;
@@ -274,7 +278,7 @@ namespace SDLGame
                 return elapsedTime;
             }
             double delta_time() const {
-                return elapsedTimes.back()/1000;
+                return elapsedTimes.back()*1.0/1000.0;
             }
             double get_fps() const
             {
@@ -344,7 +348,7 @@ namespace SDLGame
                 }
                 return *this;
             }
-            SDLGame::math::Vector2 &operator+=(const SDLGame::math::Vector2 &oth)
+            sdlgame::math::Vector2 &operator+=(const sdlgame::math::Vector2 &oth)
             {
                 if (this != &oth)
                 {
@@ -353,7 +357,7 @@ namespace SDLGame
                 }
                 return *this;
             }
-            SDLGame::math::Vector2 &operator-=(const SDLGame::math::Vector2 &oth)
+            sdlgame::math::Vector2 &operator-=(const sdlgame::math::Vector2 &oth)
             {
                 if (this != &oth)
                 {
@@ -363,33 +367,33 @@ namespace SDLGame
                 return *this;
             }
             template <class T>
-            SDLGame::math::Vector2 &operator*=(const T &scalar)
+            sdlgame::math::Vector2 &operator*=(const T &scalar)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
                 x *= scalar;
                 y *= scalar;
                 return *this;
             }
-            SDLGame::math::Vector2 operator+(const SDLGame::math::Vector2 &oth) const
+            sdlgame::math::Vector2 operator+(const sdlgame::math::Vector2 &oth) const
             {
-                return SDLGame::math::Vector2(x + oth.x, y + oth.y);
+                return sdlgame::math::Vector2(x + oth.x, y + oth.y);
             }
-            SDLGame::math::Vector2 operator-() const
+            sdlgame::math::Vector2 operator-() const
             {
-                return SDLGame::math::Vector2(-x, -y);
+                return sdlgame::math::Vector2(-x, -y);
             }
-            SDLGame::math::Vector2 operator-(const SDLGame::math::Vector2 &oth) const
+            sdlgame::math::Vector2 operator-(const sdlgame::math::Vector2 &oth) const
             {
-                return SDLGame::math::Vector2(x - oth.x, y - oth.y);
+                return sdlgame::math::Vector2(x - oth.x, y - oth.y);
             }
             template <class T>
-            SDLGame::math::Vector2 operator*(const T &scalar) const
+            sdlgame::math::Vector2 operator*(const T &scalar) const
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
-                return SDLGame::math::Vector2(scalar * x, scalar * y);
+                return sdlgame::math::Vector2(scalar * x, scalar * y);
             }
 
-            bool operator==(const SDLGame::math::Vector2 &oth) const
+            bool operator==(const sdlgame::math::Vector2 &oth) const
             {
                 return abs(x - oth.x) <= epsilon and abs(y - oth.y) <= epsilon;
             }
@@ -404,9 +408,9 @@ namespace SDLGame
             /**
              * @return a normalized vector (a vector with length 1 unit) that have the same direction with the original
              */
-            SDLGame::math::Vector2 normalize() const
+            sdlgame::math::Vector2 normalize() const
             {
-                return SDLGame::math::Vector2(x / this->magnitude(), y / this->magnitude());
+                return sdlgame::math::Vector2(x / this->magnitude(), y / this->magnitude());
             }
             /**
              *  normalize the vector
@@ -416,14 +420,14 @@ namespace SDLGame
                 x /= this->magnitude();
                 y /= this->magnitude();
             }
-            double dot(const SDLGame::math::Vector2 &oth) const
+            double dot(const sdlgame::math::Vector2 &oth) const
             {
                 return x * oth.x + y * oth.y;
             }
             /**
              * @return angle in degree to another vector in range [0,180] degrees, which is the smallest of 2 angle
              * */
-            double angle_to(const SDLGame::math::Vector2 &oth) const
+            double angle_to(const sdlgame::math::Vector2 &oth) const
             {
                 return acos(this->dot(oth) / (this->magnitude() * oth.magnitude())) * 180.0 / M_PI;
             }
@@ -431,10 +435,10 @@ namespace SDLGame
             /**
              * @return a vector that rotated deg degrees counter clockwise
              * */
-            SDLGame::math::Vector2 rotate(double deg) const
+            sdlgame::math::Vector2 rotate(double deg) const
             {
                 double angleInRadians = degree_to_radian(deg);
-                return SDLGame::math::Vector2(x * cos(angleInRadians) - y * sin(angleInRadians), x * sin(angleInRadians) + y * cos(angleInRadians));
+                return sdlgame::math::Vector2(x * cos(angleInRadians) - y * sin(angleInRadians), x * sin(angleInRadians) + y * cos(angleInRadians));
             }
             /**
              *  make the vector rotate deg degrees counter-clockwise
@@ -445,27 +449,27 @@ namespace SDLGame
                 x = _x * cos(angleInRadians) - _y * sin(angleInRadians);
                 y = x * sin(angleInRadians) + y * cos(angleInRadians);
             }
-            double distance_to(const SDLGame::math::Vector2 &oth) const
+            double distance_to(const sdlgame::math::Vector2 &oth) const
             {
                 return sqrt((x - oth.x) * (x - oth.x) + (y - oth.y) * (y - oth.y));
             }
             /**
              * @return the vector that is the reflection of the current vector to a normal vector
              */
-            SDLGame::math::Vector2 reflect(const SDLGame::math::Vector2 &normal) const
+            sdlgame::math::Vector2 reflect(const sdlgame::math::Vector2 &normal) const
             {
                 double dotProduct = this->dot(normal);
                 return (*this) - normal * 2 * (this->dot(normal));
             }
-            void reflect_ip(const SDLGame::math::Vector2 &normal)
+            void reflect_ip(const sdlgame::math::Vector2 &normal)
             {
                 *this = this->reflect(normal);
             }
-            SDLGame::math::Vector2 project(const SDLGame::math::Vector2 &normal) const
+            sdlgame::math::Vector2 project(const sdlgame::math::Vector2 &normal) const
             {
                 return normal * (this->dot(normal) / (normal.sqr_magnitude()));
             }
-            void project_ip(const SDLGame::math::Vector2 &normal)
+            void project_ip(const sdlgame::math::Vector2 &normal)
             {
                 *this = this->project(normal);
             }
@@ -476,10 +480,10 @@ namespace SDLGame
         };
 
         template <class T>
-        SDLGame::math::Vector2 operator*(const T &scalar, const SDLGame::math::Vector2 &v)
+        sdlgame::math::Vector2 operator*(const T &scalar, const sdlgame::math::Vector2 &v)
         {
             static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
-            return SDLGame::math::Vector2(scalar * v.x, scalar * v.y);
+            return sdlgame::math::Vector2(scalar * v.x, scalar * v.y);
         }
     }
 
@@ -504,8 +508,8 @@ namespace SDLGame
             double x, y, left, top, bottom, right;
             double w, h, width, height;
             double centerx, centery;
-            SDLGame::math::Vector2 center, topleft, bottomleft, topright, bottomright, midtop, midleft, midbottom, midright;
-            SDLGame::math::Vector2 size;
+            sdlgame::math::Vector2 center, topleft, bottomleft, topright, bottomright, midtop, midleft, midbottom, midright;
+            sdlgame::math::Vector2 size;
             double epsilon = 1e-6;
 
         public:
@@ -523,21 +527,21 @@ namespace SDLGame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                size = SDLGame::math::Vector2(w, h);
+                size = sdlgame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(T _left, T _top, SDLGame::math::Vector2 _size)
+            Rect(T _left, T _top, sdlgame::math::Vector2 _size)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = _left;
@@ -549,18 +553,18 @@ namespace SDLGame
                 size = _size;
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             template <class T>
-            Rect(SDLGame::math::Vector2 pos, T _w, T _h)
+            Rect(sdlgame::math::Vector2 pos, T _w, T _h)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = pos.x;
@@ -569,20 +573,20 @@ namespace SDLGame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                size = SDLGame::math::Vector2(w, h);
+                size = sdlgame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
-            Rect(SDLGame::math::Vector2 pos, SDLGame::math::Vector2 _size)
+            Rect(sdlgame::math::Vector2 pos, sdlgame::math::Vector2 _size)
             {
                 x = left = pos.x;
                 y = top = pos.y;
@@ -593,15 +597,15 @@ namespace SDLGame
                 size = _size;
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             /**
              * @return a new rectangle that have been moved by given OFFSET x and y
@@ -616,18 +620,18 @@ namespace SDLGame
                     h = height = oth.getHeight();
                     bottom = top + h;
                     right = left + w;
-                    size = SDLGame::math::Vector2(w, h);
+                    size = sdlgame::math::Vector2(w, h);
                     centerx = x + width / 2;
                     centery = y + height / 2;
-                    center = SDLGame::math::Vector2(centerx, centery);
-                    topleft = SDLGame::math::Vector2(left, top);
-                    bottomleft = SDLGame::math::Vector2(left, bottom);
-                    bottomright = SDLGame::math::Vector2(right, bottom);
-                    topright = SDLGame::math::Vector2(right, top);
-                    midtop = SDLGame::math::Vector2(centerx, top);
-                    midleft = SDLGame::math::Vector2(left, centery);
-                    midbottom = SDLGame::math::Vector2(centerx, bottom);
-                    midright = SDLGame::math::Vector2(right, centery);
+                    center = sdlgame::math::Vector2(centerx, centery);
+                    topleft = sdlgame::math::Vector2(left, top);
+                    bottomleft = sdlgame::math::Vector2(left, bottom);
+                    bottomright = sdlgame::math::Vector2(right, bottom);
+                    topright = sdlgame::math::Vector2(right, top);
+                    midtop = sdlgame::math::Vector2(centerx, top);
+                    midleft = sdlgame::math::Vector2(left, centery);
+                    midbottom = sdlgame::math::Vector2(centerx, bottom);
+                    midright = sdlgame::math::Vector2(right, centery);
                 }
                 return *this;
             }
@@ -653,15 +657,15 @@ namespace SDLGame
                 res.right = res.left + res.w;
                 res.centerx = res.x + res.width / 2;
                 res.centery = res.y + res.height / 2;
-                res.center = SDLGame::math::Vector2(res.centerx, res.centery);
-                res.topleft = SDLGame::math::Vector2(res.left, res.top);
-                res.bottomleft = SDLGame::math::Vector2(res.left, res.bottom);
-                res.bottomright = SDLGame::math::Vector2(res.right, res.bottom);
-                res.topright = SDLGame::math::Vector2(res.right, res.top);
-                res.midtop = SDLGame::math::Vector2(res.centerx, res.top);
-                res.midleft = SDLGame::math::Vector2(res.left, res.centery);
-                res.midbottom = SDLGame::math::Vector2(res.centerx, res.bottom);
-                res.midright = SDLGame::math::Vector2(res.right, res.centery);
+                res.center = sdlgame::math::Vector2(res.centerx, res.centery);
+                res.topleft = sdlgame::math::Vector2(res.left, res.top);
+                res.bottomleft = sdlgame::math::Vector2(res.left, res.bottom);
+                res.bottomright = sdlgame::math::Vector2(res.right, res.bottom);
+                res.topright = sdlgame::math::Vector2(res.right, res.top);
+                res.midtop = sdlgame::math::Vector2(res.centerx, res.top);
+                res.midleft = sdlgame::math::Vector2(res.left, res.centery);
+                res.midbottom = sdlgame::math::Vector2(res.centerx, res.bottom);
+                res.midright = sdlgame::math::Vector2(res.right, res.centery);
                 return res;
             }
 
@@ -677,14 +681,14 @@ namespace SDLGame
             /**
              * @return a new rectangle that have been moved by given OFFSET x and y
              */
-            Rect move(const SDLGame::math::Vector2 &offset) const
+            Rect move(const sdlgame::math::Vector2 &offset) const
             {
                 return this->move(offset.x, offset.y);
             }
             /**
              *  instead of a new one, this just move the rect that called this function
              */
-            void move_ip(const SDLGame::math::Vector2 &offset)
+            void move_ip(const sdlgame::math::Vector2 &offset)
             {
                 *this = this->move(offset.x, offset.y);
             }
@@ -697,25 +701,25 @@ namespace SDLGame
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 Rect res = *this;
-                res.size += SDLGame::math::Vector2(offset_w, offset_h);
+                res.size += sdlgame::math::Vector2(offset_w, offset_h);
                 res.w = res.width += offset_w;
                 res.h = res.height += offset_h;
                 res.bottom = res.top + res.h;
                 res.right = res.left + res.w;
                 res.centerx = res.x + res.width / 2;
                 res.centery = res.y + res.height / 2;
-                res.center = SDLGame::math::Vector2(res.centerx, res.centery);
-                res.topleft = SDLGame::math::Vector2(res.left, res.top);
-                res.bottomleft = SDLGame::math::Vector2(res.left, res.bottom);
-                res.bottomright = SDLGame::math::Vector2(res.right, res.bottom);
-                res.topright = SDLGame::math::Vector2(res.right, res.top);
-                res.midtop = SDLGame::math::Vector2(res.centerx, res.top);
-                res.midleft = SDLGame::math::Vector2(res.left, res.centery);
-                res.midbottom = SDLGame::math::Vector2(res.centerx, res.bottom);
-                res.midright = SDLGame::math::Vector2(res.right, res.centery);
+                res.center = sdlgame::math::Vector2(res.centerx, res.centery);
+                res.topleft = sdlgame::math::Vector2(res.left, res.top);
+                res.bottomleft = sdlgame::math::Vector2(res.left, res.bottom);
+                res.bottomright = sdlgame::math::Vector2(res.right, res.bottom);
+                res.topright = sdlgame::math::Vector2(res.right, res.top);
+                res.midtop = sdlgame::math::Vector2(res.centerx, res.top);
+                res.midleft = sdlgame::math::Vector2(res.left, res.centery);
+                res.midbottom = sdlgame::math::Vector2(res.centerx, res.bottom);
+                res.midright = sdlgame::math::Vector2(res.right, res.centery);
                 return res;
             }
-            Rect inflate(const SDLGame::math::Vector2 &offset) const
+            Rect inflate(const sdlgame::math::Vector2 &offset) const
             {
                 return this->inflate(offset.x, offset.y);
             }
@@ -727,7 +731,7 @@ namespace SDLGame
             {
                 *this = this->inflate(offset_w, offset_h);
             }
-            void inflate_ip(const SDLGame::math::Vector2 &offset)
+            void inflate_ip(const sdlgame::math::Vector2 &offset)
             {
                 *this = this->inflate(offset.x, offset.y);
             }
@@ -745,21 +749,21 @@ namespace SDLGame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                size = SDLGame::math::Vector2(w, h);
+                size = sdlgame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             template <class T>
-            void update(T _left, T _top, const SDLGame::math::Vector2 &_size)
+            void update(T _left, T _top, const sdlgame::math::Vector2 &_size)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = _left;
@@ -771,18 +775,18 @@ namespace SDLGame
                 size = _size;
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             template <class T>
-            void update(const SDLGame::math::Vector2 &pos, T _w, T _h)
+            void update(const sdlgame::math::Vector2 &pos, T _w, T _h)
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
                 x = left = pos.x;
@@ -791,20 +795,20 @@ namespace SDLGame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                size = SDLGame::math::Vector2(w, h);
+                size = sdlgame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
-            void update(const SDLGame::math::Vector2 &pos, const SDLGame::math::Vector2 &_size)
+            void update(const sdlgame::math::Vector2 &pos, const sdlgame::math::Vector2 &_size)
             {
                 x = left = pos.x;
                 y = top = pos.y;
@@ -815,15 +819,15 @@ namespace SDLGame
                 size = _size;
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                center = SDLGame::math::Vector2(centerx, centery);
-                topleft = SDLGame::math::Vector2(left, top);
-                bottomleft = SDLGame::math::Vector2(left, bottom);
-                bottomright = SDLGame::math::Vector2(right, bottom);
-                topright = SDLGame::math::Vector2(right, top);
-                midtop = SDLGame::math::Vector2(centerx, top);
-                midleft = SDLGame::math::Vector2(left, centery);
-                midbottom = SDLGame::math::Vector2(centerx, bottom);
-                midright = SDLGame::math::Vector2(right, centery);
+                center = sdlgame::math::Vector2(centerx, centery);
+                topleft = sdlgame::math::Vector2(left, top);
+                bottomleft = sdlgame::math::Vector2(left, bottom);
+                bottomright = sdlgame::math::Vector2(right, bottom);
+                topright = sdlgame::math::Vector2(right, top);
+                midtop = sdlgame::math::Vector2(centerx, top);
+                midleft = sdlgame::math::Vector2(left, centery);
+                midbottom = sdlgame::math::Vector2(centerx, bottom);
+                midright = sdlgame::math::Vector2(right, centery);
             }
             /**
              *  return a new rectangle that fit another rect but keep the aspect ratio of the caller
@@ -852,7 +856,7 @@ namespace SDLGame
             /**
              * @return return whether the point in param is inside the caller or not
              */
-            bool collidepoint(const SDLGame::math::Vector2 &point)
+            bool collidepoint(const sdlgame::math::Vector2 &point)
             {
                 return left <= point.x and point.x <= right and top <= point.y and point.y <= bottom;
             }
@@ -890,7 +894,7 @@ namespace SDLGame
             {
                 inflate_ip(_w - w, _h - h);
             }
-            void setSize(const SDLGame::math::Vector2 &_size)
+            void setSize(const sdlgame::math::Vector2 &_size)
             {
                 inflate_ip(_size - size);
             }
@@ -919,7 +923,7 @@ namespace SDLGame
             {
                 move_ip(_x - centerx, _y - centery);
             }
-            void setCenter(const SDLGame::math::Vector2 &pos)
+            void setCenter(const sdlgame::math::Vector2 &pos)
             {
                 move_ip(pos.x - centerx, pos.y - centery);
             }
@@ -928,7 +932,7 @@ namespace SDLGame
             {
                 move_ip(_x - centerx, _y - y);
             }
-            void setMidTop(const SDLGame::math::Vector2 &pos)
+            void setMidTop(const sdlgame::math::Vector2 &pos)
             {
                 move_ip(pos.x - centerx, pos.y - y);
             }
@@ -937,7 +941,7 @@ namespace SDLGame
             {
                 move_ip(_x - centerx, _y - bottom);
             }
-            void setMidBottom(const SDLGame::math::Vector2 &pos)
+            void setMidBottom(const sdlgame::math::Vector2 &pos)
             {
                 move_ip(pos.x - centerx, pos.y - bottom);
             }
@@ -946,7 +950,7 @@ namespace SDLGame
             {
                 move_ip(_x - x, _y - centery);
             }
-            void setMidLeft(const SDLGame::math::Vector2 &pos)
+            void setMidLeft(const sdlgame::math::Vector2 &pos)
             {
                 move_ip(pos.x - x, pos.y - centery);
             }
@@ -955,7 +959,7 @@ namespace SDLGame
             {
                 move_ip(_x - right, _y - centery);
             }
-            void setMidRight(const SDLGame::math::Vector2 &pos)
+            void setMidRight(const sdlgame::math::Vector2 &pos)
             {
                 move_ip(pos.x - right, pos.y - centery);
             }
@@ -967,16 +971,16 @@ namespace SDLGame
             double getBottom() const { return bottom; }
             double getCenterX() const { return centerx; }
             double getCenterY() const { return centery; }
-            SDLGame::math::Vector2 getSize() const { return size; }
-            SDLGame::math::Vector2 getCenter() const { return center; }
-            SDLGame::math::Vector2 getTopLeft() const { return topleft; }
-            SDLGame::math::Vector2 getTopRight() const { return topright; }
-            SDLGame::math::Vector2 getBottomLeft() const { return bottomleft; }
-            SDLGame::math::Vector2 getBottomRight() const { return bottomright; }
-            SDLGame::math::Vector2 getMidTop() const { return midtop; }
-            SDLGame::math::Vector2 getMidLeft() const { return midleft; }
-            SDLGame::math::Vector2 getMidBottom() const { return midbottom; }
-            SDLGame::math::Vector2 getMidRight() const { return midright; }
+            sdlgame::math::Vector2 getSize() const { return size; }
+            sdlgame::math::Vector2 getCenter() const { return center; }
+            sdlgame::math::Vector2 getTopLeft() const { return topleft; }
+            sdlgame::math::Vector2 getTopRight() const { return topright; }
+            sdlgame::math::Vector2 getBottomLeft() const { return bottomleft; }
+            sdlgame::math::Vector2 getBottomRight() const { return bottomright; }
+            sdlgame::math::Vector2 getMidTop() const { return midtop; }
+            sdlgame::math::Vector2 getMidLeft() const { return midleft; }
+            sdlgame::math::Vector2 getMidBottom() const { return midbottom; }
+            sdlgame::math::Vector2 getMidRight() const { return midright; }
 
             /**
              *  return a SDL_Rect object from this rect
@@ -1060,25 +1064,29 @@ namespace SDLGame
          */
         class Surface
         {
-        private:
-            SDLGame::rect::Rect rect;
-
         public:
+            sdlgame::math::Vector2 size;
             SDL_Texture *texture = nullptr;
             Uint32 flags = 0;
             Surface()
             {
                 flags = 0;
-                texture = SDL_CreateTexture(SDLGame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, 0, 0);
+                texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, 0, 0);
+                SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
             }
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
-                if(texture = SDL_CreateTexture(SDLGame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height)){
-                    printf("Failed to create texture\nErr:%s\n",SDL_GetError());
+                if(!(texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height))){
+                    printf("Failed to create texture\n");
                     exit(0);
                 }
-                rect = SDLGame::rect::Rect(0, 0, width, height);
+                rect = sdlgame::rect::Rect(0, 0, width, height);
+                SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderTarget(sdlgame::display::renderer, texture);
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
+                SDL_RenderClear(sdlgame::display::renderer);
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
             }
             Surface(const Surface &oth)
             {
@@ -1089,20 +1097,26 @@ namespace SDLGame
 
             Surface(SDL_Texture *oth)
             {
-                texture = oth;
-                int w, h;
-                SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-                rect = SDLGame::rect::Rect(0, 0, w, h);
+                int w,h;
+                SDL_QueryTexture(oth,NULL,NULL,&w,&h);
+                texture = SDL_CreateTexture(sdlgame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,w,h);
+                SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderTarget(sdlgame::display::renderer, texture);
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
+                SDL_RenderClear(sdlgame::display::renderer);
+                SDL_RenderCopy(sdlgame::display::renderer,oth,NULL,NULL);
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
+                rect = sdlgame::rect::Rect(0, 0, w, h);
             }
             Surface(SDL_Surface *surf)
             {
-                texture = SDL_CreateTextureFromSurface(SDLGame::display::renderer, surf);
+                texture = SDL_CreateTextureFromSurface(sdlgame::display::renderer, surf);
                 // printf("tex: %p | surf: %p\n",texture,surf);
                 if(texture == NULL){
                     printf("Failed to create texture form surface\nErr:%s\n",SDL_GetError());
                     exit(0);
                 }
-                rect = SDLGame::rect::Rect(0,0,surf->w,surf->h);
+                rect = sdlgame::rect::Rect(0,0,surf->w,surf->h);
             }
             Surface &operator=(const Surface &other)
             {
@@ -1110,63 +1124,98 @@ namespace SDLGame
                 {
                     SDL_DestroyTexture(texture);
                     flags = other.flags;
-                    texture = other.texture;
+                    int w,h;
+                    SDL_QueryTexture(other.texture,NULL,NULL,&w,&h);
+                    texture = SDL_CreateTexture(sdlgame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,w,h);
+                    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+                    SDL_SetRenderTarget(sdlgame::display::renderer, texture);
+                    SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
+                    SDL_RenderClear(sdlgame::display::renderer);
+                    SDL_RenderCopy(sdlgame::display::renderer,other.texture,NULL,NULL);
+                    SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                     rect = other.getRect();
                 }
                 return *this;
             }
             /**
+             * Return a copy of this surface, 
+            */
+            Surface copy() const {
+                sdlgame::surface::Surface res = sdlgame::surface::Surface((int)this->getWidth(),(int)this->getHeight());
+                SDL_SetRenderTarget(sdlgame::display::renderer,res.texture);
+                SDL_RenderCopy(sdlgame::display::renderer,texture,NULL,NULL);
+                SDL_SetRenderTarget(sdlgame::display::renderer,NULL);
+                return res;
+            }
+            /**
              * Return a copy of the surface rect
              */
-            SDLGame::rect::Rect getRect() const
+            sdlgame::rect::Rect getRect() const
             {
                 return rect;
             }
-            void blit(const Surface &source, SDLGame::math::Vector2 pos, SDLGame::math::Vector2 size = SDLGame::math::Vector2(-1,-1), SDLGame::rect::Rect area = SDLGame::rect::Rect())
+            /**
+             * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
+             * the surface or image will stretch or shrink acoording to the size
+            */
+            void blit(const Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1,-1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
             {
-                if (area == SDLGame::rect::Rect())
+                if (area == sdlgame::rect::Rect())
                 {
-                    area = SDLGame::rect::Rect(0.0, 0.0, source.getWidth(), source.getHeight());
+                    area = sdlgame::rect::Rect(0.0, 0.0, source.getWidth(), source.getHeight());
                 }
-                SDLGame::rect::Rect destrect = SDLGame::rect::Rect(
+                sdlgame::rect::Rect destrect = sdlgame::rect::Rect(
                     pos.x, pos.y,
-                    (size.x == -1.0 ? source.getWidth() : size.x),(size.y == -1.0 ? source.getHeight() : size.y)
+                    (size.x < 0 ? source.getWidth() : size.x),(size.y < 0 ? source.getHeight() : size.y)
                 );
-                SDL_SetRenderTarget(SDLGame::display::renderer, texture);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, texture)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
                 SDL_Rect srcrect = area.to_SDL_Rect();
                 SDL_FRect dstrect = destrect.to_SDL_FRect();
-                if (SDL_RenderCopyF(SDLGame::display::renderer, source.texture, &srcrect, &dstrect))
+                if (SDL_RenderCopyF(sdlgame::display::renderer, source.texture, &srcrect, &dstrect))
                 {
-                    printf("Error copy texture onto another\nErr:%s\n", SDL_GetError());
+                    printf("Error copy texture onto another\n");
+                    printf("%s\n",SDL_GetError());
                     exit(0);
                 }
-                SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
-            }
-            void fill(SDLGame::color::Color color, SDLGame::rect::Rect area = SDLGame::rect::Rect())
-            {
-                if (area == SDLGame::rect::Rect())
-                {
-                    area = SDLGame::rect::Rect(0.0, 0.0, rect.getWidth(), rect.getHeight());
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
                 }
-                SDL_SetRenderTarget(SDLGame::display::renderer, texture);
-                if (SDL_SetRenderDrawColor(SDLGame::display::renderer, color.r, color.g, color.b, color.a))
+
+            }
+            void fill(sdlgame::color::Color color, sdlgame::rect::Rect area = sdlgame::rect::Rect())
+            {
+                if (area == sdlgame::rect::Rect())
+                {
+                    area = sdlgame::rect::Rect(0.0, 0.0, rect.getWidth(), rect.getHeight());
+                }
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, texture)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
+                if (SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a))
                 {
                     printf("Failed to set draw color\nErr:%s\n", SDL_GetError());
                     exit(0);
                 }
-                if (SDL_RenderClear(SDLGame::display::renderer))
+                if (SDL_RenderClear(sdlgame::display::renderer))
                 {
                     printf("Failed to clear the render target\nErr:%s\n", SDL_GetError());
                     exit(0);
                 }
-                SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
             }
             template <class T>
             void scroll(T offset_x, T offset_y)
             {
                 rect.move_ip(offset_x, offset_y);
             }
-            SDLGame::math::Vector2 get_size() const
+            sdlgame::math::Vector2 get_size() const
             {
                 return rect.getSize();
             }
@@ -1190,10 +1239,10 @@ namespace SDLGame
     {
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
-        SDLGame::surface::Surface win_surf;
+        sdlgame::surface::Surface win_surf;
         bool isInit = false;
 
-        SDLGame::surface::Surface &set_mode(int width = 0, int height = 0, Uint32 flags = 0)
+        sdlgame::surface::Surface &set_mode(int width = 0, int height = 0, Uint32 flags = 0)
         {
             if (width == 0 or height == 0)
             {
@@ -1202,7 +1251,7 @@ namespace SDLGame
                 width = DM.w;
                 height = DM.h;
             }
-            window = SDL_CreateWindow("SDLGame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+            window = SDL_CreateWindow("sdlgame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
             if (window == nullptr)
             {
                 printf("Failed to create a window object\nErr: %s\n", SDL_GetError());
@@ -1222,7 +1271,7 @@ namespace SDLGame
         /**
          *  return a Surface object that have reference SDL_surface to the window surface (NOT GARUANTEE IN ADVANCE ENGINE)
          */
-        SDLGame::surface::Surface &get_surface()
+        sdlgame::surface::Surface &get_surface()
         {
             win_surf.texture = NULL;
             return win_surf;
@@ -1286,7 +1335,7 @@ namespace SDLGame
     namespace image
     {
         SDL_Surface *tmp;
-        SDLGame::surface::Surface load(std::string path)
+        sdlgame::surface::Surface load(std::string path)
         {
             const char* img_path = path.c_str();
             SDL_RWops *ops = SDL_RWFromFile(img_path,"rb");
@@ -1300,7 +1349,7 @@ namespace SDLGame
                 exit(0);
             }
             SDL_RWclose(ops);
-            return SDLGame::surface::Surface(tmp);
+            return sdlgame::surface::Surface(tmp);
         }
     }
 
@@ -1335,14 +1384,14 @@ namespace SDLGame
         // best for not mess up these var some how
         namespace
         {
-            SDLGame::math::Vector2 last_mouse_pos = SDLGame::math::Vector2(-1, -1);
+            sdlgame::math::Vector2 last_mouse_pos = sdlgame::math::Vector2(-1, -1);
             bool isVisible = true;
         }
-        SDLGame::math::Vector2 get_pos()
+        sdlgame::math::Vector2 get_pos()
         {
             int x, y;
             SDL_GetMouseState(&x, &y);
-            return SDLGame::math::Vector2(x, y);
+            return sdlgame::math::Vector2(x, y);
         }
         std::vector<bool> get_pressed()
         {
@@ -1356,14 +1405,14 @@ namespace SDLGame
             }
             return buttons;
         }
-        SDLGame::math::Vector2 get_rel()
+        sdlgame::math::Vector2 get_rel()
         {
-            if (last_mouse_pos == SDLGame::math::Vector2(-1, -1))
-                return SDLGame::math::Vector2(0, 0);
+            if (last_mouse_pos == sdlgame::math::Vector2(-1, -1))
+                return sdlgame::math::Vector2(0, 0);
             int x, y;
             SDL_GetMouseState(&x, &y);
-            SDLGame::math::Vector2 res = SDLGame::math::Vector2(x, y) - last_mouse_pos;
-            last_mouse_pos = SDLGame::math::Vector2(x, y);
+            sdlgame::math::Vector2 res = sdlgame::math::Vector2(x, y) - last_mouse_pos;
+            last_mouse_pos = sdlgame::math::Vector2(x, y);
             return res;
         }
         void set_visible(int enable)
@@ -1481,9 +1530,9 @@ namespace SDLGame
     {
         // for (SDL_Texture *tex : textures)
         //     SDL_DestroyTexture(tex);
-        SDL_DestroyWindowSurface(SDLGame::display::window);
-        SDL_DestroyRenderer(SDLGame::display::renderer);
-        SDL_DestroyWindow(SDLGame::display::window);
+        SDL_DestroyWindowSurface(sdlgame::display::window);
+        SDL_DestroyRenderer(sdlgame::display::renderer);
+        SDL_DestroyWindow(sdlgame::display::window);
         SDL_Quit();
         exit(0);
     }
@@ -1498,89 +1547,117 @@ namespace SDLGame
         /**
          * width determine how far the border will expand to the INSIDE
          */
-        void rect(SDLGame::surface::Surface &surface, SDLGame::color::Color color, SDLGame::rect::Rect rect, int width = 0)
+        void rect(sdlgame::surface::Surface &surface, sdlgame::color::Color color, sdlgame::rect::Rect rect, int width = 0)
         {
             if (width == 0)
             {
                 SDL_FRect tmp = rect.to_SDL_FRect();
-                SDL_SetRenderTarget(SDLGame::display::renderer, surface.texture);
-                SDL_RenderFillRectF(SDLGame::display::renderer, &tmp);
-                SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
+                SDL_RenderFillRectF(sdlgame::display::renderer, &tmp);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
             }
             else if (width > 0)
             {
                 SDL_FRect tmp = rect.to_SDL_FRect();
-                SDL_SetRenderTarget(SDLGame::display::renderer, surface.texture);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
                 SDL_FRect top = rect.inflate(width - rect.getHeight(), 0.0).to_SDL_FRect();
                 SDL_FRect left = rect.inflate(0.0, width - rect.getWidth()).to_SDL_FRect();
                 SDL_FRect bottom = rect.inflate(width - rect.getHeight(), 0.0).move(0.0, rect.getHeight() - width).to_SDL_FRect();
                 SDL_FRect right = rect.inflate(0.0, width - rect.getWidth()).move(rect.getWidth() - width, 0.0).to_SDL_FRect();
-                SDL_RenderFillRectF(SDLGame::display::renderer, &top);
-                SDL_RenderFillRectF(SDLGame::display::renderer, &left);
-                SDL_RenderFillRectF(SDLGame::display::renderer, &bottom);
-                SDL_RenderFillRectF(SDLGame::display::renderer, &right);
-                SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+                SDL_RenderFillRectF(sdlgame::display::renderer, &top);
+                SDL_RenderFillRectF(sdlgame::display::renderer, &left);
+                SDL_RenderFillRectF(sdlgame::display::renderer, &bottom);
+                SDL_RenderFillRectF(sdlgame::display::renderer, &right);
+                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                    printf("Failed to set target: %s\n",SDL_GetError());
+                }
+
             }
         }
 
         template <class T>
-        void line(SDLGame::surface::Surface &surface, T x1, T y1, T x2, T y2, SDLGame::color::Color color)
+        void line(sdlgame::surface::Surface &surface, T x1, T y1, T x2, T y2, sdlgame::color::Color color)
         {
-            SDL_SetRenderTarget(SDLGame::display::renderer, surface.texture);
-            SDL_RenderDrawLineF(SDLGame::display::renderer, x1, y1, x2, y2);
-            SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
+
+            SDL_RenderDrawLineF(sdlgame::display::renderer, x1, y1, x2, y2);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
         }
-        void draw_circle(SDLGame::surface::Surface &surface, int centerX, int centerY, int radius, SDLGame::color::Color color)
+        void draw_circle(sdlgame::surface::Surface &surface, int centerX, int centerY, int radius, sdlgame::color::Color color)
         {
-            SDL_SetRenderTarget(SDLGame::display::renderer, surface.texture);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
             for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
             {
                 float x = centerX + radius * cos(angle);
                 float y = centerY + radius * sin(angle);
-                SDL_RenderDrawPointF(SDLGame::display::renderer, x, y);
+                SDL_RenderDrawPointF(sdlgame::display::renderer, x, y);
             }
-            SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
         }
 
-        void draw_polygon(SDLGame::surface::Surface &surface, std::vector<std::pair<int, int>> points, SDLGame::color::Color color)
+        void draw_polygon(sdlgame::surface::Surface &surface, std::vector<std::pair<int, int>> points, sdlgame::color::Color color)
         {
             if (points.size() < 3)
                 throw std::invalid_argument("can't draw polygon with only 2 vertices or less");
             for (int i = 0; i < int(points.size()) - 1; i++)
             {
-                SDLGame::draw::line(surface, points[i].first, points[i].second, points[i + 1].first, points[i + 1].second, color);
+                sdlgame::draw::line(surface, points[i].first, points[i].second, points[i + 1].first, points[i + 1].second, color);
             }
-            SDLGame::draw::line(surface, points[0].first, points[0].second, points[points.size() - 1].first, points[points.size() - 1].second, color);
+            sdlgame::draw::line(surface, points[0].first, points[0].second, points[points.size() - 1].first, points[points.size() - 1].second, color);
         }
     }
 
     namespace transform
     {
-        SDLGame::surface::Surface flip(SDLGame::surface::Surface &surface, bool flip_x, bool flip_y)
+        sdlgame::surface::Surface flip(sdlgame::surface::Surface &surface, bool flip_x, bool flip_y)
         {
-            SDLGame::surface::Surface res = SDLGame::surface::Surface(surface.getWidth(), surface.getHeight());
-            SDL_SetRenderTarget(SDLGame::display::renderer, res.texture);
-            if (flip_x)
-                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, 0, NULL, SDL_FLIP_HORIZONTAL))
-                    printf("Failed to flip x\n");
-            if (flip_y)
-                if (SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, 0, NULL, SDL_FLIP_VERTICAL))
-                    printf("Failed to flip y\n");
-            SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+            sdlgame::surface::Surface res = surface.copy();
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
+            SDL_RendererFlip flipType = SDL_FLIP_NONE;
+            if (flip_x) flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_HORIZONTAL);
+            if (flip_y) flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_VERTICAL);
+            if (SDL_RenderCopyEx(sdlgame::display::renderer, surface.texture, NULL, NULL, 0, NULL, flipType))
+                printf("Failed to flip\n");
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
             return res;
         }
-        SDLGame::surface::Surface scale(SDLGame::surface::Surface &surface, SDLGame::math::Vector2 size)
+        sdlgame::surface::Surface scale(sdlgame::surface::Surface &surface, sdlgame::math::Vector2 size)
         {
-            SDLGame::surface::Surface res = SDLGame::surface::Surface(size.x, size.y);
-            SDL_SetRenderTarget(SDLGame::display::renderer, res.texture);
-            SDL_RenderCopyF(SDLGame::display::renderer, surface.texture, NULL, NULL);
-            SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+            sdlgame::surface::Surface res = sdlgame::surface::Surface(size.x, size.y);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
+            SDL_RenderCopyF(sdlgame::display::renderer, surface.texture, NULL, NULL);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
             return res;
         }
 
-        SDLGame::surface::Surface scale_by(SDLGame::surface::Surface &surface, double factor)
+        sdlgame::surface::Surface scale_by(sdlgame::surface::Surface &surface, double factor)
         {
-            return SDLGame::surface::Surface(surface.get_size().x * factor,surface.get_size().y * factor);
+            return sdlgame::transform::scale(surface,surface.get_size() * factor);
         }
 
         /**
@@ -1588,20 +1665,24 @@ namespace SDLGame
          * angle unit is degrees
          * TODO: calculate the new size for the res surface
          */
-        SDLGame::surface::Surface rotate(SDLGame::surface::Surface &surface, double angle, SDLGame::math::Vector2 center)
+        sdlgame::surface::Surface rotate(sdlgame::surface::Surface &surface, double angle_deg, sdlgame::math::Vector2 center)
         {
-            SDLGame::math::Vector2 newtopleft = (surface.getRect().getTopLeft() - center).rotate(angle);
-            SDLGame::math::Vector2 newbotleft = (surface.getRect().getBottomLeft() - center).rotate(angle);
-            SDLGame::math::Vector2 newtopright = (surface.getRect().getTopRight() - center).rotate(angle);
-            SDLGame::math::Vector2 newbotright = (surface.getRect().getBottomRight() - center).rotate(angle);
+            sdlgame::math::Vector2 newtopleft = (surface.getRect().getTopLeft() - center).rotate(angle_deg);
+            sdlgame::math::Vector2 newbotleft = (surface.getRect().getBottomLeft() - center).rotate(angle_deg);
+            sdlgame::math::Vector2 newtopright = (surface.getRect().getTopRight() - center).rotate(angle_deg);
+            sdlgame::math::Vector2 newbotright = (surface.getRect().getBottomRight() - center).rotate(angle_deg);
 
-            SDLGame::surface::Surface res = SDLGame::surface::Surface(
+            sdlgame::surface::Surface res = sdlgame::surface::Surface(
                 std::max({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}) - std::min({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}),
                 std::max({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}) - std::min({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}));
-            SDL_SetRenderTarget(SDLGame::display::renderer, res.texture);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
             SDL_FPoint tmp = {float(center.x), float(center.y)};
-            SDL_RenderCopyExF(SDLGame::display::renderer, surface.texture, NULL, NULL, angle, &tmp, SDL_FLIP_NONE);
-            SDL_SetRenderTarget(SDLGame::display::renderer, NULL);
+            SDL_RenderCopyExF(sdlgame::display::renderer, surface.texture, NULL, NULL, angle_deg, &tmp, SDL_FLIP_NONE);
+            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
+                printf("Failed to set target: %s\n",SDL_GetError());
+            }
             return res;
         }
     }
