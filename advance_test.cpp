@@ -2,19 +2,7 @@
  * @brief this file is for testing function and classes in advance_engine.cpp
  */
 #include "engine.hpp"
-#include <mapinls.h>
-
-// this code force the program to use better gpu for rendering
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-
-#ifdef __cplusplus
-}
-#endif
+#include <windows.h>
 using Event = sdlgame::event::Event;
 using Rect = sdlgame::rect::Rect;
 using Vector2 = sdlgame::math::Vector2;
