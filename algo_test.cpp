@@ -2,5 +2,5 @@
 #include "engine.hpp"
 using namespace std;
 int main(){
-    cout << sizeof(SDLGame::sprite::Sprite&);
+    cout << sizeof(sdlgame::sprite::Sprite&);
 }

@@ -3,11 +3,11 @@
  */
 
 #include "engine.hpp"
-using Event = SDLGame::event::Event;
-using Rect = SDLGame::rect::Rect;
-using Vector2 = SDLGame::math::Vector2;
-using Surface = SDLGame::surface::Surface;
-using Color = SDLGame::color::Color;
+using Event = sdlgame::event::Event;
+using Rect = sdlgame::rect::Rect;
+using Vector2 = sdlgame::math::Vector2;
+using Surface = sdlgame::surface::Surface;
+using Color = sdlgame::color::Color;
 const int WIDTH = 1280, HEIGHT = 720;
 
 class Player
@@ -32,23 +32,23 @@ public:
     }
     void draw(Surface& window)
     {
-        SDLGame::draw::rect(window,color, player_rect);
+        sdlgame::draw::rect(window,color, player_rect);
     }
     void update()
     {
-        std::vector<bool> keys = SDLGame::key::get_pressed();
-        if (keys[SDLGame::K_a])
+        std::vector<bool> keys = sdlgame::key::get_pressed();
+        if (keys[sdlgame::K_a])
         {
             // printf("A is pressed");
             dir.x = -1;
         }
-        else if (keys[SDLGame::K_d])
+        else if (keys[sdlgame::K_d])
         {
             // printf("D is pressed");
             dir.x = 1;
         }
         else dir.x = 0;
-        if (keys[SDLGame::K_w])
+        if (keys[sdlgame::K_w])
         {
             // printf("W is pressed");
             dir.y = -jump_speed;
@@ -78,7 +78,7 @@ void draw(Surface& window)
 {
     window.fill(Color(255,255,255));
     player.draw(window);
-    // SDLGame::draw::rect(window,Color(0,255,0), Rect(30,30,20,20));
+    // sdlgame::draw::rect(window,Color(0,255,0), Rect(30,30,20,20));
 }
 
 void update()
@@ -89,12 +89,12 @@ void update()
 int main(int argc, char *argv[])
 {
     bool debugging = true;
-    SDLGame::init();
-    Surface window = SDLGame::display::set_mode(
+    sdlgame::init();
+    Surface window = sdlgame::display::set_mode(
         WIDTH, HEIGHT,
-        SDLGame::SKIP_TASK_BAR | SDLGame::RENDERER_ACCELERATED
+        sdlgame::SKIP_TASK_BAR | sdlgame::RENDERER_ACCELERATED
     );
-    SDLGame::time::Clock clock = SDLGame::time::Clock();
+    sdlgame::time::Clock clock = sdlgame::time::Clock();
 
     /**
      * @warning ATTENTION: ALWAYS CAP FPS, other wise the program will be to fast and lag your computer
@@ -102,19 +102,19 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        std::vector<Event> events = SDLGame::event::get();
+        std::vector<Event> events = sdlgame::event::get();
         for (Event &event : events)
         {
-            if (event.type == SDLGame::QUIT)
+            if (event.type == sdlgame::QUIT)
             {
-                SDLGame::quit();
+                sdlgame::quit();
                 exit(0);
             }
         }
         update();
         draw(window);
         clock.tick(60);
-        SDLGame::display::flip();
-        SDLGame::display::set_caption(std::to_string(clock.get_fps()).c_str());
+        sdlgame::display::flip();
+        sdlgame::display::set_caption(std::to_string(clock.get_fps()).c_str());
     }
 }

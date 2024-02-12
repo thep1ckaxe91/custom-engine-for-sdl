@@ -1,7 +1,7 @@
 /**
  * @brief Test surface and transform namespace
  */
-#include "advance_engine.hpp"
+#include "engine.hpp"
 using Event = sdlgame::event::Event;
 using Rect = sdlgame::rect::Rect;
 using Vector2 = sdlgame::math::Vector2;
@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
             // image = sdlgame::transform::flip(image,1,1);
             // image = sdlgame::transform::rotate(image,30,image.getRect().getCenter());
             // image = sdlgame::transform::scale_by(image,1.1);
-            image.scroll(2,2);
         }
         update();
         draw();

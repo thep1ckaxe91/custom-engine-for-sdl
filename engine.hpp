@@ -14,7 +14,6 @@
  *
  * @copyright if you want to use this file, please contact for permission, after that, feel free to use and modify this file
  */
-
 #include <bits/stdc++.h>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_audio.h"
@@ -50,7 +49,20 @@
 #include "SDL3/SDL_image.h"
 #include "SDL3/SDL_mixer.h"
 #include "SDL3/SDL_ttf.h"
+#include <windows.h>
 #define null NULL
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+
+#ifdef __cplusplus
+}
+#endif
+
 namespace sdlgame
 {
     const int K_a = SDL_SCANCODE_A;
@@ -1081,7 +1093,7 @@ namespace sdlgame
                     printf("Failed to create texture\n");
                     exit(0);
                 }
-                rect = sdlgame::rect::Rect(0, 0, width, height);
+                size = sdlgame::math::Vector2(width, height);
                 SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
                 SDL_SetRenderTarget(sdlgame::display::renderer, texture);
                 SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
@@ -1092,7 +1104,7 @@ namespace sdlgame
             {
                 flags = oth.flags;
                 texture = oth.texture;
-                rect = oth.getRect();
+                size = oth.size;
             }
 
             Surface(SDL_Texture *oth)
@@ -1106,7 +1118,7 @@ namespace sdlgame
                 SDL_RenderClear(sdlgame::display::renderer);
                 SDL_RenderCopy(sdlgame::display::renderer,oth,NULL,NULL);
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
-                rect = sdlgame::rect::Rect(0, 0, w, h);
+                size = sdlgame::math::Vector2(w, h);
             }
             Surface(SDL_Surface *surf)
             {
@@ -1116,7 +1128,7 @@ namespace sdlgame
                     printf("Failed to create texture form surface\nErr:%s\n",SDL_GetError());
                     exit(0);
                 }
-                rect = sdlgame::rect::Rect(0,0,surf->w,surf->h);
+                size = sdlgame::math::Vector2(surf->w,surf->h);
             }
             Surface &operator=(const Surface &other)
             {
@@ -1133,7 +1145,7 @@ namespace sdlgame
                     SDL_RenderClear(sdlgame::display::renderer);
                     SDL_RenderCopy(sdlgame::display::renderer,other.texture,NULL,NULL);
                     SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
-                    rect = other.getRect();
+                    size = other.size;
                 }
                 return *this;
             }
@@ -1152,7 +1164,7 @@ namespace sdlgame
              */
             sdlgame::rect::Rect getRect() const
             {
-                return rect;
+                return sdlgame::rect::Rect(0.0,0.0,size.x,size.y);
             }
             /**
              * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
@@ -1189,7 +1201,7 @@ namespace sdlgame
             {
                 if (area == sdlgame::rect::Rect())
                 {
-                    area = sdlgame::rect::Rect(0.0, 0.0, rect.getWidth(), rect.getHeight());
+                    area = sdlgame::rect::Rect(0.0, 0.0, size.x, size.y);
                 }
                 if(SDL_SetRenderTarget(sdlgame::display::renderer, texture)){
                     printf("Failed to set target: %s\n",SDL_GetError());
@@ -1210,22 +1222,17 @@ namespace sdlgame
                 }
 
             }
-            template <class T>
-            void scroll(T offset_x, T offset_y)
-            {
-                rect.move_ip(offset_x, offset_y);
-            }
             sdlgame::math::Vector2 get_size() const
             {
-                return rect.getSize();
+                return size;
             }
             double getWidth() const
             {
-                return rect.getWidth();
+                return size.x;
             }
             double getHeight() const
             {
-                return rect.getHeight();
+                return size.y;
             }
             ~Surface()
             {
