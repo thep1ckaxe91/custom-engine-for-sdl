@@ -1338,7 +1338,7 @@ namespace sdlgame
              * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
              * the surface or image will stretch or shrink acoording to the size
             */
-            void blit(const Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1,-1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
+            void blit(const Surface source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1,-1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
             {
                 if (area == sdlgame::rect::Rect())
                 {
@@ -1509,23 +1509,29 @@ namespace sdlgame
     // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
-        SDL_Surface *tmp;
+        // SDL_Surface *tmp;
+        // sdlgame::surface::Surface load(std::string path)
+        // {
+        //     const char* img_path = path.c_str();
+        //     SDL_RWops *ops = SDL_RWFromFile(img_path,"rb");
+        //     if(ops==NULL){
+        //         printf("Failed to RW from file\nErr:%s\n",SDL_GetError());
+        //         exit(0);
+        //     }
+        //     tmp = IMG_Load_RW(ops,SDL_FALSE);
+        //     if(!tmp){
+        //         printf("Failed to load image\n");
+        //         exit(0);
+        //     }
+        //     SDL_RWclose(ops);
+        //     return sdlgame::surface::Surface(tmp);
+        // }
         sdlgame::surface::Surface load(std::string path)
         {
-            const char* img_path = path.c_str();
-            SDL_RWops *ops = SDL_RWFromFile(img_path,"rb");
-            if(ops==NULL){
-                printf("Failed to RW from file\nErr:%s\n",SDL_GetError());
-                exit(0);
-            }
-            tmp = IMG_Load_RW(ops,SDL_FALSE);
-            if(!tmp){
-                printf("Failed to load image\n");
-                exit(0);
-            }
-            SDL_RWclose(ops);
-            return sdlgame::surface::Surface(tmp);
+            sdlgame::surface::Surface res = sdlgame::surface::Surface(IMG_LoadTexture(sdlgame::display::renderer,path.c_str()));
+            return res;
         }
+
     }
 
     namespace key
@@ -1708,6 +1714,7 @@ namespace sdlgame
         SDL_DestroyWindowSurface(sdlgame::display::window);
         SDL_DestroyRenderer(sdlgame::display::renderer);
         SDL_DestroyWindow(sdlgame::display::window);
+        Mix_Quit();
         SDL_Quit();
         exit(0);
     }
@@ -1722,7 +1729,7 @@ namespace sdlgame
         /**
          * width determine how far the border will expand to the INSIDE
          */
-        void rect(sdlgame::surface::Surface &surface, sdlgame::color::Color color, sdlgame::rect::Rect rect, int width = 0)
+        void rect(sdlgame::surface::Surface surface, sdlgame::color::Color color, sdlgame::rect::Rect rect, int width = 0)
         {
             // std::cout << surface.texture << " color: "<<color.toString() << " rect: "<<rect.toString()<<std::endl;
             SDL_SetRenderDrawColor(sdlgame::display::renderer,color.r,color.g,color.b,color.a);
@@ -1757,7 +1764,7 @@ namespace sdlgame
         }
 
         template <class T>
-        void line(sdlgame::surface::Surface &surface, sdlgame::color::Color color, T x1, T y1, T x2, T y2)
+        void line(sdlgame::surface::Surface surface, sdlgame::color::Color color, T x1, T y1, T x2, T y2)
         {
             if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
                 printf("Failed to set target: %s\n",SDL_GetError());
@@ -1771,7 +1778,7 @@ namespace sdlgame
                 printf("Failed to set target: %s\n",SDL_GetError());
             }
         }
-        void draw_circle(sdlgame::surface::Surface &surface, sdlgame::color::Color color, int centerX, int centerY, int radius)
+        void draw_circle(sdlgame::surface::Surface surface, sdlgame::color::Color color, int centerX, int centerY, int radius)
         {
             if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
                 printf("Failed to set target: %s\n",SDL_GetError());
@@ -1788,7 +1795,7 @@ namespace sdlgame
             }
         }
 
-        void draw_polygon(sdlgame::surface::Surface &surface, sdlgame::color::Color color, std::vector<std::pair<int, int>> points)
+        void draw_polygon(sdlgame::surface::Surface surface, sdlgame::color::Color color, std::vector<std::pair<int, int>> points)
         {
             if (points.size() < 3)
                 throw std::invalid_argument("can't draw polygon with only 2 vertices or less");
@@ -1865,41 +1872,172 @@ namespace sdlgame
 
     namespace sprite
     {
+        /**
+         * Should be test heavyly around pointer
+         * just use stack-alloc like normal
+         * treat the pointer as a address holder only,
+         * not an pointer to a heap allocated object
+        */
         class Sprite;
         class Group
         {
-            std::vector<std::shared_ptr<Sprite>> sprite_list;
-            std::vector<std::shared_ptr<Sprite>> &sprites()
+        public:
+            std::set<Sprite*> sprite_list;
+            std::set<Sprite*> &sprites()
             {
                 return sprite_list;
             }
-            void add(std::shared_ptr<Sprite> sprite)
+            void add(Sprite* sprite)
             {
-                sprite_list.push_back(sprite);
+                sprite_list.insert(sprite);
+                sprite->group_list.insert(this);
             }
-            void add(std::vector<std::shared_ptr<Sprite>> &sprites)
+            void add(std::vector<Sprite*> &sprites)
             {
-                sprite_list.emplace_back();
+                for(auto &sprite : sprites){
+                    sprite_list.insert(sprite);
+                    sprite->group_list.insert(this);
+                }
             }
-            void remove(std::vector<std::shared_ptr<Sprite>> &sprite)
+            void remove(std::vector<Sprite*> &sprites)
             {
+                for(auto &sprite: sprites){
+                    auto it = sprite_list.find(sprite);
+                    if(it!=sprite_list.end()) {
+                        sprite->remove(this);
+                        sprite_list.erase(it);
+                    }
+                }
+            }
+            void remove(Sprite* sprite)
+            {
+                auto it = sprite_list.find(sprite);
+                if(it!=sprite_list.end()){
+                    sprite->remove(this);
+                    sprite_list.erase(it);
+                }
+            }
+            bool has(std::vector<Sprite*> &sprites){
+                for(auto &sprite: sprites){
+                    if(sprite_list.find(sprite)==sprite_list.end()) return false;
+                }
+                return true;
+            }
+            bool has(Sprite* sprite){
+                if(sprite_list.find(sprite)==sprite_list.end()) return false;
+                return true;
+            }
+            void update(){
+                for(auto &sprite : sprite_list){
+                    sprite->update();
+                }
+            }
+            void draw(sdlgame::surface::Surface &surface){
+                for(auto &sprite : sprite_list){
+                    sprite->draw(surface);
+                }
+            }
+        };
+        /**
+         * 
+         * The base class for visible game objects.
+         * Derived classes will want to override the Sprite.update() and assign a Sprite.image and Sprite.rect attributes.
+         * The initializer can accept any number of Group instances to be added to
+         * 
+        */
+        class Sprite
+        {
+        public:
+            sdlgame::rect::Rect rect;
+            sdlgame::surface::Surface image;
+            std::set<Group*> group_list;
+            Sprite(sdlgame::surface::Surface surface, sdlgame::math::Vector2 pos){
+                image = surface;
+                rect = sdlgame::rect::Rect(pos, image.get_size());
+            }
+            /**
+             * return a set of group that conrtain this sprite
+            */
+            std::set<Group*> &groups(){
+                return group_list;
+            }
+            virtual void update() = 0;
+            void add(std::vector<Group*> groups){
+                for(auto &group : groups) group_list.insert(group);
+            }
+            void add(Group* group){
+                group_list.insert(group);
+            }   
+            void remove(std::vector<Group*> groups){
+                for(auto &group : groups){
+                    auto it = group_list.find(group);
+                    if(it!=group_list.end()){
+                        group->sprite_list.erase(this);
+                        group_list.erase(group);
+                    }
+                }
+            }
+            void remove(Group* group){
+                auto it = group_list.find(group);
+                if(it!=group_list.end()){
+                    group->sprite_list.erase(this);
+                    group_list.erase(group);
+                }
+            }
+            /**
+             * remove this sprite from all group, still usable after call
+            */
+            void kill(){
+                for(auto& group : group_list) group->sprite_list.erase(this);
+                group_list.clear();
+            }
+            bool alive(){
+                return group_list.size()>0;
+            }
+            void draw(sdlgame::surface::Surface &surface){
+                surface.blit(image, rect.getTopLeft(), rect.getSize());
             }
         };
 
-        class Sprite
-        {
-            std::vector<std::shared_ptr<Group>> group_list;
-            virtual void update() = 0;
-            void add(std::vector<Group &> groups);
-            void remove(std::vector<Group &> groups);
-            void kill();
-            bool alive();
-            std::vector<std::shared_ptr<Group>> &groups();
-        };
+        /**
+         * @return a list containing all Sprites in a Group that intersect with another Sprite.
+         * Intersection is determined by comparing the Sprite.rect attribute of each Sprite.
+         * The dokill argument is a bool. If set to True, all Sprites that collide will be removed from the Group.
+        */
+        std::vector<Sprite*> spritecollide(Sprite* sprite, Group* group, bool dokill = false){
+            std::vector<Sprite*> res;
+            for(auto &img : group->sprite_list){
+                if(img->rect.colliderect(sprite->rect)){
+                    res.push_back(img);
+                }
+            }
+            if(dokill) group->remove(res);
+            return res;
+        }
+        /**
+         * @return if 2 sprite is collide or not, but using 2 sprite, both must have rect attr defined
+        */
+        bool collide_rect(Sprite* left, Sprite* right){
+            return left->rect.colliderect(right->rect);
+        }
+        /**
+         * Tests for collision between two sprites,
+         * by testing to see if two circles centered on the sprites overlap.
+         * If the radius value is passed, it will check if 2 circle center at the both rect center is collide with that center and that radius or not
+         * otherwise a circle is created that is big enough to completely enclose the sprites rect as given by the "rect" attribute.
+         */
+        bool collide_circle(Sprite* left, Sprite* right, double left_radius = 0, double right_radius = 0){
+            left_radius = (left_radius==0 ? (left->rect.getTopLeft() - left->rect.getBottomRight()).magnitude()/2 : left_radius);
+            right_radius = (right_radius==0 ? (right->rect.getTopLeft() - right->rect.getBottomRight()).magnitude()/2 : right_radius);
+            return (left->rect.getCenter() - right->rect.getCenter()).magnitude() <= left_radius + right_radius;
+        }
 
     }
 
-    namespace mixer{}
+    namespace mixer
+    {
+
+    }
 
     namespace font{}
 };

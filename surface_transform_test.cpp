@@ -26,7 +26,9 @@ int main(int argc, char *argv[])
         sdlgame::RENDERER_ACCELERATED);
     sdlgame::time::Clock clock = sdlgame::time::Clock();
     std::string base_path = sdlgame::get_abs_path();
-    Surface image = sdlgame::image::load(base_path+"test.png");
+    Surface image = sdlgame::image::load(base_path+"test.jpg");
+    Vector2 pos = Vector2(50,50);
+    // Surface image = sdlgame::image::load(base_path+"test.png");
 
     double effect_time = 1; //second
     double cur_t = 0;
@@ -43,13 +45,15 @@ int main(int argc, char *argv[])
             }
         }
         window.fill(Color(255,255,255));
-        window.blit(image,Vector2(50,50));
+        window.blit(image,pos);
         cur_t += clock.delta_time();
 
         if(cur_t>=effect_time){
             printf("Effect trigger\n");
             cur_t -= effect_time;
-            // image = sdlgame::transform::flip(image,1,1);
+            image = sdlgame::transform::flip(image,1,0);
+            if(pos.x==50) pos.x = 500;
+            else pos.x = 50;
             // image = sdlgame::transform::rotate(image,30,image.getRect().getCenter());
             // image = sdlgame::transform::scale_by(image,1.1);
         }
