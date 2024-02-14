@@ -2036,7 +2036,23 @@ namespace sdlgame
 
     namespace mixer
     {
+        void init(){
+            mix_ope
+        }
+        class Channel;
+        /**
+         * class represent a Sound object
+        */
+        class Sound{
+        public:    
+            Mix_Chunk* sound;
+            Channel play(int loops = 0, int maxtime_ms = 0, int fade_ms = 0){
+                
+            }
+        };
+        class Channel{
 
+        };
     }
 
     namespace font{}

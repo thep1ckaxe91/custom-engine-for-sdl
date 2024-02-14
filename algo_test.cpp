@@ -9,7 +9,7 @@ void print() {
 // Variadic function
 template <typename T, typename... Types>
 void print(T var1, Types... var2) {
-    cout << var2... << endl;
+    cout <<  << endl;
 }
 
 int main() {
