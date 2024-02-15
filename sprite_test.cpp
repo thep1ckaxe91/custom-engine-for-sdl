@@ -9,10 +9,15 @@ using Surface = sdlgame::surface::Surface;
 using Color = sdlgame::color::Color;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
 class Player : public sdlgame::sprite::Sprite {
-    Player(){
+    
+    Player(Surface image, Vector2 pos) : sdlgame::sprite::Sprite(image,pos){
         
     }
-}
+
+    void update(){
+        
+    }
+};
 void draw()
 {
 

@@ -50,13 +50,14 @@
 #include "SDL2/SDL_ttf.h"
 #include <windows.h>
 #define null NULL
-//request high performance gpu
+// request high performance gpu
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 #ifdef __cplusplus
 }
@@ -64,132 +65,133 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 namespace sdlgame
 {
-    const int K_a = SDL_SCANCODE_A;
-    const int K_b = SDL_SCANCODE_B;
-    const int K_c = SDL_SCANCODE_C;
-    const int K_d = SDL_SCANCODE_D;
-    const int K_e = SDL_SCANCODE_E;
-    const int K_f = SDL_SCANCODE_F;
-    const int K_g = SDL_SCANCODE_G;
-    const int K_h = SDL_SCANCODE_H;
-    const int K_i = SDL_SCANCODE_I;
-    const int K_j = SDL_SCANCODE_J;
-    const int K_k = SDL_SCANCODE_K;
-    const int K_l = SDL_SCANCODE_L;
-    const int K_m = SDL_SCANCODE_M;
-    const int K_n = SDL_SCANCODE_N;
-    const int K_o = SDL_SCANCODE_O;
-    const int K_p = SDL_SCANCODE_P;
-    const int K_q = SDL_SCANCODE_Q;
-    const int K_r = SDL_SCANCODE_R;
-    const int K_s = SDL_SCANCODE_S;
-    const int K_t = SDL_SCANCODE_T;
-    const int K_u = SDL_SCANCODE_U;
-    const int K_v = SDL_SCANCODE_V;
-    const int K_w = SDL_SCANCODE_W;
-    const int K_x = SDL_SCANCODE_X;
-    const int K_y = SDL_SCANCODE_Y;
-    const int K_z = SDL_SCANCODE_Z;
+    typedef enum{
+        K_a = SDL_SCANCODE_A,
+        K_b = SDL_SCANCODE_B,
+        K_c = SDL_SCANCODE_C,
+        K_d = SDL_SCANCODE_D,
+        K_e = SDL_SCANCODE_E,
+        K_f = SDL_SCANCODE_F,
+        K_g = SDL_SCANCODE_G,
+        K_h = SDL_SCANCODE_H,
+        K_i = SDL_SCANCODE_I,
+        K_j = SDL_SCANCODE_J,
+        K_k = SDL_SCANCODE_K,
+        K_l = SDL_SCANCODE_L,
+        K_m = SDL_SCANCODE_M,
+        K_n = SDL_SCANCODE_N,
+        K_o = SDL_SCANCODE_O,
+        K_p = SDL_SCANCODE_P,
+        K_q = SDL_SCANCODE_Q,
+        K_r = SDL_SCANCODE_R,
+        K_s = SDL_SCANCODE_S,
+        K_t = SDL_SCANCODE_T,
+        K_u = SDL_SCANCODE_U,
+        K_v = SDL_SCANCODE_V,
+        K_w = SDL_SCANCODE_W,
+        K_x = SDL_SCANCODE_X,
+        K_y = SDL_SCANCODE_Y,
+        K_z = SDL_SCANCODE_Z,
 
-    const int K_0 = SDL_SCANCODE_0;
-    const int K_1 = SDL_SCANCODE_1;
-    const int K_2 = SDL_SCANCODE_2;
-    const int K_3 = SDL_SCANCODE_3;
-    const int K_4 = SDL_SCANCODE_4;
-    const int K_5 = SDL_SCANCODE_5;
-    const int K_6 = SDL_SCANCODE_6;
-    const int K_7 = SDL_SCANCODE_7;
-    const int K_8 = SDL_SCANCODE_8;
-    const int K_9 = SDL_SCANCODE_9;
+        K_0 = SDL_SCANCODE_0,
+        K_1 = SDL_SCANCODE_1,
+        K_2 = SDL_SCANCODE_2,
+        K_3 = SDL_SCANCODE_3,
+        K_4 = SDL_SCANCODE_4,
+        K_5 = SDL_SCANCODE_5,
+        K_6 = SDL_SCANCODE_6,
+        K_7 = SDL_SCANCODE_7,
+        K_8 = SDL_SCANCODE_8,
+        K_9 = SDL_SCANCODE_9,
 
-    const int K_F1 = SDL_SCANCODE_F1;
-    const int K_F2 = SDL_SCANCODE_F2;
-    const int K_F3 = SDL_SCANCODE_F3;
-    const int K_F4 = SDL_SCANCODE_F4;
-    const int K_F5 = SDL_SCANCODE_F5;
-    const int K_F6 = SDL_SCANCODE_F6;
-    const int K_F7 = SDL_SCANCODE_F7;
-    const int K_F8 = SDL_SCANCODE_F8;
-    const int K_F9 = SDL_SCANCODE_F9;
-    const int K_F10 = SDL_SCANCODE_F10;
-    const int K_F11 = SDL_SCANCODE_F11;
-    const int K_F12 = SDL_SCANCODE_F12;
+        K_F1 = SDL_SCANCODE_F1,
+        K_F2 = SDL_SCANCODE_F2,
+        K_F3 = SDL_SCANCODE_F3,
+        K_F4 = SDL_SCANCODE_F4,
+        K_F5 = SDL_SCANCODE_F5,
+        K_F6 = SDL_SCANCODE_F6,
+        K_F7 = SDL_SCANCODE_F7,
+        K_F8 = SDL_SCANCODE_F8,
+        K_F9 = SDL_SCANCODE_F9,
+        K_F10 = SDL_SCANCODE_F10,
+        K_F11 = SDL_SCANCODE_F11,
+        K_F12 = SDL_SCANCODE_F12,
 
-    const int K_SPACE = SDL_SCANCODE_SPACE;
-    const int K_COMMA = SDL_SCANCODE_COMMA;
-    const int K_PERIOD = SDL_SCANCODE_PERIOD;
-    const int K_SLASH = SDL_SCANCODE_SLASH;
-    const int K_SEMICOLON = SDL_SCANCODE_SEMICOLON;
-    const int K_APOSTROPHE = SDL_SCANCODE_APOSTROPHE;
-    const int K_LEFTBRACKET = SDL_SCANCODE_LEFTBRACKET;
-    const int K_RIGHTBRACKET = SDL_SCANCODE_RIGHTBRACKET;
-    const int K_BACKSLASH = SDL_SCANCODE_BACKSLASH;
-    const int K_MINUS = SDL_SCANCODE_MINUS;
-    const int K_EQUALS = SDL_SCANCODE_EQUALS;
-    const int K_BACKSPACE = SDL_SCANCODE_BACKSPACE;
-    const int K_RETURN = SDL_SCANCODE_RETURN;
+        K_SPACE = SDL_SCANCODE_SPACE,
+        K_COMMA = SDL_SCANCODE_COMMA,
+        K_PERIOD = SDL_SCANCODE_PERIOD,
+        K_SLASH = SDL_SCANCODE_SLASH,
+        K_SEMICOLON = SDL_SCANCODE_SEMICOLON,
+        K_APOSTROPHE = SDL_SCANCODE_APOSTROPHE,
+        K_LEFTBRACKET = SDL_SCANCODE_LEFTBRACKET,
+        K_RIGHTBRACKET = SDL_SCANCODE_RIGHTBRACKET,
+        K_BACKSLASH = SDL_SCANCODE_BACKSLASH,
+        K_MINUS = SDL_SCANCODE_MINUS,
+        K_EQUALS = SDL_SCANCODE_EQUALS,
+        K_BACKSPACE = SDL_SCANCODE_BACKSPACE,
+        K_RETURN = SDL_SCANCODE_RETURN,
 
-    const int K_CAPSLOCK = SDL_SCANCODE_CAPSLOCK;
-    const int K_SCROLLLOCK = SDL_SCANCODE_SCROLLLOCK;
-    const int K_NUMLOCKCLEAR = SDL_SCANCODE_NUMLOCKCLEAR;
-    const int K_INSERT = SDL_SCANCODE_INSERT;
-    const int K_HOME = SDL_SCANCODE_HOME;
-    const int K_PAGEUP = SDL_SCANCODE_PAGEUP;
-    const int K_DELETE = SDL_SCANCODE_DELETE;
-    const int K_END = SDL_SCANCODE_END;
-    const int K_PAGEDOWN = SDL_SCANCODE_PAGEDOWN;
-    const int K_RIGHT = SDL_SCANCODE_RIGHT;
-    const int K_LEFT = SDL_SCANCODE_LEFT;
-    const int K_DOWN = SDL_SCANCODE_DOWN;
-    const int K_UP = SDL_SCANCODE_UP;
+        K_CAPSLOCK = SDL_SCANCODE_CAPSLOCK,
+        K_SCROLLLOCK = SDL_SCANCODE_SCROLLLOCK,
+        K_NUMLOCKCLEAR = SDL_SCANCODE_NUMLOCKCLEAR,
+        K_INSERT = SDL_SCANCODE_INSERT,
+        K_HOME = SDL_SCANCODE_HOME,
+        K_PAGEUP = SDL_SCANCODE_PAGEUP,
+        K_DELETE = SDL_SCANCODE_DELETE,
+        K_END = SDL_SCANCODE_END,
+        K_PAGEDOWN = SDL_SCANCODE_PAGEDOWN,
+        K_RIGHT = SDL_SCANCODE_RIGHT,
+        K_LEFT = SDL_SCANCODE_LEFT,
+        K_DOWN = SDL_SCANCODE_DOWN,
+        K_UP = SDL_SCANCODE_UP,
 
-    const int K_KP_DIVIDE = SDL_SCANCODE_KP_DIVIDE;
-    const int K_KP_MULTIPLY = SDL_SCANCODE_KP_MULTIPLY;
-    const int K_KP_MINUS = SDL_SCANCODE_KP_MINUS;
-    const int K_KP_PLUS = SDL_SCANCODE_KP_PLUS;
-    const int K_KP_ENTER = SDL_SCANCODE_KP_ENTER;
-    const int K_KP_1 = SDL_SCANCODE_KP_1;
-    const int K_KP_2 = SDL_SCANCODE_KP_2;
-    const int K_KP_3 = SDL_SCANCODE_KP_3;
-    const int K_KP_4 = SDL_SCANCODE_KP_4;
-    const int K_KP_5 = SDL_SCANCODE_KP_5;
-    const int K_KP_6 = SDL_SCANCODE_KP_6;
-    const int K_KP_7 = SDL_SCANCODE_KP_7;
-    const int K_KP_8 = SDL_SCANCODE_KP_8;
-    const int K_KP_9 = SDL_SCANCODE_KP_9;
-    const int K_KP_0 = SDL_SCANCODE_KP_0;
-    const int K_KP_PERIOD = SDL_SCANCODE_KP_PERIOD;
+        K_KP_DIVIDE = SDL_SCANCODE_KP_DIVIDE,
+        K_KP_MULTIPLY = SDL_SCANCODE_KP_MULTIPLY,
+        K_KP_MINUS = SDL_SCANCODE_KP_MINUS,
+        K_KP_PLUS = SDL_SCANCODE_KP_PLUS,
+        K_KP_ENTER = SDL_SCANCODE_KP_ENTER,
+        K_KP_1 = SDL_SCANCODE_KP_1,
+        K_KP_2 = SDL_SCANCODE_KP_2,
+        K_KP_3 = SDL_SCANCODE_KP_3,
+        K_KP_4 = SDL_SCANCODE_KP_4,
+        K_KP_5 = SDL_SCANCODE_KP_5,
+        K_KP_6 = SDL_SCANCODE_KP_6,
+        K_KP_7 = SDL_SCANCODE_KP_7,
+        K_KP_8 = SDL_SCANCODE_KP_8,
+        K_KP_9 = SDL_SCANCODE_KP_9,
+        K_KP_0 = SDL_SCANCODE_KP_0,
+        K_KP_PERIOD = SDL_SCANCODE_KP_PERIOD,
 
-    const int K_APPLICATION = SDL_SCANCODE_APPLICATION;
-    const int K_POWER = SDL_SCANCODE_POWER;
-    const int K_KP_EQUALS = SDL_SCANCODE_KP_EQUALS;
-    const int K_F13 = SDL_SCANCODE_F13;
-    const int K_F14 = SDL_SCANCODE_F14;
-    const int K_F15 = SDL_SCANCODE_F15;
-    const int K_F16 = SDL_SCANCODE_F16;
-    const int K_F17 = SDL_SCANCODE_F17;
-    const int K_F18 = SDL_SCANCODE_F18;
-    const int K_F19 = SDL_SCANCODE_F19;
-    const int K_F20 = SDL_SCANCODE_F20;
-    const int K_F21 = SDL_SCANCODE_F21;
-    const int K_F22 = SDL_SCANCODE_F22;
-    const int K_F23 = SDL_SCANCODE_F23;
-    const int K_F24 = SDL_SCANCODE_F24;
-    const int K_EXECUTE = SDL_SCANCODE_EXECUTE;
-    const int K_HELP = SDL_SCANCODE_HELP;
-    const int K_MENU = SDL_SCANCODE_MENU;
-    const int K_SELECT = SDL_SCANCODE_SELECT;
-    const int K_STOP = SDL_SCANCODE_STOP;
-    const int K_AGAIN = SDL_SCANCODE_AGAIN;
-    const int K_UNDO = SDL_SCANCODE_UNDO;
-    const int K_CUT = SDL_SCANCODE_CUT;
-    const int K_COPY = SDL_SCANCODE_COPY;
-    const int K_PASTE = SDL_SCANCODE_PASTE;
-    const int K_FIND = SDL_SCANCODE_FIND;
-    const int K_MUTE = SDL_SCANCODE_MUTE;
-    const int K_VOLUMEUP = SDL_SCANCODE_VOLUMEUP;
-    const int K_VOLUMEDOWN = SDL_SCANCODE_VOLUMEDOWN;
-
+        K_APPLICATION = SDL_SCANCODE_APPLICATION,
+        K_POWER = SDL_SCANCODE_POWER,
+        K_KP_EQUALS = SDL_SCANCODE_KP_EQUALS,
+        K_F13 = SDL_SCANCODE_F13,
+        K_F14 = SDL_SCANCODE_F14,
+        K_F15 = SDL_SCANCODE_F15,
+        K_F16 = SDL_SCANCODE_F16,
+        K_F17 = SDL_SCANCODE_F17,
+        K_F18 = SDL_SCANCODE_F18,
+        K_F19 = SDL_SCANCODE_F19,
+        K_F20 = SDL_SCANCODE_F20,
+        K_F21 = SDL_SCANCODE_F21,
+        K_F22 = SDL_SCANCODE_F22,
+        K_F23 = SDL_SCANCODE_F23,
+        K_F24 = SDL_SCANCODE_F24,
+        K_EXECUTE = SDL_SCANCODE_EXECUTE,
+        K_HELP = SDL_SCANCODE_HELP,
+        K_MENU = SDL_SCANCODE_MENU,
+        K_SELECT = SDL_SCANCODE_SELECT,
+        K_STOP = SDL_SCANCODE_STOP,
+        K_AGAIN = SDL_SCANCODE_AGAIN,
+        K_UNDO = SDL_SCANCODE_UNDO,
+        K_CUT = SDL_SCANCODE_CUT,
+        K_COPY = SDL_SCANCODE_COPY,
+        K_PASTE = SDL_SCANCODE_PASTE,
+        K_FIND = SDL_SCANCODE_FIND,
+        K_MUTE = SDL_SCANCODE_MUTE,
+        K_VOLUMEUP = SDL_SCANCODE_VOLUMEUP,
+        K_VOLUMEDOWN = SDL_SCANCODE_VOLUMEDOWN,
+    } K_Code;
     /*window flag here*/
 
     const Uint32 FULLSCREEN = SDL_WINDOW_FULLSCREEN;
@@ -233,13 +235,15 @@ namespace sdlgame
             isInit = true;
             return;
         }
-        if(IMG_Init(IMG_INIT_AVIF|IMG_INIT_JPG|IMG_INIT_PNG|IMG_INIT_WEBP|IMG_INIT_TIF)){
+        if (IMG_Init(IMG_INIT_AVIF | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_TIF))
+        {
             printf("Failed to init any image flags\n");
             exit(0);
         }
     }
     bool get_init() { return isInit; }
-    std::string get_abs_path(){
+    std::string get_abs_path()
+    {
         return std::string(SDL_GetBasePath());
     }
     namespace time
@@ -288,8 +292,9 @@ namespace sdlgame
                     elapsedTimes.pop_front();
                 return elapsedTime;
             }
-            double delta_time() const {
-                return elapsedTimes.back()*1.0/1000.0;
+            double delta_time() const
+            {
+                return elapsedTimes.back() * 1.0 / 1000.0;
             }
             double get_fps() const
             {
@@ -511,7 +516,7 @@ namespace sdlgame
          * Though width and height can be negative, it's mostly illegal Rect for most opration, so just dont
          *
          * Most function that have here also have in pygame.Rect, but just some that are most used
-         * 
+         *
          * WARNING: not fully tested yet
          */
         class Rect
@@ -1015,152 +1020,151 @@ namespace sdlgame
         /**
          *  class for color, all values range from [0,255]
          */
-        std::unordered_map<std::string,std::vector<uint8_t>> color_name = {
-            {"maroon",{128,0,0}},
-            {"dark red",{139,0,0}},
-            {"brown",{165,42,42}},
-            {"firebrick",{178,34,34}},
-            {"crimson",{220,20,60}},
-            {"red",{255,0,0}},
-            {"tomato",{255,99,71}},
-            {"coral",{255,127,80}},
-            {"indian red",{205,92,92}},
-            {"light coral",{240,128,128}},
-            {"dark salmon",{233,150,122}},
-            {"salmon",{250,128,114}},
-            {"light salmon",{255,160,122}},
-            {"orange red",{255,69,0}},
-            {"dark orange",{255,140,0}},
-            {"orange",{255,165,0}},
-            {"gold",{255,215,0}},
-            {"dark golden rod",{184,134,11}},
-            {"golden rod",{218,165,32}},
-            {"pale golden rod",{238,232,170}},
-            {"dark khaki",{189,183,107}},
-            {"khaki",{240,230,140}},
-            {"olive",{128,128,0}},
-            {"yellow",{255,255,0}},
-            {"yellow green",{154,205,50}},
-            {"dark olive green",{85,107,47}},
-            {"olive drab",{107,142,35}},
-            {"lawn green",{124,252,0}},
-            {"chartreuse",{127,255,0}},
-            {"green yellow",{173,255,47}},
-            {"dark green",{0,100,0}},
-            {"green",{0,128,0}},
-            {"forest green",{34,139,34}},
-            {"lime",{0,255,0}},
-            {"lime green",{50,205,50}},
-            {"light green",{144,238,144}},
-            {"pale green",{152,251,152}},
-            {"dark sea green",{143,188,143}},
-            {"medium spring green",{0,250,154}},
-            {"spring green",{0,255,127}},
-            {"sea green",{46,139,87}},
-            {"medium aqua marine",{102,205,170}},
-            {"medium sea green",{60,179,113}},
-            {"light sea green",{32,178,170}},
-            {"dark slate gray",{47,79,79}},
-            {"teal",{0,128,128}},
-            {"dark cyan",{0,139,139}},
-            {"aqua",{0,255,255}},
-            {"cyan",{0,255,255}},
-            {"light cyan",{224,255,255}},
-            {"dark turquoise",{0,206,209}},
-            {"turquoise",{64,224,208}},
-            {"medium turquoise",{72,209,204}},
-            {"pale turquoise",{175,238,238}},
-            {"aqua marine",{127,255,212}},
-            {"powder blue",{176,224,230}},
-            {"cadet blue",{95,158,160}},
-            {"steel blue",{70,130,180}},
-            {"corn flower blue",{100,149,237}},
-            {"deep sky blue",{0,191,255}},
-            {"dodger blue",{30,144,255}},
-            {"light blue",{173,216,230}},
-            {"sky blue",{135,206,235}},
-            {"light sky blue",{135,206,250}},
-            {"midnight blue",{25,25,112}},
-            {"navy",{0,0,128}},
-            {"dark blue",{0,0,139}},
-            {"medium blue",{0,0,205}},
-            {"blue",{0,0,255}},
-            {"royal blue",{65,105,225}},
-            {"blue violet",{138,43,226}},
-            {"indigo",{75,0,130}},
-            {"dark slate blue",{72,61,139}},
-            {"slate blue",{106,90,205}},
-            {"medium slate blue",{123,104,238}},
-            {"medium purple",{147,112,219}},
-            {"dark magenta",{139,0,139}},
-            {"dark violet",{148,0,211}},
-            {"dark orchid",{153,50,204}},
-            {"medium orchid",{186,85,211}},
-            {"purple",{128,0,128}},
-            {"thistle",{216,191,216}},
-            {"plum",{221,160,221}},
-            {"violet",{238,130,238}},
-            {"magenta",{255,0,255}},
-            {"fuchsia",{255,0,255}},
-            {"orchid",{218,112,214}},
-            {"medium violet red",{199,21,133}},
-            {"pale violet red",{219,112,147}},
-            {"deep pink",{255,20,147}},
-            {"hot pink",{255,105,180}},
-            {"light pink",{255,182,193}},
-            {"pink",{255,192,203}},
-            {"antique white",{250,235,215}},
-            {"beige",{245,245,220}},
-            {"bisque",{255,228,196}},
-            {"blanched almond",{255,235,205}},
-            {"wheat",{245,222,179}},
-            {"corn silk",{255,248,220}},
-            {"lemon chiffon",{255,250,205}},
-            {"light golden rod yellow",{250,250,210}},
-            {"light yellow",{255,255,224}},
-            {"saddle brown",{139,69,19}},
-            {"sienna",{160,82,45}},
-            {"chocolate",{210,105,30}},
-            {"peru",{205,133,63}},
-            {"sandy brown",{244,164,96}},
-            {"burly wood",{222,184,135}},
-            {"tan",{210,180,140}},
-            {"rosy brown",{188,143,143}},
-            {"moccasin",{255,228,181}},
-            {"navajo white",{255,222,173}},
-            {"peach puff",{255,218,185}},
-            {"misty rose",{255,228,225}},
-            {"lavender blush",{255,240,245}},
-            {"linen",{250,240,230}},
-            {"old lace",{253,245,230}},
-            {"papaya whip",{255,239,213}},
-            {"sea shell",{255,245,238}},
-            {"mint cream",{245,255,250}},
-            {"slate gray",{112,128,144}},
-            {"light slate gray",{119,136,153}},
-            {"light steel blue",{176,196,222}},
-            {"lavender",{230,230,250}},
-            {"floral white",{255,250,240}},
-            {"alice blue",{240,248,255}},
-            {"ghost white",{248,248,255}},
-            {"honeydew",{240,255,240}},
-            {"ivory",{255,255,240}},
-            {"azure",{240,255,255}},
-            {"snow",{255,250,250}},
-            {"black",{0,0,0}},
-            {"dim gray",{105,105,105}},
-            {"dim grey",{105,105,105}},
-            {"gray",{128,128,128}},
-            {"grey",{128,128,128}},
-            {"dark gray",{169,169,169}},
-            {"dark grey",{169,169,169}},
-            {"silver",{192,192,192}},
-            {"light gray",{211,211,211}},
-            {"light grey",{211,211,211}},
-            {"gainsboro",{220,220,220}},
-            {"white smoke",{245,245,245}},
-            {"white",{255,255,255}}
-        };
+        std::unordered_map<std::string, std::vector<uint8_t>> color_name = {
+            {"maroon", {128, 0, 0}},
+            {"dark red", {139, 0, 0}},
+            {"brown", {165, 42, 42}},
+            {"firebrick", {178, 34, 34}},
+            {"crimson", {220, 20, 60}},
+            {"red", {255, 0, 0}},
+            {"tomato", {255, 99, 71}},
+            {"coral", {255, 127, 80}},
+            {"indian red", {205, 92, 92}},
+            {"light coral", {240, 128, 128}},
+            {"dark salmon", {233, 150, 122}},
+            {"salmon", {250, 128, 114}},
+            {"light salmon", {255, 160, 122}},
+            {"orange red", {255, 69, 0}},
+            {"dark orange", {255, 140, 0}},
+            {"orange", {255, 165, 0}},
+            {"gold", {255, 215, 0}},
+            {"dark golden rod", {184, 134, 11}},
+            {"golden rod", {218, 165, 32}},
+            {"pale golden rod", {238, 232, 170}},
+            {"dark khaki", {189, 183, 107}},
+            {"khaki", {240, 230, 140}},
+            {"olive", {128, 128, 0}},
+            {"yellow", {255, 255, 0}},
+            {"yellow green", {154, 205, 50}},
+            {"dark olive green", {85, 107, 47}},
+            {"olive drab", {107, 142, 35}},
+            {"lawn green", {124, 252, 0}},
+            {"chartreuse", {127, 255, 0}},
+            {"green yellow", {173, 255, 47}},
+            {"dark green", {0, 100, 0}},
+            {"green", {0, 128, 0}},
+            {"forest green", {34, 139, 34}},
+            {"lime", {0, 255, 0}},
+            {"lime green", {50, 205, 50}},
+            {"light green", {144, 238, 144}},
+            {"pale green", {152, 251, 152}},
+            {"dark sea green", {143, 188, 143}},
+            {"medium spring green", {0, 250, 154}},
+            {"spring green", {0, 255, 127}},
+            {"sea green", {46, 139, 87}},
+            {"medium aqua marine", {102, 205, 170}},
+            {"medium sea green", {60, 179, 113}},
+            {"light sea green", {32, 178, 170}},
+            {"dark slate gray", {47, 79, 79}},
+            {"teal", {0, 128, 128}},
+            {"dark cyan", {0, 139, 139}},
+            {"aqua", {0, 255, 255}},
+            {"cyan", {0, 255, 255}},
+            {"light cyan", {224, 255, 255}},
+            {"dark turquoise", {0, 206, 209}},
+            {"turquoise", {64, 224, 208}},
+            {"medium turquoise", {72, 209, 204}},
+            {"pale turquoise", {175, 238, 238}},
+            {"aqua marine", {127, 255, 212}},
+            {"powder blue", {176, 224, 230}},
+            {"cadet blue", {95, 158, 160}},
+            {"steel blue", {70, 130, 180}},
+            {"corn flower blue", {100, 149, 237}},
+            {"deep sky blue", {0, 191, 255}},
+            {"dodger blue", {30, 144, 255}},
+            {"light blue", {173, 216, 230}},
+            {"sky blue", {135, 206, 235}},
+            {"light sky blue", {135, 206, 250}},
+            {"midnight blue", {25, 25, 112}},
+            {"navy", {0, 0, 128}},
+            {"dark blue", {0, 0, 139}},
+            {"medium blue", {0, 0, 205}},
+            {"blue", {0, 0, 255}},
+            {"royal blue", {65, 105, 225}},
+            {"blue violet", {138, 43, 226}},
+            {"indigo", {75, 0, 130}},
+            {"dark slate blue", {72, 61, 139}},
+            {"slate blue", {106, 90, 205}},
+            {"medium slate blue", {123, 104, 238}},
+            {"medium purple", {147, 112, 219}},
+            {"dark magenta", {139, 0, 139}},
+            {"dark violet", {148, 0, 211}},
+            {"dark orchid", {153, 50, 204}},
+            {"medium orchid", {186, 85, 211}},
+            {"purple", {128, 0, 128}},
+            {"thistle", {216, 191, 216}},
+            {"plum", {221, 160, 221}},
+            {"violet", {238, 130, 238}},
+            {"magenta", {255, 0, 255}},
+            {"fuchsia", {255, 0, 255}},
+            {"orchid", {218, 112, 214}},
+            {"medium violet red", {199, 21, 133}},
+            {"pale violet red", {219, 112, 147}},
+            {"deep pink", {255, 20, 147}},
+            {"hot pink", {255, 105, 180}},
+            {"light pink", {255, 182, 193}},
+            {"pink", {255, 192, 203}},
+            {"antique white", {250, 235, 215}},
+            {"beige", {245, 245, 220}},
+            {"bisque", {255, 228, 196}},
+            {"blanched almond", {255, 235, 205}},
+            {"wheat", {245, 222, 179}},
+            {"corn silk", {255, 248, 220}},
+            {"lemon chiffon", {255, 250, 205}},
+            {"light golden rod yellow", {250, 250, 210}},
+            {"light yellow", {255, 255, 224}},
+            {"saddle brown", {139, 69, 19}},
+            {"sienna", {160, 82, 45}},
+            {"chocolate", {210, 105, 30}},
+            {"peru", {205, 133, 63}},
+            {"sandy brown", {244, 164, 96}},
+            {"burly wood", {222, 184, 135}},
+            {"tan", {210, 180, 140}},
+            {"rosy brown", {188, 143, 143}},
+            {"moccasin", {255, 228, 181}},
+            {"navajo white", {255, 222, 173}},
+            {"peach puff", {255, 218, 185}},
+            {"misty rose", {255, 228, 225}},
+            {"lavender blush", {255, 240, 245}},
+            {"linen", {250, 240, 230}},
+            {"old lace", {253, 245, 230}},
+            {"papaya whip", {255, 239, 213}},
+            {"sea shell", {255, 245, 238}},
+            {"mint cream", {245, 255, 250}},
+            {"slate gray", {112, 128, 144}},
+            {"light slate gray", {119, 136, 153}},
+            {"light steel blue", {176, 196, 222}},
+            {"lavender", {230, 230, 250}},
+            {"floral white", {255, 250, 240}},
+            {"alice blue", {240, 248, 255}},
+            {"ghost white", {248, 248, 255}},
+            {"honeydew", {240, 255, 240}},
+            {"ivory", {255, 255, 240}},
+            {"azure", {240, 255, 255}},
+            {"snow", {255, 250, 250}},
+            {"black", {0, 0, 0}},
+            {"dim gray", {105, 105, 105}},
+            {"dim grey", {105, 105, 105}},
+            {"gray", {128, 128, 128}},
+            {"grey", {128, 128, 128}},
+            {"dark gray", {169, 169, 169}},
+            {"dark grey", {169, 169, 169}},
+            {"silver", {192, 192, 192}},
+            {"light gray", {211, 211, 211}},
+            {"light grey", {211, 211, 211}},
+            {"gainsboro", {220, 220, 220}},
+            {"white smoke", {245, 245, 245}},
+            {"white", {255, 255, 255}}};
         class Color
         {
         public:
@@ -1171,11 +1175,14 @@ namespace sdlgame
                 g = 0;
                 b = 0;
             }
-            Color(const char* c_name){
+            Color(const char *c_name)
+            {
                 std::string name = std::string(c_name);
-                for(char& c:name) c=std::tolower(c);
-                if(color_name.find(name)==color_name.end()){
-                    printf("no such color: %s\n",c_name);
+                for (char &c : name)
+                    c = std::tolower(c);
+                if (color_name.find(name) == color_name.end())
+                {
+                    printf("no such color: %s\n", c_name);
                     exit(0);
                 }
                 r = color_name[name][0];
@@ -1183,10 +1190,13 @@ namespace sdlgame
                 b = color_name[name][2];
                 a = 255;
             }
-            Color(std::string name){
-                for(char& c:name) c=std::tolower(c);
-                if(color_name.find(name)==color_name.end()){
-                    std::cout<<"no such color: "<<name<<"\n";
+            Color(std::string name)
+            {
+                for (char &c : name)
+                    c = std::tolower(c);
+                if (color_name.find(name) == color_name.end())
+                {
+                    std::cout << "no such color: " << name << "\n";
                     exit(0);
                 }
                 r = color_name[name][0];
@@ -1227,16 +1237,18 @@ namespace sdlgame
             }
         };
     }
-    namespace surface{
+    namespace surface
+    {
         class Surface;
     }
-    
-    namespace display{
+
+    namespace display
+    {
         extern SDL_Window *window;
         extern SDL_Renderer *renderer;
         extern bool isInit;
     }
-    
+
     namespace surface
     {
         /**
@@ -1258,7 +1270,8 @@ namespace sdlgame
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
-                if(!(texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height))){
+                if (!(texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height)))
+                {
                     printf("Failed to create texture\n");
                     exit(0);
                 }
@@ -1278,14 +1291,14 @@ namespace sdlgame
 
             Surface(SDL_Texture *oth)
             {
-                int w,h;
-                SDL_QueryTexture(oth,NULL,NULL,&w,&h);
-                texture = SDL_CreateTexture(sdlgame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,w,h);
+                int w, h;
+                SDL_QueryTexture(oth, NULL, NULL, &w, &h);
+                texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
                 SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
                 SDL_SetRenderTarget(sdlgame::display::renderer, texture);
                 SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
                 SDL_RenderClear(sdlgame::display::renderer);
-                SDL_RenderCopy(sdlgame::display::renderer,oth,NULL,NULL);
+                SDL_RenderCopy(sdlgame::display::renderer, oth, NULL, NULL);
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                 size = sdlgame::math::Vector2(w, h);
             }
@@ -1293,11 +1306,12 @@ namespace sdlgame
             {
                 texture = SDL_CreateTextureFromSurface(sdlgame::display::renderer, surf);
                 // printf("tex: %p | surf: %p\n",texture,surf);
-                if(texture == NULL){
-                    printf("Failed to create texture form surface\nErr:%s\n",SDL_GetError());
+                if (texture == NULL)
+                {
+                    printf("Failed to create texture form surface\nErr:%s\n", SDL_GetError());
                     exit(0);
                 }
-                size = sdlgame::math::Vector2(surf->w,surf->h);
+                size = sdlgame::math::Vector2(surf->w, surf->h);
             }
             Surface &operator=(const Surface &other)
             {
@@ -1305,27 +1319,28 @@ namespace sdlgame
                 {
                     SDL_DestroyTexture(texture);
                     flags = other.flags;
-                    int w,h;
-                    SDL_QueryTexture(other.texture,NULL,NULL,&w,&h);
-                    texture = SDL_CreateTexture(sdlgame::display::renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_TARGET,w,h);
+                    int w, h;
+                    SDL_QueryTexture(other.texture, NULL, NULL, &w, &h);
+                    texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
                     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
                     SDL_SetRenderTarget(sdlgame::display::renderer, texture);
                     SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
                     SDL_RenderClear(sdlgame::display::renderer);
-                    SDL_RenderCopy(sdlgame::display::renderer,other.texture,NULL,NULL);
+                    SDL_RenderCopy(sdlgame::display::renderer, other.texture, NULL, NULL);
                     SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                     size = other.size;
                 }
                 return *this;
             }
             /**
-             * Return a copy of this surface, 
-            */
-            Surface copy() const {
-                sdlgame::surface::Surface res = sdlgame::surface::Surface((int)this->getWidth(),(int)this->getHeight());
-                SDL_SetRenderTarget(sdlgame::display::renderer,res.texture);
-                SDL_RenderCopy(sdlgame::display::renderer,texture,NULL,NULL);
-                SDL_SetRenderTarget(sdlgame::display::renderer,NULL);
+             * Return a copy of this surface,
+             */
+            Surface copy() const
+            {
+                sdlgame::surface::Surface res = sdlgame::surface::Surface((int)this->getWidth(), (int)this->getHeight());
+                SDL_SetRenderTarget(sdlgame::display::renderer, res.texture);
+                SDL_RenderCopy(sdlgame::display::renderer, texture, NULL, NULL);
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                 return res;
             }
             /**
@@ -1333,13 +1348,13 @@ namespace sdlgame
              */
             sdlgame::rect::Rect getRect() const
             {
-                return sdlgame::rect::Rect(0.0,0.0,size.x,size.y);
+                return sdlgame::rect::Rect(0.0, 0.0, size.x, size.y);
             }
             /**
              * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
              * the surface or image will stretch or shrink acoording to the size
-            */
-            void blit(const Surface source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1,-1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
+             */
+            void blit(const Surface source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1, -1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
             {
                 if (area == sdlgame::rect::Rect())
                 {
@@ -1347,10 +1362,10 @@ namespace sdlgame
                 }
                 sdlgame::rect::Rect destrect = sdlgame::rect::Rect(
                     pos.x, pos.y,
-                    (size.x < 0 ? source.getWidth() : size.x),(size.y < 0 ? source.getHeight() : size.y)
-                );
-                if(SDL_SetRenderTarget(sdlgame::display::renderer, texture)){
-                    printf("Failed to set target: %s\n",SDL_GetError());
+                    (size.x < 0 ? source.getWidth() : size.x), (size.y < 0 ? source.getHeight() : size.y));
+                if (SDL_SetRenderTarget(sdlgame::display::renderer, texture))
+                {
+                    printf("Failed to set target: %s\n", SDL_GetError());
                 }
 
                 SDL_Rect srcrect = area.to_SDL_Rect();
@@ -1358,13 +1373,13 @@ namespace sdlgame
                 if (SDL_RenderCopyF(sdlgame::display::renderer, source.texture, &srcrect, &dstrect))
                 {
                     printf("Error copy texture onto another\n");
-                    printf("%s\n",SDL_GetError());
+                    printf("%s\n", SDL_GetError());
                     exit(0);
                 }
-                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                    printf("Failed to set target: %s\n",SDL_GetError());
+                if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+                {
+                    printf("Failed to set target: %s\n", SDL_GetError());
                 }
-
             }
             void fill(sdlgame::color::Color color, sdlgame::rect::Rect area = sdlgame::rect::Rect())
             {
@@ -1372,8 +1387,9 @@ namespace sdlgame
                 {
                     area = sdlgame::rect::Rect(0.0, 0.0, size.x, size.y);
                 }
-                if(SDL_SetRenderTarget(sdlgame::display::renderer, texture)){
-                    printf("Failed to set target: %s\n",SDL_GetError());
+                if (SDL_SetRenderTarget(sdlgame::display::renderer, texture))
+                {
+                    printf("Failed to set target: %s\n", SDL_GetError());
                 }
 
                 if (SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a))
@@ -1386,10 +1402,10 @@ namespace sdlgame
                     printf("Failed to clear the render target\nErr:%s\n", SDL_GetError());
                     exit(0);
                 }
-                if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                    printf("Failed to set target: %s\n",SDL_GetError());
+                if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+                {
+                    printf("Failed to set target: %s\n", SDL_GetError());
                 }
-
             }
             sdlgame::math::Vector2 get_size() const
             {
@@ -1502,7 +1518,8 @@ namespace sdlgame
         }
         void flip()
         {
-            if(SDL_GetRenderTarget(renderer)) SDL_SetRenderTarget(renderer,NULL);
+            if (SDL_GetRenderTarget(renderer))
+                SDL_SetRenderTarget(renderer, NULL);
             SDL_RenderPresent(renderer);
         }
     }
@@ -1529,7 +1546,7 @@ namespace sdlgame
         // }
         sdlgame::surface::Surface load(std::string path)
         {
-            sdlgame::surface::Surface res = sdlgame::surface::Surface(IMG_LoadTexture(sdlgame::display::renderer,path.c_str()));
+            sdlgame::surface::Surface res = sdlgame::surface::Surface(IMG_LoadTexture(sdlgame::display::renderer, path.c_str()));
             return res;
         }
 
@@ -1644,7 +1661,7 @@ namespace sdlgame
                 if (e.type == SDL_KEYDOWN or e.type == SDL_KEYUP)
                 {
                     timestamp = e.key.timestamp;
-                    dict["key"] = e.key.keysym.sym;
+                    dict["key"] = e.key.keysym.scancode;
                 }
                 else if (e.type == SDL_QUIT)
                 {
@@ -1733,15 +1750,17 @@ namespace sdlgame
         void rect(sdlgame::surface::Surface surface, sdlgame::color::Color color, sdlgame::rect::Rect rect, int width = 0)
         {
             // std::cout << surface.texture << " color: "<<color.toString() << " rect: "<<rect.toString()<<std::endl;
-            SDL_SetRenderDrawColor(sdlgame::display::renderer,color.r,color.g,color.b,color.a);
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             if (width == 0)
             {
                 SDL_FRect tmp = rect.to_SDL_FRect();
-                if(SDL_RenderFillRectF(sdlgame::display::renderer, &tmp)){
-                    printf("Error filling a rectangle: %s\n",SDL_GetError());
+                if (SDL_RenderFillRectF(sdlgame::display::renderer, &tmp))
+                {
+                    printf("Error filling a rectangle: %s\n", SDL_GetError());
                     exit(0);
                 }
             }
@@ -1751,48 +1770,55 @@ namespace sdlgame
                 SDL_FRect left = rect.inflate(0.0, width - rect.getWidth()).to_SDL_FRect();
                 SDL_FRect bottom = rect.inflate(width - rect.getHeight(), 0.0).move(0.0, rect.getHeight() - width).to_SDL_FRect();
                 SDL_FRect right = rect.inflate(0.0, width - rect.getWidth()).move(rect.getWidth() - width, 0.0).to_SDL_FRect();
-                if( SDL_RenderFillRectF(sdlgame::display::renderer, &top) or
+                if (SDL_RenderFillRectF(sdlgame::display::renderer, &top) or
                     SDL_RenderFillRectF(sdlgame::display::renderer, &left) or
                     SDL_RenderFillRectF(sdlgame::display::renderer, &bottom) or
-                    SDL_RenderFillRectF(sdlgame::display::renderer, &right)){
-                        printf("Error drawing a rectangle: %s\n",SDL_GetError());
-                        exit(0);
-                    }
+                    SDL_RenderFillRectF(sdlgame::display::renderer, &right))
+                {
+                    printf("Error drawing a rectangle: %s\n", SDL_GetError());
+                    exit(0);
+                }
             }
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
         }
 
         template <class T>
         void line(sdlgame::surface::Surface surface, sdlgame::color::Color color, T x1, T y1, T x2, T y2)
         {
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
-            SDL_SetRenderDrawColor(sdlgame::display::renderer,color.r,color.g,color.b,color.a);
-            if(SDL_RenderDrawLineF(sdlgame::display::renderer, x1, y1, x2, y2)){
-                printf("Failed to draw a line: %s\n",SDL_GetError());
+            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            if (SDL_RenderDrawLineF(sdlgame::display::renderer, x1, y1, x2, y2))
+            {
+                printf("Failed to draw a line: %s\n", SDL_GetError());
                 exit(0);
             }
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
         }
         void draw_circle(sdlgame::surface::Surface surface, sdlgame::color::Color color, int centerX, int centerY, int radius)
         {
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
-            SDL_SetRenderDrawColor(sdlgame::display::renderer,color.r,color.g,color.b,color.a);
+            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
             for (double angle = 0.0; angle < 2 * M_PI; angle += 0.01)
             {
                 float x = centerX + radius * cos(angle);
                 float y = centerY + radius * sin(angle);
                 SDL_RenderDrawPointF(sdlgame::display::renderer, x, y);
             }
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
         }
 
@@ -1813,35 +1839,41 @@ namespace sdlgame
         sdlgame::surface::Surface flip(sdlgame::surface::Surface &surface, bool flip_x, bool flip_y)
         {
             sdlgame::surface::Surface res = surface.copy();
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             SDL_RendererFlip flipType = SDL_FLIP_NONE;
-            if (flip_x) flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_HORIZONTAL);
-            if (flip_y) flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_VERTICAL);
+            if (flip_x)
+                flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_HORIZONTAL);
+            if (flip_y)
+                flipType = (SDL_RendererFlip)(flipType | SDL_FLIP_VERTICAL);
             if (SDL_RenderCopyEx(sdlgame::display::renderer, surface.texture, NULL, NULL, 0, NULL, flipType))
                 printf("Failed to flip\n");
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             return res;
         }
         sdlgame::surface::Surface scale(sdlgame::surface::Surface &surface, sdlgame::math::Vector2 size)
         {
             sdlgame::surface::Surface res = sdlgame::surface::Surface(size.x, size.y);
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             SDL_RenderCopyF(sdlgame::display::renderer, surface.texture, NULL, NULL);
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             return res;
         }
 
         sdlgame::surface::Surface scale_by(sdlgame::surface::Surface &surface, double factor)
         {
-            return sdlgame::transform::scale(surface,surface.get_size() * factor);
+            return sdlgame::transform::scale(surface, surface.get_size() * factor);
         }
 
         /**
@@ -1859,144 +1891,212 @@ namespace sdlgame
             sdlgame::surface::Surface res = sdlgame::surface::Surface(
                 std::max({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}) - std::min({newtopleft.x, newbotleft.x, newbotright.x, newtopright.x}),
                 std::max({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}) - std::min({newtopleft.y, newbotleft.y, newbotright.y, newtopright.y}));
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, res.texture)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             SDL_FPoint tmp = {float(center.x), float(center.y)};
             SDL_RenderCopyExF(sdlgame::display::renderer, surface.texture, NULL, NULL, angle_deg, &tmp, SDL_FLIP_NONE);
-            if(SDL_SetRenderTarget(sdlgame::display::renderer, NULL)){
-                printf("Failed to set target: %s\n",SDL_GetError());
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
             }
             return res;
         }
     }
-
+    /**
+     * Should be test heavyly around pointer
+     * just use stack-alloc like normal
+     * treat the pointer as a address holder only,
+     * not an pointer to a heap allocated object
+     */
     namespace sprite
     {
         /**
-         * Should be test heavyly around pointer
-         * just use stack-alloc like normal
-         * treat the pointer as a address holder only,
-         * not an pointer to a heap allocated object
-        */
+         *
+         * The base class for visible game objects.
+         * Derived classes will want to override the Sprite.update() and assign a Sprite.image and Sprite.rect attributes.
+         * The initializer can accept any number of Group instances to be added to
+         *
+         */
         class Sprite;
         class Group
         {
         public:
-            std::set<Sprite*> sprite_list;
-            std::set<Sprite*> &sprites()
-            {
-                return sprite_list;
-            }
-            void add(Sprite* sprite)
-            {
-                sprite_list.insert(sprite);
-                sprite->group_list.insert(this);
-            }
-            void add(std::vector<Sprite*> &sprites)
-            {
-                for(auto &sprite : sprites){
-                    sprite_list.insert(sprite);
-                    sprite->group_list.insert(this);
-                }
-            }
-            void remove(std::vector<Sprite*> &sprites)
-            {
-                for(auto &sprite: sprites){
-                    auto it = sprite_list.find(sprite);
-                    if(it!=sprite_list.end()) {
-                        sprite->remove(this);
-                        sprite_list.erase(it);
-                    }
-                }
-            }
-            void remove(Sprite* sprite)
-            {
-                auto it = sprite_list.find(sprite);
-                if(it!=sprite_list.end()){
-                    sprite->remove(this);
-                    sprite_list.erase(it);
-                }
-            }
-            bool has(std::vector<Sprite*> &sprites){
-                for(auto &sprite: sprites){
-                    if(sprite_list.find(sprite)==sprite_list.end()) return false;
-                }
-                return true;
-            }
-            bool has(Sprite* sprite){
-                if(sprite_list.find(sprite)==sprite_list.end()) return false;
-                return true;
-            }
-            void update(){
-                for(auto &sprite : sprite_list){
-                    sprite->update();
-                }
-            }
-            void draw(sdlgame::surface::Surface &surface){
-                for(auto &sprite : sprite_list){
-                    sprite->draw(surface);
-                }
-            }
+            std::set<Sprite *> sprite_list;
+            Group() = default;
+            std::set<Sprite *> &sprites();
+            void add(Sprite *sprite);
+            void add(std::vector<Sprite *> &sprites);
+            void remove(std::vector<Sprite *> &sprites);
+            void remove(Sprite *sprite);
+            bool has(std::vector<Sprite *> &sprites);
+            bool has(Sprite *sprite);
+            void update();
+            void draw(sdlgame::surface::Surface &surface);
         };
-        /**
-         * 
-         * The base class for visible game objects.
-         * Derived classes will want to override the Sprite.update() and assign a Sprite.image and Sprite.rect attributes.
-         * The initializer can accept any number of Group instances to be added to
-         * 
-        */
+
         class Sprite
         {
         public:
             sdlgame::rect::Rect rect;
             sdlgame::surface::Surface image;
-            std::set<Group*> group_list;
-            Sprite(sdlgame::surface::Surface surface, sdlgame::math::Vector2 pos){
+            std::set<Group *> group_list;
+            Sprite(sdlgame::surface::Surface surface, sdlgame::math::Vector2 pos)
+            {
                 image = surface;
                 rect = sdlgame::rect::Rect(pos, image.get_size());
             }
             /**
              * return a set of group that conrtain this sprite
-            */
-            std::set<Group*> &groups(){
+             */
+            std::set<Group *> &groups()
+            {
                 return group_list;
             }
             virtual void update() = 0;
-            void add(std::vector<Group*> groups){
-                for(auto &group : groups) group_list.insert(group);
+            void add(std::vector<Group *> groups)
+            {
+                for (auto &group : groups){
+                    group->sprite_list.insert(this);
+                    group_list.insert(group);
+                }
             }
-            void add(Group* group){
+            void add(Group *group)
+            {
+                group->sprite_list.insert(this);
                 group_list.insert(group);
-            }   
-            void remove(std::vector<Group*> groups){
-                for(auto &group : groups){
+            }
+            void remove(std::vector<Group *> groups)
+            {
+                for (auto &group : groups)
+                {
                     auto it = group_list.find(group);
-                    if(it!=group_list.end()){
+                    if (it != group_list.end())
+                    {
                         group->sprite_list.erase(this);
                         group_list.erase(group);
                     }
                 }
             }
-            void remove(Group* group){
+            void remove(Group *group)
+            {
                 auto it = group_list.find(group);
-                if(it!=group_list.end()){
+                if (it != group_list.end())
+                {
                     group->sprite_list.erase(this);
                     group_list.erase(group);
                 }
             }
             /**
              * remove this sprite from all group, still usable after call
-            */
-            void kill(){
-                for(auto& group : group_list) group->sprite_list.erase(this);
+             */
+            void kill()
+            {
+                for (auto &group : group_list)
+                    group->sprite_list.erase(this);
                 group_list.clear();
             }
-            bool alive(){
-                return group_list.size()>0;
+            bool alive()
+            {
+                return group_list.size() > 0;
             }
-            void draw(sdlgame::surface::Surface &surface){
+            void draw(sdlgame::surface::Surface &surface)
+            {
                 surface.blit(image, rect.getTopLeft(), rect.getSize());
+            }
+        };
+
+        
+        std::set<Sprite *> &Group::sprites()
+        {
+            return sprite_list;
+        }
+        void Group::add(Sprite *sprite)
+        {
+            sprite_list.insert(sprite);
+            sprite->group_list.insert(this);
+        }
+        void Group::add(std::vector<Sprite *> &sprites)
+        {
+            for (auto &sprite : sprites)
+            {
+                sprite_list.insert(sprite);
+                sprite->group_list.insert(this);
+            }
+        }
+        void Group::remove(std::vector<Sprite *> &sprites)
+        {
+            for (auto &sprite : sprites)
+            {
+                auto it = sprite_list.find(sprite);
+                if (it != sprite_list.end())
+                {
+                    sprite->remove(this);
+                    sprite_list.erase(it);
+                }
+            }
+        }
+        void Group::remove(Sprite *sprite)
+        {
+            auto it = sprite_list.find(sprite);
+            if (it != sprite_list.end())
+            {
+                sprite->remove(this);
+                sprite_list.erase(it);
+            }
+        }
+        bool Group::has(std::vector<Sprite *> &sprites)
+        {
+            for (auto &sprite : sprites)
+            {
+                if (sprite_list.find(sprite) == sprite_list.end())
+                    return false;
+            }
+            return true;
+        }
+        bool Group::has(Sprite *sprite)
+        {
+            if (sprite_list.find(sprite) == sprite_list.end())
+                return false;
+            return true;
+        }
+        void Group::update()
+        {
+            for (auto &sprite : sprite_list)
+            {
+                sprite->update();
+            }
+        }
+        void Group::draw(sdlgame::surface::Surface &surface)
+        {
+            for (auto &sprite : sprite_list)
+            {
+                sprite->draw(surface);
+            }
+        }
+        /**
+         * Also a sprite group, the only difference is it only hold 1 sprite,
+         * if you call add, it will replace that sprite
+         */
+        class GroupSingle
+        {
+        public:
+            Sprite* sprite;
+            GroupSingle(Sprite* sprite = NULL){
+                this->sprite = sprite;
+            }
+            void add(Sprite* sprite){
+                this->sprite = sprite;
+            }
+            void remove(){
+                sprite = NULL;
+            }
+            void update(){
+                sprite->update();
+            }
+            ~GroupSingle(){
+                if(sprite) delete sprite;
             }
         };
 
@@ -2004,21 +2104,26 @@ namespace sdlgame
          * @return a list containing all Sprites in a Group that intersect with another Sprite.
          * Intersection is determined by comparing the Sprite.rect attribute of each Sprite.
          * The dokill argument is a bool. If set to True, all Sprites that collide will be removed from the Group.
-        */
-        std::vector<Sprite*> spritecollide(Sprite* sprite, Group* group, bool dokill = false){
-            std::vector<Sprite*> res;
-            for(auto &img : group->sprite_list){
-                if(img->rect.colliderect(sprite->rect)){
+         */
+        std::vector<Sprite *> spritecollide(Sprite *sprite, Group *group, bool dokill = false)
+        {
+            std::vector<Sprite *> res;
+            for (auto &img : group->sprite_list)
+            {
+                if (img->rect.colliderect(sprite->rect))
+                {
                     res.push_back(img);
                 }
             }
-            if(dokill) group->remove(res);
+            if (dokill)
+                group->remove(res);
             return res;
         }
         /**
          * @return if 2 sprite is collide or not, but using 2 sprite, both must have rect attr defined
-        */
-        bool collide_rect(Sprite* left, Sprite* right){
+         */
+        bool collide_rect(Sprite *left, Sprite *right)
+        {
             return left->rect.colliderect(right->rect);
         }
         /**
@@ -2027,9 +2132,10 @@ namespace sdlgame
          * If the radius value is passed, it will check if 2 circle center at the both rect center is collide with that center and that radius or not
          * otherwise a circle is created that is big enough to completely enclose the sprites rect as given by the "rect" attribute.
          */
-        bool collide_circle(Sprite* left, Sprite* right, double left_radius = 0, double right_radius = 0){
-            left_radius = (left_radius==0 ? (left->rect.getTopLeft() - left->rect.getBottomRight()).magnitude()/2 : left_radius);
-            right_radius = (right_radius==0 ? (right->rect.getTopLeft() - right->rect.getBottomRight()).magnitude()/2 : right_radius);
+        bool collide_circle(Sprite *left, Sprite *right, double left_radius = 0, double right_radius = 0)
+        {
+            left_radius = (left_radius == 0 ? (left->rect.getTopLeft() - left->rect.getBottomRight()).magnitude() / 2 : left_radius);
+            right_radius = (right_radius == 0 ? (right->rect.getTopLeft() - right->rect.getBottomRight()).magnitude() / 2 : right_radius);
             return (left->rect.getCenter() - right->rect.getCenter()).magnitude() <= left_radius + right_radius;
         }
 
@@ -2043,55 +2149,88 @@ namespace sdlgame
          * @param channels 1 for mono, 2 for stereo
          * @param buffer size of sample that fed to the computer, the larger then better qualiy, but more audio lag
          * @param devicename name of the device, leave it as empty to be default system
-        */
-        void init(int freq = 44100,Uint16 size=16, int channels = 2, int buffer = 512, std::string devicename = ""){
+         */
+        void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512, std::string devicename = "")
+        {
             size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
-            if(Mix_Init(MIX_INIT_FLAC|MIX_INIT_MOD|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_WAVPACK) != MIX_INIT_FLAC|MIX_INIT_MOD|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_WAVPACK){
+            if (Mix_Init(MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK) != MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK)
+            {
                 printf("Failed to init some sound file type\n");
             }
-            if(Mix_OpenAudioDevice(freq,size,channels,buffer,(devicename=="" ? NULL : devicename.c_str()),SDL_AUDIO_ALLOW_ANY_CHANGE)){
+            if (Mix_OpenAudioDevice(freq, size, channels, buffer, (devicename == "" ? NULL : devicename.c_str()), SDL_AUDIO_ALLOW_ANY_CHANGE))
+            {
                 printf("Failed to init mixer\n");
                 exit(0);
             }
         }
         /*set number of playback channel, default is 8*/
-        void set_num_channels(int count){
+        void set_num_channels(int count)
+        {
             Mix_AllocateChannels(count);
         }
-        int get_num_channels(){
+        int get_num_channels()
+        {
             return Mix_AllocateChannels(-1);
         }
-        class Channel;
+        class Sound;
+        
+        int convert_volume_value(float value)
+        {
+            return int((value >= 1 ? 1 : value) / 1.0 * 128);
+        }
+        /**
+         * A Channel object to controll playback at certain channel id,
+         * in its core, it just a int var hold the id to the channel after all
+         */
+        class Channel
+        {
+        private:
+            int id;
+            float volume = 1;
+
+        public:
+            Channel(int id)
+            {
+                this->id = id;
+            }
+            void play(Sound sound, int loops = 0, int maxtime_ms = -1, int fade_ms = 0);
+            void set_volume(float value);
+            int get_volume();
+        };
+        
         /**
          * class represent a Sound object, should be only support WAV and OGG,
          * if you need to play music, use music namepsace instead
-        */
-        int convert_volume_value(float value){
-            return int((value >= 1 ? 1 : value)/1.0*128);
-        }
-        class Sound{
+         */
+        class Sound
+        {
         private:
             std::atomic_int channels;
-            float volume=1;
-        public:    
-            Mix_Chunk* chunk = NULL;
-            Sound(std::string path){
+            float volume = 1;
+
+        public:
+            Mix_Chunk *chunk = NULL;
+            Sound(std::string path)
+            {
                 chunk = Mix_LoadWAV(path.c_str());
             }
             /**
              * @param loops -1 to loop infinitely, 0 is play once, 1 is twice...
              * @param maxtime_ms maximum time in miliseconds the sound will be play in ms until it stop
              * @param fade_ms fade in time in miliseconds
-            */
-            Channel play(int loops = 0, int maxtime_ms = -1, int fade_ms = 0){
-                int channel = Mix_FadeInChannelTimed(-1,chunk,loops,fade_ms,maxtime_ms);
-                if(channel==-1){
+             */
+            Channel play(int loops = 0, int maxtime_ms = -1, int fade_ms = 0)
+            {
+                int channel = Mix_FadeInChannelTimed(-1, chunk, loops, fade_ms, maxtime_ms);
+                if (channel == -1)
+                {
                     printf("cant play sound for some reason\n");
                 }
-                return channel;
+                return Channel(channel);
             }
-            void fadeout(int ms){
-                Mix_FadeOutChannel(channels,ms);
+            void fadeout(int ms)
+            {
+                Mix_FadeOutChannel(channels, ms);
             }
             /**
              * This will set the playback volume (loudness) for this Sound.
@@ -2102,41 +2241,39 @@ namespace sdlgame
                 If value < 0.0, the volume will not be changed
                 If value > 1.0, the volume will be set to 1.0
             */
-            void set_volume(float value){
-                Mix_VolumeChunk(chunk,convert_volume_value(value));
+            void set_volume(float value)
+            {
+                Mix_VolumeChunk(chunk, convert_volume_value(value));
             }
-            int get_volume(){
-                return Mix_VolumeChunk(chunk,-1);
+            int get_volume()
+            {
+                return Mix_VolumeChunk(chunk, -1);
             }
-            ~Sound(){
-                if(chunk!=NULL) Mix_FreeChunk(chunk);
-            }
-        };
-        /**
-         * A Channel object to controll playback at certain channel id,
-         * in its core, it just a int var hold the id to the channel after all
-        */
-        class Channel{
-        private:
-            int id;
-            float volume = 1;
-        public:
-            Channel(int id){
-                this->id = id;
-            }
-            void play(Sound sound, int loops=0, int maxtime_ms = -1, int fade_ms=0){
-                if(Mix_FadeInChannelTimed(id,sound.chunk, loops,fade_ms, maxtime_ms)==-1){
-                    printf("Cant play soudn for some reason\n");
-                }
-            }
-            void set_volume(float value){
-                Mix_Volume(id,convert_volume_value(value));
-            }
-            int get_volume(){
-                return Mix_Volume(id,-1);
+            ~Sound()
+            {
+                if (chunk != NULL)
+                    Mix_FreeChunk(chunk);
             }
         };
+
+        void Channel::play(Sound sound, int loops, int maxtime_ms, int fade_ms)
+        {
+            if (Mix_FadeInChannelTimed(id, sound.chunk, loops, fade_ms, maxtime_ms) == -1)
+            {
+                printf("Cant play soudn for some reason\n");
+            }
+        }
+        void Channel::set_volume(float value)
+        {
+            Mix_Volume(id, convert_volume_value(value));
+        }
+        int Channel::get_volume()
+        {
+            return Mix_Volume(id, -1);
+        }
     }
 
-    namespace font{}
+    namespace font
+    {
+    }
 };
