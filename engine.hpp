@@ -44,9 +44,10 @@
 #include "SDL2/SDL_blendmode.h"
 #include "SDL2/SDL_error.h"
 #include "SDL2/SDL_bits.h"
-#include "SDL3/SDL_image.h"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL_mixer.h"
 #include "SDL3/SDL_mixer.h"
-#include "SDL3/SDL_ttf.h"
+#include "SDL2/SDL_ttf.h"
 #include <windows.h>
 #define null NULL
 //request high performance gpu
@@ -2036,22 +2037,104 @@ namespace sdlgame
 
     namespace mixer
     {
-        void init(){
-            mix_ope
+        /**
+         * @param freq freqency of the audio
+         * @param size determine the audio format, you can choose between 16 or 32 bit audio
+         * @param channels 1 for mono, 2 for stereo
+         * @param buffer size of sample that fed to the computer, the larger then better qualiy, but more audio lag
+         * @param devicename name of the device, leave it as empty to be default system
+        */
+        void init(int freq = 44100,Uint16 size=16, int channels = 2, int buffer = 512, std::string devicename = ""){
+            size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
+            if(Mix_Init(MIX_INIT_FLAC|MIX_INIT_MOD|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_WAVPACK) != MIX_INIT_FLAC|MIX_INIT_MOD|MIX_INIT_MP3|MIX_INIT_OGG|MIX_INIT_WAVPACK){
+                printf("Failed to init some sound file type\n");
+            }
+            if(Mix_OpenAudioDevice(freq,size,channels,buffer,(devicename=="" ? NULL : devicename.c_str()),SDL_AUDIO_ALLOW_ANY_CHANGE)){
+                printf("Failed to init mixer\n");
+                exit(0);
+            }
+        }
+        /*set number of playback channel, default is 8*/
+        void set_num_channels(int count){
+            Mix_AllocateChannels(count);
+        }
+        int get_num_channels(){
+            return Mix_AllocateChannels(-1);
         }
         class Channel;
         /**
-         * class represent a Sound object
+         * class represent a Sound object, should be only support WAV and OGG,
+         * if you need to play music, use music namepsace instead
         */
+        int convert_volume_value(float value){
+            return int((value >= 1 ? 1 : value)/1.0*128);
+        }
         class Sound{
+        private:
+            std::atomic_int channels;
+            float volume=1;
         public:    
-            Mix_Chunk* sound;
-            Channel play(int loops = 0, int maxtime_ms = 0, int fade_ms = 0){
-                
+            Mix_Chunk* chunk = NULL;
+            Sound(std::string path){
+                chunk = Mix_LoadWAV(path.c_str());
+            }
+            /**
+             * @param loops -1 to loop infinitely, 0 is play once, 1 is twice...
+             * @param maxtime_ms maximum time in miliseconds the sound will be play in ms until it stop
+             * @param fade_ms fade in time in miliseconds
+            */
+            Channel play(int loops = 0, int maxtime_ms = -1, int fade_ms = 0){
+                int channel = Mix_FadeInChannelTimed(-1,chunk,loops,fade_ms,maxtime_ms);
+                if(channel==-1){
+                    printf("cant play sound for some reason\n");
+                }
+                return channel;
+            }
+            void fadeout(int ms){
+                Mix_FadeOutChannel(channels,ms);
+            }
+            /**
+             * This will set the playback volume (loudness) for this Sound.
+             * This will immediately affect the Sound if it is playing.
+             * It will also affect any future playback of this Sound.
+             * @param value (float) --
+                volume in the range of 0.0 to 1.0 (inclusive)
+                If value < 0.0, the volume will not be changed
+                If value > 1.0, the volume will be set to 1.0
+            */
+            void set_volume(float value){
+                Mix_VolumeChunk(chunk,convert_volume_value(value));
+            }
+            int get_volume(){
+                return Mix_VolumeChunk(chunk,-1);
+            }
+            ~Sound(){
+                if(chunk!=NULL) Mix_FreeChunk(chunk);
             }
         };
+        /**
+         * A Channel object to controll playback at certain channel id,
+         * in its core, it just a int var hold the id to the channel after all
+        */
         class Channel{
-
+        private:
+            int id;
+            float volume = 1;
+        public:
+            Channel(int id){
+                this->id = id;
+            }
+            void play(Sound sound, int loops=0, int maxtime_ms = -1, int fade_ms=0){
+                if(Mix_FadeInChannelTimed(id,sound.chunk, loops,fade_ms, maxtime_ms)==-1){
+                    printf("Cant play soudn for some reason\n");
+                }
+            }
+            void set_volume(float value){
+                Mix_Volume(id,convert_volume_value(value));
+            }
+            int get_volume(){
+                return Mix_Volume(id,-1);
+            }
         };
     }
 
