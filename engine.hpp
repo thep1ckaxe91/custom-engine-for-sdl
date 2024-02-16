@@ -1,5 +1,6 @@
 /**
- * @authors thep1ckaxe, Ngô Hoan Tài and many authors from SDL2's developers
+ * @authors thep1ckaxe
+ * @contributor: Ngô Hoan Tài and many more from SDL2's developers
  * email: ThePickaxe91@gmail.com
  *
  * @brief this is also a replicate for pygame in c++, but due to some exploitation, redoing and still testing
@@ -193,30 +194,31 @@ namespace sdlgame
         K_VOLUMEDOWN = SDL_SCANCODE_VOLUMEDOWN,
     } K_Code;
     /*window flag here*/
-
-    const Uint32 FULLSCREEN = SDL_WINDOW_FULLSCREEN;
-    const Uint32 NO_FRAME = SDL_WINDOW_BORDERLESS;
-    const Uint32 RESIZABLE = SDL_WINDOW_RESIZABLE;
-    const Uint32 HIDDEN = SDL_WINDOW_HIDDEN;
-    const Uint32 SKIP_TASK_BAR = SDL_WINDOW_SKIP_TASKBAR;
-    const Uint32 POPUP_MENU = SDL_WINDOW_POPUP_MENU;
-    const Uint32 ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP;
-    const Uint32 RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED;
+    typedef enum{
+        FULLSCREEN = SDL_WINDOW_FULLSCREEN,
+        NO_FRAME = SDL_WINDOW_BORDERLESS,
+        RESIZABLE = SDL_WINDOW_RESIZABLE,
+        HIDDEN = SDL_WINDOW_HIDDEN,
+        SKIP_TASK_BAR = SDL_WINDOW_SKIP_TASKBAR,
+        POPUP_MENU = SDL_WINDOW_POPUP_MENU,
+        ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP,
+        RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED
     // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
+    } Window_Flag;
 
     /*Texture flags ?*/
 
     /*event type here*/
-
-    const Uint32 QUIT = SDL_QUIT;
-    const Uint32 KEYUP = SDL_KEYUP;
-    const Uint32 KEYDOWN = SDL_KEYDOWN;
-    const Uint32 MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN;
-    const Uint32 MOUSEBUTTONUP = SDL_MOUSEBUTTONUP;
-    const Uint32 MOUSEMOTION = SDL_MOUSEMOTION;
-    const Uint32 MOUSEWHEEL = SDL_MOUSEWHEEL;
-    const Uint32 USEREVENT = SDL_USEREVENT;
-
+    typedef enum{
+        QUIT = SDL_QUIT,
+        KEYUP = SDL_KEYUP,
+        KEYDOWN = SDL_KEYDOWN,
+        MOUSEBUTTONDOWN = SDL_MOUSEBUTTONDOWN,
+        MOUSEBUTTONUP = SDL_MOUSEBUTTONUP,
+        MOUSEMOTION = SDL_MOUSEMOTION,
+        MOUSEWHEEL = SDL_MOUSEWHEEL,
+        USEREVENT = SDL_USEREVENT,
+    } Event_Code;
     /*Variable here*/
     bool isInit = false;
 
@@ -880,7 +882,7 @@ namespace sdlgame
              */
             bool colliderect(const Rect oth) const
             {
-                return !(left > oth.getRight() || right < oth.getLeft() || top > oth.getBottom() || bottom < oth.getTop());
+                return !(left >= oth.getRight() || right <= oth.getLeft() || top >= oth.getBottom() || bottom <= oth.getTop());
             }
             /**
              * @return return whether the caller collide with any of the rect in the list
@@ -1917,9 +1919,12 @@ namespace sdlgame
         {
         public:
             std::set<Sprite *> sprite_list;
-            Group() = default;
             Group(std::vector<Sprite *> sprites = std::vector<Sprite *>()){
                 for(auto sprite : sprites) this->add(sprite);
+            }
+            Group& operator = (Group oth){
+                sprite_list = oth.sprite_list;
+                return *this;
             }
             std::set<Sprite *> &sprites();
             void add(Sprite *sprite);
@@ -2266,5 +2271,25 @@ namespace sdlgame
 
     namespace font
     {
+    }
+
+    namespace random
+    {
+        /*
+        * return a random interger in range [l,r], if l > r, it automatically swap
+        * the range can be up to 2^30
+        */
+        int randint(int l,int r){
+            srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+            if(l>r) std::swap(l,r);
+            return (rand()*rand())%(r-l+1)+l;
+        }
+
+        /**
+         * return a random value between 0 and 1
+        */
+        float randf(){
+            return randint(0,1000000)/1000000.0;
+        }
     }
 };
