@@ -30,17 +30,15 @@ void draw()
 }
 void update()
 {
-    // testSFX.play();
-    /**
-     * TODO: cant play sound for some reason, check init, funciton and stuff
-    */
+    
 }
 
 int main(int argc, char *argv[])
 {
     sdlgame::mixer::init();
     Sound testMusic(sdlgame::get_abs_path()+"/resources/test.mp3");
-    Sound testSFX(sdlgame::get_abs_path()+"/resources/test.ogg");
+    // Sound testSFX(sdlgame::get_abs_path()+"/resources/test.ogg");
+    Sound testSFX(sdlgame::get_abs_path()+"/resources/test.wav");
     sdlgame::mixer::set_num_channels(16);
     testSFX.play();
     testMusic.play(2,-1,3000);

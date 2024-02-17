@@ -47,9 +47,7 @@
 #include "SDL2/SDL_bits.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
-#include "SDL3/SDL_mixer.h"
 #include "SDL2/SDL_ttf.h"
-#include "wavpack.h"
 #include <windows.h>
 #define null NULL
 // request high performance gpu
@@ -2147,8 +2145,8 @@ namespace sdlgame
          * @param channels 1 for mono, 2 for stereo
          * @param buffer size of sample that fed to the computer, the larger then better qualiy, but more audio lag
          * @param devicename name of the device, leave it as empty to be default system
-         * WARNING: @bug ogg and wav is not yet support and need external lib to work,
-         * still not yet fixed
+         * WTF: wav dont need to be call init but still loadable??????
+         * HUHHHHHHHHHHH?????????????
          */
         void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512)
         {
@@ -2161,10 +2159,10 @@ namespace sdlgame
             {
                 printf("Failed to init ogg type\nErr:%s\n",Mix_GetError());
             }
-            // if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK !=  MIX_INIT_WAVPACK)
-            // {
-            //     printf("Failed to init wav pack\nErr:%s\n",Mix_GetError());
-            // }
+            if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK !=  MIX_INIT_WAVPACK)
+            {
+                printf("Failed to init wav pack\nErr:%s\n",Mix_GetError());
+            }
             if (Mix_OpenAudio(freq, size, channels, buffer))
             {
                 printf("Failed to init mixer\nErr:%s\n",Mix_GetError());
