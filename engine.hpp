@@ -1722,7 +1722,6 @@ namespace sdlgame
         SDL_DestroyWindow(sdlgame::display::window);
         Mix_Quit();
         SDL_Quit();
-        exit(0);
     }
 
     /**

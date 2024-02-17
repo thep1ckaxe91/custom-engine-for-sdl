@@ -7,6 +7,8 @@ using Rect = sdlgame::rect::Rect;
 using Vector2 = sdlgame::math::Vector2;
 using Surface = sdlgame::surface::Surface;
 using Color = sdlgame::color::Color;
+using Sound = sdlgame::mixer::Sound;
+using Channel = sdlgame::mixer::Channel;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
 
 void init()__attribute__((constructor));
@@ -16,7 +18,7 @@ Surface window = sdlgame::display::set_mode(
     sdlgame::RENDERER_ACCELERATED
 );
 sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
-
+Sound test(sdlgame::get_abs_path()+"test.wav");
 void draw()
 {
     
