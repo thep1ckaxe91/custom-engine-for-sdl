@@ -1,5 +1,6 @@
 /**
  * @brief Test surface and transform namespace
+ * TEST: Approved?
  */
 #include "engine.hpp"
 using Event = sdlgame::event::Event;
@@ -120,9 +121,6 @@ public:
             std::cout<<"_________________\n";
     }
 };
-/**
- * TODO: fix bug collide top rect releport, only collide under work normall
-*/
 void draw()
 {
     window.fill(Color("white"));

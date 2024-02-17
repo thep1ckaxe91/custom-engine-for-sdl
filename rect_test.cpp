@@ -32,7 +32,10 @@ void update()
     auto keys = sdlgame::key::get_pressed();
     rect1.move_ip((keys[sdlgame::K_d]-keys[sdlgame::K_a])*speed,(keys[sdlgame::K_s]-keys[sdlgame::K_w])*speed);
 
-    if(rect1.colliderect(rect2)) color1 = Color("lime");
+    if(rect1.colliderect(rect2)){
+        color1 = Color("lime");
+        if(rect1.collidepoint(rect2.getBottomRight())) color1 = Color("gray");
+    }
     else color1 = Color("red");
 }
 

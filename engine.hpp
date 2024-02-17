@@ -849,11 +849,14 @@ namespace sdlgame
                 return left <= oth.getLeft() && right >= oth.getRight() && top <= oth.getTop() && bottom >= oth.getBottom();
             }
 
+            /**
+             * TEST: approved
+            */
             template <class T>
             bool collidepoint(T _x, T _y) const
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
-                return left <= _x and _x <= right and top <= _y and _y <= bottom;
+                return left < _x and _x < right and top < _y and _y < bottom;
             }
             /**
              * @return return whether the point in param is inside the caller or not
