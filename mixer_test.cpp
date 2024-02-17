@@ -1,5 +1,9 @@
 /**
  * TEST: mixer
+ * MP3 work just fine
+ * OGG work just fine
+ * WAV is fucked
+ * Mixer need to be init in main fucntion
 */
 #include "engine.hpp"
 using Event = sdlgame::event::Event;
@@ -10,11 +14,11 @@ using Color = sdlgame::color::Color;
 using Sound = sdlgame::mixer::Sound;
 using Channel = sdlgame::mixer::Channel;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
-
 void init()__attribute__((constructor));
 void init(){
     sdlgame::init();
 } //should do this if need to declare window for global purpose
+
 Surface window = sdlgame::display::set_mode(
     WIDTH, HEIGHT,
     sdlgame::RENDERER_ACCELERATED
@@ -36,7 +40,9 @@ int main(int argc, char *argv[])
 {
     sdlgame::mixer::init();
     Sound testMusic(sdlgame::get_abs_path()+"/resources/test.mp3");
+    Sound testSFX(sdlgame::get_abs_path()+"/resources/test.ogg");
     sdlgame::mixer::set_num_channels(16);
+    testSFX.play();
     testMusic.play(2,-1,3000);
     while (true)
     {

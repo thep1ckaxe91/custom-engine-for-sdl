@@ -2130,6 +2130,9 @@ namespace sdlgame
 
     }
 
+    /**
+     * @brief due to its complexity, it's best practice to call init function as use in main function
+    */
     namespace mixer
     {
         
