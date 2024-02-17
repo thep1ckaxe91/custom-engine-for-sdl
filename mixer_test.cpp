@@ -18,18 +18,23 @@ Surface window = sdlgame::display::set_mode(
     sdlgame::RENDERER_ACCELERATED
 );
 sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
-Sound test(sdlgame::get_abs_path()+"test.wav");
+Sound testSFX(sdlgame::get_abs_path()+"\\resources\\test.wav");
+Sound testMusic(sdlgame::get_abs_path()+"\\resources\\test.mp3");
 void draw()
 {
     
 }
 void update()
 {
-    
+    testSFX.play();
+    /**
+     * TODO: cant play sound for some reason, check init, funciton and stuff
+    */
 }
 
 int main(int argc, char *argv[])
 {
+    testMusic.play(2,100000,3000);
     while (true)
     {
         std::vector<Event> events = sdlgame::event::get();
