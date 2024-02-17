@@ -14,7 +14,8 @@
                 "-lSDL2_image",
                 "-lSDL2_mixer",
                 "-lSDL2_ttf",
-                "-lmpg123",
+                "-lmpg123-0",
+                "-lwavpackdll",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

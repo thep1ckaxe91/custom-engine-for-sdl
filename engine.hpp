@@ -2132,30 +2132,41 @@ namespace sdlgame
 
     namespace mixer
     {
+        
+        /*set number of playback channel, default is 8*/
+        void set_num_channels(int count)
+        {
+            Mix_AllocateChannels(count);
+        }
         /**
          * @param freq freqency of the audio
          * @param size determine the audio format, you can choose between 16 or 32 bit audio
          * @param channels 1 for mono, 2 for stereo
          * @param buffer size of sample that fed to the computer, the larger then better qualiy, but more audio lag
          * @param devicename name of the device, leave it as empty to be default system
+         * WARNING: @bug ogg and wav is not yet support and need external lib to work,
+         * still not yet fixed
          */
-        void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512, std::string devicename = "")
+        void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512)
         {
             size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
-            if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK) !=  MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK)
+            if (Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3 !=  MIX_INIT_MP3)
             {
-                printf("Failed to init some sound file type\nErr:%s\n",Mix_GetError());
+                printf("Failed to init mp3 type\nErr:%s\n",Mix_GetError());
             }
-            if (Mix_OpenAudioDevice(freq, size, channels, buffer, (devicename == "" ? NULL : devicename.c_str()), SDL_AUDIO_ALLOW_ANY_CHANGE))
+            if (Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG !=  MIX_INIT_OGG)
+            {
+                printf("Failed to init ogg type\nErr:%s\n",Mix_GetError());
+            }
+            // if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK !=  MIX_INIT_WAVPACK)
+            // {
+            //     printf("Failed to init wav pack\nErr:%s\n",Mix_GetError());
+            // }
+            if (Mix_OpenAudio(freq, size, channels, buffer))
             {
                 printf("Failed to init mixer\nErr:%s\n",Mix_GetError());
                 exit(0);
             }
-        }
-        /*set number of playback channel, default is 8*/
-        void set_num_channels(int count)
-        {
-            Mix_AllocateChannels(count);
         }
         int get_num_channels()
         {
@@ -2202,6 +2213,10 @@ namespace sdlgame
             Sound(std::string path)
             {
                 chunk = Mix_LoadWAV(path.c_str());
+                if(chunk == NULL){
+                    printf("Cant load file\nErr:%s\n",Mix_GetError());
+                    exit(0);
+                }
             }
             /**
              * @param loops -1 to loop infinitely, 0 is play once, 1 is twice...
