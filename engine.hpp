@@ -663,6 +663,9 @@ namespace sdlgame
                 SDL_FRect res = {(float)x, (float)y, (float)w, (float)h};
                 return res;
             }
+            /**
+             * TEST: Approved
+            */
             template <class T>
             Rect move(T offset_x, T offset_y) const
             {
@@ -674,20 +677,12 @@ namespace sdlgame
                 res.right = res.left + res.w;
                 res.centerx = res.x + res.width / 2;
                 res.centery = res.y + res.height / 2;
-                // res.center = sdlgame::math::Vector2(res.centerx, res.centery);
-                // res.topleft = sdlgame::math::Vector2(res.left, res.top);
-                // res.bottomleft = sdlgame::math::Vector2(res.left, res.bottom);
-                // res.bottomright = sdlgame::math::Vector2(res.right, res.bottom);
-                // res.topright = sdlgame::math::Vector2(res.right, res.top);
-                // res.midtop = sdlgame::math::Vector2(res.centerx, res.top);
-                // res.midleft = sdlgame::math::Vector2(res.left, res.centery);
-                // res.midbottom = sdlgame::math::Vector2(res.centerx, res.bottom);
-                // res.midright = sdlgame::math::Vector2(res.right, res.centery);
                 return res;
             }
 
             /**
              *  instead of a new one, this just move the rect that called this function
+             * TEST: Approved
              */
             template <class T>
             void move_ip(T offset_x, T offset_y)
@@ -766,18 +761,8 @@ namespace sdlgame
                 h = height = _h;
                 bottom = top + h;
                 right = left + w;
-                // size = sdlgame::math::Vector2(w, h);
                 centerx = x + width / 2;
                 centery = y + height / 2;
-                // center = sdlgame::math::Vector2(centerx, centery);
-                // topleft = sdlgame::math::Vector2(left, top);
-                // bottomleft = sdlgame::math::Vector2(left, bottom);
-                // bottomright = sdlgame::math::Vector2(right, bottom);
-                // topright = sdlgame::math::Vector2(right, top);
-                // midtop = sdlgame::math::Vector2(centerx, top);
-                // midleft = sdlgame::math::Vector2(left, centery);
-                // midbottom = sdlgame::math::Vector2(centerx, bottom);
-                // midright = sdlgame::math::Vector2(right, centery);
             }
             template <class T>
             void update(T _left, T _top, sdlgame::math::Vector2 _size)
@@ -879,6 +864,7 @@ namespace sdlgame
             }
             /**
              * @return return whether the caller collide with the other rect or not
+             * TEST: Approved
              */
             bool colliderect(const Rect oth) const
             {
@@ -899,86 +885,90 @@ namespace sdlgame
             template <class T>
             void setWidth(T _w)
             {
-                inflate_ip(_w - w, 0);
+                this->inflate_ip(_w - w, 0);
             }
             template <class T>
             void setHeight(T _h)
             {
-                inflate_ip(0, _h - h);
+                this->inflate_ip(0, _h - h);
             }
             template <class T>
             void setSize(T _w, T _h)
             {
-                inflate_ip(_w - w, _h - h);
+                this->inflate_ip(_w - w, _h - h);
             }
             void setSize(const sdlgame::math::Vector2 &_size)
             {
-                inflate_ip(_size - sdlgame::math::Vector2(w,h));
+                this->inflate_ip(_size - sdlgame::math::Vector2(w,h));
             }
             template <class T>
             void setTop(T _y)
             {
-                move_ip(T(0), T(_y - y));
+                std::cout << "Moved the rect by " << T(_y-y) << " in y axis\n";
+                this->move_ip(T(0),T(_y-y));
             }
             template <class T>
             void setLeft(T _x)
             {
-                move_ip(T(_x - x), T(0));
+                std::cout << "Moved the rect by " << T(_x-x) << " in x axis\n";
+                this->move_ip(T(_x - x), T(0));
             }
             template <class T>
             void setRight(T _x)
             {
-                move_ip(T(_x - right), T(0));
+                std::cout << "Moved the rect by " << T(_x-x) << " in x axis\n";
+                this->move_ip(T(_x - right), T(0));
             }
             template <class T>
             void setBottom(T _y)
             {
-                move_ip(T(_y - bottom), T(0));
+                std::cout << "Moved the rect by " << T(_y-y) << " in y axis\n";
+                this->move_ip(T(0),T(_y - bottom));
             }
             template <class T>
             void setCenter(T _x, T _y)
             {
-                move_ip(_x - centerx, _y - centery);
+                this->move_ip(_x - centerx, _y - centery);
             }
-            void setCenter(const sdlgame::math::Vector2 &pos)
+            void setCenter(sdlgame::math::Vector2 pos)
             {
-                move_ip(pos.x - centerx, pos.y - centery);
+                this->move_ip(pos.x - centerx, pos.y - centery);
             }
             template <class T>
             void setMidTop(T _x, T _y)
             {
-                move_ip(_x - centerx, _y - y);
+                this->move_ip(_x - centerx, _y - y);
             }
             void setMidTop(const sdlgame::math::Vector2 &pos)
             {
-                move_ip(pos.x - centerx, pos.y - y);
+                this->move_ip(pos.x - centerx, pos.y - y);
             }
             template <class T>
             void setMidBottom(T _x, T _y)
             {
-                move_ip(_x - centerx, _y - bottom);
+                this->move_ip(_x - centerx, _y - bottom);
             }
             void setMidBottom(const sdlgame::math::Vector2 &pos)
             {
-                move_ip(pos.x - centerx, pos.y - bottom);
+                this->move_ip(pos.x - centerx, pos.y - bottom);
             }
             template <class T>
             void setMidLeft(T _x, T _y)
             {
-                move_ip(_x - x, _y - centery);
+                this->move_ip(_x - x, _y - centery);
             }
             void setMidLeft(const sdlgame::math::Vector2 &pos)
             {
-                move_ip(pos.x - x, pos.y - centery);
+                this->move_ip(pos.x - x, pos.y - centery);
             }
             template <class T>
             void setMidRight(T _x, T _y)
             {
-                move_ip(_x - right, _y - centery);
+                this->move_ip(_x - right, _y - centery);
             }
             void setMidRight(const sdlgame::math::Vector2 &pos)
             {
-                move_ip(pos.x - right, pos.y - centery);
+                this->move_ip(pos.x - right, pos.y - centery);
             }
             double getWidth() const { return w; }
             double getHeight() const { return h; }
@@ -1688,7 +1678,7 @@ namespace sdlgame
 
                 // }
             }
-            Uint32 &operator[](std::string &key)
+            Uint32 operator[](std::string key)
             {
                 if (dict.find(key) != dict.end())
                 {
