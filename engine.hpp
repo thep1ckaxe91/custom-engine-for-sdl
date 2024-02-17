@@ -49,6 +49,7 @@
 #include "SDL2/SDL_mixer.h"
 #include "SDL3/SDL_mixer.h"
 #include "SDL2/SDL_ttf.h"
+#include "wavpack.h"
 #include <windows.h>
 #define null NULL
 // request high performance gpu
@@ -2141,13 +2142,13 @@ namespace sdlgame
         void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512, std::string devicename = "")
         {
             size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
-            if (Mix_Init(MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK) != MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK)
+            if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK) !=  MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_WAVPACK)
             {
-                printf("Failed to init some sound file type\n");
+                printf("Failed to init some sound file type\nErr:%s\n",Mix_GetError());
             }
             if (Mix_OpenAudioDevice(freq, size, channels, buffer, (devicename == "" ? NULL : devicename.c_str()), SDL_AUDIO_ALLOW_ANY_CHANGE))
             {
-                printf("Failed to init mixer\n");
+                printf("Failed to init mixer\nErr:%s\n",Mix_GetError());
                 exit(0);
             }
         }
@@ -2212,7 +2213,8 @@ namespace sdlgame
                 int channel = Mix_FadeInChannelTimed(-1, chunk, loops, fade_ms, maxtime_ms);
                 if (channel == -1)
                 {
-                    printf("cant play sound for some reason\n");
+                    printf("cant play sound for some reason\nErr:%s\n",Mix_GetError());
+                    exit(0);
                 }
                 return Channel(channel);
             }
@@ -2248,7 +2250,8 @@ namespace sdlgame
         {
             if (Mix_FadeInChannelTimed(id, sound.chunk, loops, fade_ms, maxtime_ms) == -1)
             {
-                printf("Cant play soudn for some reason\n");
+                printf("cant play sound for some reason\nErr:%s\n",Mix_GetError());
+                exit(0);
             }
         }
         void Channel::set_volume(float value)

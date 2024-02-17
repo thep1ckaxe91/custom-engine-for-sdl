@@ -12,7 +12,10 @@ using Channel = sdlgame::mixer::Channel;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
 
 void init()__attribute__((constructor));
-void init(){sdlgame::init();} //should do this if need to declare window for global purpose
+void init(){
+    sdlgame::init();
+    sdlgame::mixer::init();
+} //should do this if need to declare window for global purpose
 Surface window = sdlgame::display::set_mode(
     WIDTH, HEIGHT,
     sdlgame::RENDERER_ACCELERATED
@@ -34,6 +37,7 @@ void update()
 
 int main(int argc, char *argv[])
 {
+    sdlgame::mixer::set_num_channels(16);
     testMusic.play(2,100000,3000);
     while (true)
     {
