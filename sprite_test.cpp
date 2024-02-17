@@ -47,13 +47,17 @@ public:
         this->rect.move_ip(dir);
     }
 };
-Player player(sdlgame::image::load(sdlgame::get_abs_path()+"player.png"),Vector2(50,50));
+Player player(
+    sdlgame::transform::scale_by(sdlgame::image::load(sdlgame::get_abs_path()+"player.png"),3),
+    Vector2(50,50)
+);
 sdlgame::sprite::GroupSingle player_group(&player);
 sdlgame::sprite::Group bounce_rects;
 class BounceRect : public sdlgame::sprite::Sprite
 {
 public:
     Vector2 dir;
+    Vector2 prepos;
     double speed = 3;
     BounceRect() = default;
     BounceRect(Rect rect,Color color){
@@ -71,6 +75,7 @@ public:
         return *this;
     }
     void update() override{
+        int collide_num=0;
         rect.move_ip(dir.x,0.0);
         if(rect.getLeft() < 0){
             rect.setLeft(0);
@@ -80,13 +85,14 @@ public:
             rect.setRight(WIDTH);
             dir.x = -dir.x;
         }
-        else if(sdlgame::sprite::spritecollide(player_group.sprite, &bounce_rects).size()>0){
+        else if((collide_num=sdlgame::sprite::spritecollide(player_group.sprite, &bounce_rects).size())>0){
+            std::cout<< collide_num <<" x\n";
             if(dir.x > 0){
-                rect.setLeft(player_group.sprite->rect.getRight());
+                rect.setRight(player_group.sprite->rect.getLeft());
                 dir.x = -dir.x;
             }
             else if(dir.x < 0){
-                rect.setRight(player_group.sprite->rect.getLeft());
+                rect.setLeft(player_group.sprite->rect.getRight());
                 dir.x = -dir.x;
             }
         }
@@ -99,7 +105,8 @@ public:
             rect.setBottom(HEIGHT);
             dir.y = -dir.y;
         }
-        else if(sdlgame::sprite::spritecollide(player_group.sprite, &bounce_rects).size()>0){
+        else if((collide_num=sdlgame::sprite::spritecollide(player_group.sprite, &bounce_rects).size())>0){
+            std::cout<< collide_num << "y\n";
             if(dir.y > 0){
                 rect.setBottom(player_group.sprite->rect.getTop());
                 dir.y = -dir.y;
@@ -108,9 +115,14 @@ public:
                 rect.setTop(player_group.sprite->rect.getBottom());
                 dir.y = -dir.y;
             }
-        } 
+        }
+        if(collide_num) 
+            std::cout<<"_________________\n";
     }
 };
+/**
+ * TODO: fix bug collide top rect releport, only collide under work normall
+*/
 void draw()
 {
     window.fill(Color("white"));
@@ -125,7 +137,7 @@ void update()
 
 int main(int argc, char *argv[])
 {
-    const int brnum = 10;
+    const int brnum = 2;
     BounceRect brect_list[brnum];
     std::cout << "init address\n";
     for(int i=0;i<brnum;i++){

@@ -1831,7 +1831,7 @@ namespace sdlgame
 
     namespace transform
     {
-        sdlgame::surface::Surface flip(sdlgame::surface::Surface &surface, bool flip_x, bool flip_y)
+        sdlgame::surface::Surface flip(sdlgame::surface::Surface surface, bool flip_x, bool flip_y)
         {
             sdlgame::surface::Surface res = surface.copy();
             if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
@@ -1851,7 +1851,7 @@ namespace sdlgame
             }
             return res;
         }
-        sdlgame::surface::Surface scale(sdlgame::surface::Surface &surface, sdlgame::math::Vector2 size)
+        sdlgame::surface::Surface scale(sdlgame::surface::Surface surface, sdlgame::math::Vector2 size)
         {
             sdlgame::surface::Surface res = sdlgame::surface::Surface(size.x, size.y);
             if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
@@ -1866,7 +1866,7 @@ namespace sdlgame
             return res;
         }
 
-        sdlgame::surface::Surface scale_by(sdlgame::surface::Surface &surface, double factor)
+        sdlgame::surface::Surface scale_by(sdlgame::surface::Surface surface, double factor)
         {
             return sdlgame::transform::scale(surface, surface.get_size() * factor);
         }
@@ -1876,7 +1876,7 @@ namespace sdlgame
          * angle unit is degrees
          * TODO: calculate the new size for the res surface
          */
-        sdlgame::surface::Surface rotate(sdlgame::surface::Surface &surface, double angle_deg, sdlgame::math::Vector2 center)
+        sdlgame::surface::Surface rotate(sdlgame::surface::Surface surface, double angle_deg, sdlgame::math::Vector2 center)
         {
             sdlgame::math::Vector2 newtopleft = (surface.getRect().getTopLeft() - center).rotate(angle_deg);
             sdlgame::math::Vector2 newbotleft = (surface.getRect().getBottomLeft() - center).rotate(angle_deg);
