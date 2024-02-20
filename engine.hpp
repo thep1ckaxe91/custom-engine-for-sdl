@@ -229,6 +229,10 @@ namespace sdlgame
     {
         return std::string(SDL_GetBasePath());
     }
+    
+    /**
+     * @brief namespace for time function and class in sdlgame
+    */
     namespace time
     {
         /**
@@ -238,6 +242,9 @@ namespace sdlgame
         {
             return SDL_GetTicks64();
         }
+        /**
+         * get time from init in milisecond
+         */
         void wait(Uint32 miliseconds)
         {
             SDL_Delay(miliseconds);
@@ -2365,7 +2372,7 @@ namespace sdlgame
         Font SysFont(std::string name, int size = 12)
         {
 
-            return Font(window_font_path + name, size);
+            return Font(window_font_path + name + ".ttf", size);
         }
     }
 

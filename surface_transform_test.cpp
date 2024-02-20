@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     Vector2 pos = Vector2(50,50);
     // Surface image = sdlgame::image::load(base_path+"test.png");
 
-    double effect_time = 1; //second
+    double effect_time = 0.1; //second
     double cur_t = 0;
 
     while (true)
@@ -41,15 +41,15 @@ int main(int argc, char *argv[])
         window.blit(image,pos);
         cur_t += sdlclock.delta_time();
 
-        // if(cur_t>=effect_time){
-        //     printf("Effect trigger\n");
-        //     cur_t -= effect_time;
+        if(cur_t>=effect_time){
+            printf("Effect trigger\n");
+            cur_t -= effect_time;
             image = sdlgame::transform::flip(image,1,0);
             if(pos.x==50) pos.x = 500;
             else pos.x = 50;
             // image = sdlgame::transform::rotate(image,30,image.getRect().getCenter());
             // image = sdlgame::transform::scale_by(image,1.1);
-        // }
+        }
         sdlgame::display::flip();
         sdlclock.tick(FPS);
     }

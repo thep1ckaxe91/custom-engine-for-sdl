@@ -18,8 +18,8 @@ Surface window = sdlgame::display::set_mode(
 sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
 int main(int argc, char *argv[])
 {
-    Font minecraft_font(sdlgame::get_base_path()+"test.ttf");
-    // Font test_sysfont = sdlgame::font::SysFont()
+    // Font minecraft_font(sdlgame::get_base_path()+"test.ttf");
+    Font minecraft_font = sdlgame::font::SysFont("consolas");
     while (true)
     {
         std::vector<Event> events = sdlgame::event::get();
