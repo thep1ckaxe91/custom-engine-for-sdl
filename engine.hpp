@@ -224,22 +224,6 @@ namespace sdlgame
     /*Variable here*/
     bool isInit = false;
 
-    void init()
-    {
-        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-        {
-            printf("Error initializing SDL: %s\n", SDL_GetError());
-            exit(0);
-            isInit = false;
-            return;
-        }
-        else
-        {
-            printf("SDL successfully initialized\n");
-            isInit = true;
-            return;
-        }
-    }
     bool get_init() { return isInit; }
     std::string get_abs_path()
     {
@@ -1406,8 +1390,12 @@ namespace sdlgame
             }
             ~Surface()
             {
-                if (texture != NULL)
-                    SDL_DestroyTexture(texture);
+                try{
+                    if (texture != NULL)
+                        SDL_DestroyTexture(texture);
+                }catch(...){
+                    
+                }
             }
         };
     }
@@ -1511,6 +1499,9 @@ namespace sdlgame
 
     namespace image
     {
+        /**
+         * Currently only support JPG and PNG type
+        */
         void init()
         {
             if (IMG_Init(IMG_INIT_JPG)&IMG_INIT_JPG!=IMG_INIT_JPG)
@@ -1712,17 +1703,6 @@ namespace sdlgame
             tmp.tmp_e.type = event_type;
             SDL_PushEvent(&tmp.tmp_e);
         }
-    }
-
-    void quit()
-    {
-        SDL_DestroyWindowSurface(sdlgame::display::window);
-        SDL_DestroyRenderer(sdlgame::display::renderer);
-        SDL_DestroyWindow(sdlgame::display::window);
-        IMG_Quit();
-        Mix_Quit();
-        TTF_Quit();
-        SDL_Quit();
     }
 
     /**
@@ -2433,5 +2413,32 @@ namespace sdlgame
         {
             return randint(0, 1000000) / 1000000.0;
         }
+    }
+
+    //ini
+    void init()
+    {
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+        {
+            printf("Error initializing SDL: %s\n", SDL_GetError());
+            exit(0);
+            isInit = false;
+        }
+        else
+        {
+            printf("SDL successfully initialized\n");
+            isInit = true;
+        }
+        sdlgame::image::init();
+    }
+    void quit()
+    {
+        SDL_DestroyWindowSurface(sdlgame::display::window);
+        SDL_DestroyRenderer(sdlgame::display::renderer);
+        SDL_DestroyWindow(sdlgame::display::window);
+        IMG_Quit();
+        Mix_Quit();
+        TTF_Quit();
+        SDL_Quit();
     }
 };

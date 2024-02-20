@@ -8,17 +8,18 @@ using Vector2 = sdlgame::math::Vector2;
 using Surface = sdlgame::surface::Surface;
 using Color = sdlgame::color::Color;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
-
+void init()__attribute__((constructor));
+void init(){
+    sdlgame::init();
+}
+Surface window = sdlgame::display::set_mode(
+    WIDTH, HEIGHT,
+    sdlgame::RENDERER_ACCELERATED);
+sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
+std::string base_path = sdlgame::get_abs_path();
+Surface image = sdlgame::image::load(base_path+"/resources/test.jpg");
 int main(int argc, char *argv[])
 {
-    sdlgame::init();
-    sdlgame::image::init();
-    Surface window = sdlgame::display::set_mode(
-        WIDTH, HEIGHT,
-        sdlgame::RENDERER_ACCELERATED);
-    sdlgame::time::Clock clock = sdlgame::time::Clock();
-    std::string base_path = sdlgame::get_abs_path();
-    Surface image = sdlgame::image::load(base_path+"/resources/test.jpg");
     Vector2 pos = Vector2(50,50);
     // Surface image = sdlgame::image::load(base_path+"test.png");
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
         }
         window.fill(Color(255,255,255));
         window.blit(image,pos);
-        cur_t += clock.delta_time();
+        cur_t += sdlclock.delta_time();
 
         if(cur_t>=effect_time){
             printf("Effect trigger\n");
@@ -50,6 +51,6 @@ int main(int argc, char *argv[])
             // image = sdlgame::transform::scale_by(image,1.1);
         }
         sdlgame::display::flip();
-        clock.tick(FPS);
+        sdlclock.tick(FPS);
     }
 }
