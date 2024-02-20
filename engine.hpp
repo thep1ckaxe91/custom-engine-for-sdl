@@ -9,7 +9,7 @@
  *
  * all pixel format is RGBA32, fixed
  *
- * @warning this is not thread-safe, recommend only sigle threading
+ * @warning this is not thread-safe, recommend only sigle threading, currently only support window OS
  *
  * @copyright if you want to use this file, please contact for permission, after that, feel free to use and modify this file
  */
@@ -2276,7 +2276,10 @@ namespace sdlgame
 
     namespace font
     {
-        std::string window_font_path = "C:/Windows/Fonts/";
+        std::string window_font_path = "C:\\Windows\\Fonts\\";
+        /**
+         * @brief initialize font, after call this function, you should be able to use other function and class
+        */
         void init()
         {
             if (TTF_Init())
@@ -2297,12 +2300,11 @@ namespace sdlgame
         class Font
         {
         private:
-            bool underline = 0;
-            bool strikethrough = 0;
             int height;
 
         public:
             TTF_Font *font;
+            
             Font(std::string path, int size = 12)
             {
                 height = size;
@@ -2313,17 +2315,7 @@ namespace sdlgame
                     exit(0);
                 }
             }
-            void set_underline(bool enable)
-            {
-                underline = enable;
-            }
-            bool get_underline() { return underline; }
-            void set_strikethrough(bool enable)
-            {
-                strikethrough = enable;
-            }
-            bool get_strikethrough() { return strikethrough; }
-            // Must test with both have bg and no bg
+            
             /**
              * @return a surface that only contain the text
              * @param antialias = 0 no antialiasing fastest
@@ -2369,6 +2361,11 @@ namespace sdlgame
             }
         };
 
+        /**
+         * @return a Font object that is a font from system
+         * @param name name of the font, it is case-sensitive, you dont need add ".ttf"
+         * @param size height of the font in pixel
+        */
         Font SysFont(std::string name, int size = 12)
         {
 
@@ -2399,7 +2396,7 @@ namespace sdlgame
         }
     }
 
-    //ini
+
     void init()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -2411,7 +2408,6 @@ namespace sdlgame
         {
             printf("SDL successfully initialized\n");
         }
-        sdlgame::image::init();
     }
     void quit()
     {
