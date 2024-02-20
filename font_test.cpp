@@ -1,10 +1,3 @@
-/**
- * TEST: mixer
- * MP3 work just fine
- * OGG work just fine
- * WAV is fucked
- * Mixer need to be init in main fucntion
-*/
 #include "engine.hpp"
 using Event = sdlgame::event::Event;
 using Rect = sdlgame::rect::Rect;
@@ -13,35 +6,20 @@ using Surface = sdlgame::surface::Surface;
 using Color = sdlgame::color::Color;
 using Sound = sdlgame::mixer::Sound;
 using Channel = sdlgame::mixer::Channel;
+using Font = sdlgame::font::Font;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
-void init()__attribute__((constructor));
-void init(){
-    sdlgame::init();
-} //should do this if need to declare window for global purpose
 
+void init()__attribute__((constructor));
+void init(){sdlgame::init();} //should do this if need to declare window for global purpose
 Surface window = sdlgame::display::set_mode(
     WIDTH, HEIGHT,
     sdlgame::RENDERER_ACCELERATED
 );
 sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
-void draw()
-{
-    
-}
-void update()
-{
-    INT_MAX
-}
-
 int main(int argc, char *argv[])
 {
-    sdlgame::mixer::init();
-    Sound testMusic(sdlgame::get_abs_path()+"/resources/test.mp3");
-    // Sound testSFX(sdlgame::get_abs_path()+"/resources/test.ogg");
-    Sound testSFX(sdlgame::get_abs_path()+"/resources/test.wav");
-    sdlgame::mixer::set_num_channels(16);
-    testSFX.play();
-    testMusic.play(2,-1,3000);
+    sdlgame::font::init();
+    Font minecraft_font(sdlgame::get_abs_path()+"test.ttf");
     while (true)
     {
         std::vector<Event> events = sdlgame::event::get();
@@ -53,8 +31,8 @@ int main(int argc, char *argv[])
                 exit(0);
             }
         }
-        update();
-        draw();
+        window.fill(Color("white"));
+        window.blit(minecraft_font.render("ur mom fat as hell i wish she sit on my face",0,Color("red"),100,Color("blue")),Vector2(50,50));
         sdlgame::display::flip();
         sdlclock.tick(FPS);
     }

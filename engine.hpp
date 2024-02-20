@@ -65,7 +65,8 @@ extern "C"
 
 namespace sdlgame
 {
-    typedef enum{
+    typedef enum
+    {
         K_a = SDL_SCANCODE_A,
         K_b = SDL_SCANCODE_B,
         K_c = SDL_SCANCODE_C,
@@ -193,7 +194,8 @@ namespace sdlgame
         K_VOLUMEDOWN = SDL_SCANCODE_VOLUMEDOWN,
     } K_Code;
     /*window flag here*/
-    typedef enum{
+    typedef enum
+    {
         FULLSCREEN = SDL_WINDOW_FULLSCREEN,
         NO_FRAME = SDL_WINDOW_BORDERLESS,
         RESIZABLE = SDL_WINDOW_RESIZABLE,
@@ -202,13 +204,14 @@ namespace sdlgame
         POPUP_MENU = SDL_WINDOW_POPUP_MENU,
         ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP,
         RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED
-    // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
+        // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
     } Window_Flag;
 
     /*Texture flags ?*/
 
     /*event type here*/
-    typedef enum{
+    typedef enum
+    {
         QUIT = SDL_QUIT,
         KEYUP = SDL_KEYUP,
         KEYDOWN = SDL_KEYDOWN,
@@ -235,11 +238,6 @@ namespace sdlgame
             printf("SDL successfully initialized\n");
             isInit = true;
             return;
-        }
-        if (IMG_Init(IMG_INIT_AVIF | IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_WEBP | IMG_INIT_TIF))
-        {
-            printf("Failed to init any image flags\n");
-            exit(0);
         }
     }
     bool get_init() { return isInit; }
@@ -664,12 +662,12 @@ namespace sdlgame
             }
             /**
              * TEST: Approved
-            */
+             */
             template <class T>
             Rect move(T offset_x, T offset_y) const
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
-                Rect res(x,y,w,h);
+                Rect res(x, y, w, h);
                 res.x = res.left += offset_x;
                 res.y = res.top += offset_y;
                 res.bottom = res.top + res.h;
@@ -711,7 +709,7 @@ namespace sdlgame
             Rect inflate(T offset_w, T offset_h) const
             {
                 static_assert(std::is_arithmetic<T>::value, "Invalid type for Rect param");
-                Rect res(x,y,w,h);
+                Rect res(x, y, w, h);
                 // res.size += sdlgame::math::Vector2(offset_w, offset_h);
                 res.w = res.width += offset_w;
                 res.h = res.height += offset_h;
@@ -837,7 +835,7 @@ namespace sdlgame
             Rect fit(const Rect oth) const
             {
                 Rect res = *this;
-                res.setSize( sdlgame::math::Vector2(w,h) * (oth.getWidth() / res.getWidth()));
+                res.setSize(sdlgame::math::Vector2(w, h) * (oth.getWidth() / res.getWidth()));
                 return res;
             }
             /**
@@ -850,7 +848,7 @@ namespace sdlgame
 
             /**
              * TEST: approved
-            */
+             */
             template <class T>
             bool collidepoint(T _x, T _y) const
             {
@@ -901,31 +899,31 @@ namespace sdlgame
             }
             void setSize(const sdlgame::math::Vector2 &_size)
             {
-                this->inflate_ip(_size - sdlgame::math::Vector2(w,h));
+                this->inflate_ip(_size - sdlgame::math::Vector2(w, h));
             }
             template <class T>
             void setTop(T _y)
             {
-                std::cout << "Moved the rect by " << T(_y-y) << " in y axis\n";
-                this->move_ip(T(0),T(_y-y));
+                std::cout << "Moved the rect by " << T(_y - y) << " in y axis\n";
+                this->move_ip(T(0), T(_y - y));
             }
             template <class T>
             void setLeft(T _x)
             {
-                std::cout << "Moved the rect by " << T(_x-x) << " in x axis\n";
+                std::cout << "Moved the rect by " << T(_x - x) << " in x axis\n";
                 this->move_ip(T(_x - x), T(0));
             }
             template <class T>
             void setRight(T _x)
             {
-                std::cout << "Moved the rect by " << T(_x-x) << " in x axis\n";
+                std::cout << "Moved the rect by " << T(_x - x) << " in x axis\n";
                 this->move_ip(T(_x - right), T(0));
             }
             template <class T>
             void setBottom(T _y)
             {
-                std::cout << "Moved the rect by " << T(_y-y) << " in y axis\n";
-                this->move_ip(T(0),T(_y - bottom));
+                std::cout << "Moved the rect by " << T(_y - y) << " in y axis\n";
+                this->move_ip(T(0), T(_y - bottom));
             }
             template <class T>
             void setCenter(T _x, T _y)
@@ -980,16 +978,16 @@ namespace sdlgame
             double getBottom() const { return bottom; }
             double getCenterX() const { return centerx; }
             double getCenterY() const { return centery; }
-            sdlgame::math::Vector2 getSize() const { return sdlgame::math::Vector2(w,h); }
-            sdlgame::math::Vector2 getCenter() const { return sdlgame::math::Vector2(centerx,centery); }
-            sdlgame::math::Vector2 getTopLeft() const { return sdlgame::math::Vector2(x,y); }
-            sdlgame::math::Vector2 getTopRight() const { return sdlgame::math::Vector2(top,right); }
-            sdlgame::math::Vector2 getBottomLeft() const { return sdlgame::math::Vector2(bottom,left); }
-            sdlgame::math::Vector2 getBottomRight() const { return sdlgame::math::Vector2(bottom,right); }
-            sdlgame::math::Vector2 getMidTop() const { return sdlgame::math::Vector2(centerx,top); }
-            sdlgame::math::Vector2 getMidLeft() const { return sdlgame::math::Vector2(left,centery); }
-            sdlgame::math::Vector2 getMidBottom() const { return sdlgame::math::Vector2(centerx,bottom); }
-            sdlgame::math::Vector2 getMidRight() const { return sdlgame::math::Vector2(right,centery); }
+            sdlgame::math::Vector2 getSize() const { return sdlgame::math::Vector2(w, h); }
+            sdlgame::math::Vector2 getCenter() const { return sdlgame::math::Vector2(centerx, centery); }
+            sdlgame::math::Vector2 getTopLeft() const { return sdlgame::math::Vector2(x, y); }
+            sdlgame::math::Vector2 getTopRight() const { return sdlgame::math::Vector2(top, right); }
+            sdlgame::math::Vector2 getBottomLeft() const { return sdlgame::math::Vector2(bottom, left); }
+            sdlgame::math::Vector2 getBottomRight() const { return sdlgame::math::Vector2(bottom, right); }
+            sdlgame::math::Vector2 getMidTop() const { return sdlgame::math::Vector2(centerx, top); }
+            sdlgame::math::Vector2 getMidLeft() const { return sdlgame::math::Vector2(left, centery); }
+            sdlgame::math::Vector2 getMidBottom() const { return sdlgame::math::Vector2(centerx, bottom); }
+            sdlgame::math::Vector2 getMidRight() const { return sdlgame::math::Vector2(right, centery); }
 
             /**
              *  return a SDL_Rect object from this rect
@@ -1212,7 +1210,7 @@ namespace sdlgame
                 a = _a;
             }
 
-            SDL_Color toSDL_Color() const
+            SDL_Color to_SDL_Color() const
             {
                 SDL_Color res = {r, g, b, a};
                 return res;
@@ -1263,7 +1261,7 @@ namespace sdlgame
                 flags = _flags;
                 if (!(texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height)))
                 {
-                    printf("Failed to create texture\nErr: %s\n",SDL_GetError());
+                    printf("Failed to create texture\nErr: %s\n", SDL_GetError());
                     exit(0);
                 }
                 size = sdlgame::math::Vector2(width, height);
@@ -1345,7 +1343,7 @@ namespace sdlgame
              * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
              * the surface or image will stretch or shrink acoording to the size
              */
-            void blit(const Surface& source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1, -1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
+            void blit(const Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1, -1), sdlgame::rect::Rect area = sdlgame::rect::Rect())
             {
                 if (area == sdlgame::rect::Rect())
                 {
@@ -1511,29 +1509,34 @@ namespace sdlgame
         }
     }
 
-    // not yet, this only possible after install SDL3 then we should have the all image format load
     namespace image
     {
-        // SDL_Surface *tmp;
-        // sdlgame::surface::Surface load(std::string path)
-        // {
-        //     const char* img_path = path.c_str();
-        //     SDL_RWops *ops = SDL_RWFromFile(img_path,"rb");
-        //     if(ops==NULL){
-        //         printf("Failed to RW from file\nErr:%s\n",SDL_GetError());
-        //         exit(0);
-        //     }
-        //     tmp = IMG_Load_RW(ops,SDL_FALSE);
-        //     if(!tmp){
-        //         printf("Failed to load image\n");
-        //         exit(0);
-        //     }
-        //     SDL_RWclose(ops);
-        //     return sdlgame::surface::Surface(tmp);
-        // }
+        void init()
+        {
+            if (IMG_Init(IMG_INIT_JPG)&IMG_INIT_JPG!=IMG_INIT_JPG)
+            {
+                printf("Failed to init JPG image flags\n%s\n", IMG_GetError());
+                exit(0);
+            }
+            else if(IMG_Init(IMG_INIT_PNG)&IMG_INIT_PNG!=IMG_INIT_PNG)
+            {
+                printf("Failed to init PNG image flags\n%s\n", IMG_GetError());
+                exit(0);
+            }
+            else
+            {
+                printf("Image successfully initialized\n");
+                return;
+            }
+        }
         sdlgame::surface::Surface load(std::string path)
         {
-            sdlgame::surface::Surface res = sdlgame::surface::Surface(IMG_LoadTexture(sdlgame::display::renderer, path.c_str()));
+            SDL_Texture *tex = IMG_LoadTexture(sdlgame::display::renderer, path.c_str());
+            if(tex==NULL){
+                printf("Cant load image\n%s\n",IMG_GetError());
+                exit(0);
+            }
+            sdlgame::surface::Surface res = sdlgame::surface::Surface(tex);
             return res;
         }
 
@@ -1711,15 +1714,14 @@ namespace sdlgame
         }
     }
 
-    // TODO: not done, ot yet call quit for everything, sprcificly: window, renderer, mixer, image? ...
     void quit()
     {
-        // for (SDL_Texture *tex : textures)
-        //     SDL_DestroyTexture(tex);
         SDL_DestroyWindowSurface(sdlgame::display::window);
         SDL_DestroyRenderer(sdlgame::display::renderer);
         SDL_DestroyWindow(sdlgame::display::window);
+        IMG_Quit();
         Mix_Quit();
+        TTF_Quit();
         SDL_Quit();
     }
 
@@ -1910,10 +1912,13 @@ namespace sdlgame
         {
         public:
             std::set<Sprite *> sprite_list;
-            Group(std::vector<Sprite *> sprites = std::vector<Sprite *>()){
-                for(auto sprite : sprites) this->add(sprite);
+            Group(std::vector<Sprite *> sprites = std::vector<Sprite *>())
+            {
+                for (auto sprite : sprites)
+                    this->add(sprite);
             }
-            Group& operator = (Group oth){
+            Group &operator=(Group oth)
+            {
                 sprite_list = oth.sprite_list;
                 return *this;
             }
@@ -1936,7 +1941,8 @@ namespace sdlgame
             std::set<Group *> group_list;
             Sprite(std::vector<Group *> groups = std::vector<Group *>())
             {
-                for(Group* group : groups) this->add(group);
+                for (Group *group : groups)
+                    this->add(group);
             }
             /**
              * return a set of group that conrtain this sprite
@@ -1948,7 +1954,8 @@ namespace sdlgame
             virtual void update() = 0;
             void add(std::vector<Group *> groups)
             {
-                for (auto &group : groups){
+                for (auto &group : groups)
+                {
                     group->sprite_list.insert(this);
                     group_list.insert(group);
                 }
@@ -1994,7 +2001,6 @@ namespace sdlgame
             }
         };
 
-        
         std::set<Sprite *> &Group::sprites()
         {
             return sprite_list;
@@ -2059,7 +2065,7 @@ namespace sdlgame
         {
             for (auto &sprite : sprite_list)
             {
-                surface.blit(sprite->image,sprite->rect.getTopLeft());
+                surface.blit(sprite->image, sprite->rect.getTopLeft());
             }
         }
         /**
@@ -2069,21 +2075,26 @@ namespace sdlgame
         class GroupSingle
         {
         public:
-            Sprite* sprite;
-            GroupSingle(Sprite* sprite = NULL){
+            Sprite *sprite;
+            GroupSingle(Sprite *sprite = NULL)
+            {
                 this->sprite = sprite;
             }
-            void add(Sprite* sprite){
+            void add(Sprite *sprite)
+            {
                 this->sprite = sprite;
             }
-            void remove(){
+            void remove()
+            {
                 sprite = NULL;
             }
-            void update(){
+            void update()
+            {
                 sprite->update();
             }
-            void draw(sdlgame::surface::Surface& surface){
-                surface.blit(sprite->image,sprite->rect.getTopLeft());
+            void draw(sdlgame::surface::Surface &surface)
+            {
+                surface.blit(sprite->image, sprite->rect.getTopLeft());
             }
         };
 
@@ -2130,10 +2141,10 @@ namespace sdlgame
 
     /**
      * @brief due to its complexity, it's best practice to call init function as use in main function
-    */
+     */
     namespace mixer
     {
-        
+
         /*set number of playback channel, default is 8*/
         void set_num_channels(int count)
         {
@@ -2151,21 +2162,21 @@ namespace sdlgame
         void init(int freq = 44100, Uint16 size = 16, int channels = 2, int buffer = 512)
         {
             size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
-            if (Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3 !=  MIX_INIT_MP3)
+            if (Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3 != MIX_INIT_MP3)
             {
-                printf("Failed to init mp3 type\nErr:%s\n",Mix_GetError());
+                printf("Failed to init mp3 type\nErr:%s\n", Mix_GetError());
             }
-            if (Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG !=  MIX_INIT_OGG)
+            if (Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG != MIX_INIT_OGG)
             {
-                printf("Failed to init ogg type\nErr:%s\n",Mix_GetError());
+                printf("Failed to init ogg type\nErr:%s\n", Mix_GetError());
             }
-            if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK !=  MIX_INIT_WAVPACK)
+            if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK != MIX_INIT_WAVPACK)
             {
-                printf("Failed to init wav pack\nErr:%s\n",Mix_GetError());
+                printf("Failed to init wav pack\nErr:%s\n", Mix_GetError());
             }
             if (Mix_OpenAudio(freq, size, channels, buffer))
             {
-                printf("Failed to init mixer\nErr:%s\n",Mix_GetError());
+                printf("Failed to init mixer\nErr:%s\n", Mix_GetError());
                 exit(0);
             }
         }
@@ -2174,7 +2185,7 @@ namespace sdlgame
             return Mix_AllocateChannels(-1);
         }
         class Sound;
-        
+
         int convert_volume_value(float value)
         {
             return int((value >= 1 ? 1 : value) / 1.0 * 128);
@@ -2198,7 +2209,7 @@ namespace sdlgame
             void set_volume(float value);
             int get_volume();
         };
-        
+
         /**
          * class represent a Sound object, should be only support WAV and OGG,
          * if you need to play music, use music namepsace instead
@@ -2214,8 +2225,9 @@ namespace sdlgame
             Sound(std::string path)
             {
                 chunk = Mix_LoadWAV(path.c_str());
-                if(chunk == NULL){
-                    printf("Cant load file\nErr:%s\n",Mix_GetError());
+                if (chunk == NULL)
+                {
+                    printf("Cant load track\nErr:%s\n", Mix_GetError());
                     exit(0);
                 }
             }
@@ -2229,7 +2241,7 @@ namespace sdlgame
                 int channel = Mix_FadeInChannelTimed(-1, chunk, loops, fade_ms, maxtime_ms);
                 if (channel == -1)
                 {
-                    printf("cant play sound for some reason\nErr:%s\n",Mix_GetError());
+                    printf("cant play sound for some reason\nErr:%s\n", Mix_GetError());
                     exit(0);
                 }
                 return Channel(channel);
@@ -2266,7 +2278,7 @@ namespace sdlgame
         {
             if (Mix_FadeInChannelTimed(id, sound.chunk, loops, fade_ms, maxtime_ms) == -1)
             {
-                printf("cant play sound for some reason\nErr:%s\n",Mix_GetError());
+                printf("cant play sound for some reason\nErr:%s\n", Mix_GetError());
                 exit(0);
             }
         }
@@ -2282,25 +2294,144 @@ namespace sdlgame
 
     namespace font
     {
+        std::string window_font_path = "C:/Windows/Fonts/";
+        void init()
+        {
+            if (TTF_Init())
+            {
+                printf("Failed to init font\n%s\n", TTF_GetError());
+                exit(0);
+            }
+            else
+            {
+                printf("Font successfully initialized\n");
+                isInit = true;
+                return;
+            }
+        }
+        /**
+         * Load a new font from a given filename or a python file object.
+         * The size is the height of the font in pixels
+         */
+        class Font
+        {
+        private:
+            bool underline = 0;
+            bool strikethrough = 0;
+            int height;
+
+        public:
+            TTF_Font *font;
+            Font(std::string path, int size = 12)
+            {
+                height = size;
+                font = TTF_OpenFont(path.c_str(), size);
+                if (!font)
+                {
+                    printf("Cant load font\n%s\n", TTF_GetError());
+                    exit(0);
+                }
+            }
+            void set_underline(bool enable)
+            {
+                underline = enable;
+            }
+            bool get_underline() { return underline; }
+            void set_strikethrough(bool enable)
+            {
+                strikethrough = enable;
+            }
+            bool get_strikethrough() { return strikethrough; }
+            // Must test with both have bg and no bg
+            /**
+             * @return a surface that only contain the text
+             * @param antialias = 0 no antialiasing fastest
+             *                  = 1 low antialiaing faster
+             *                  = 2 high antialiasing slowest
+             * the higher, the slower the render will be
+             * @param wrap_length in pixel, once the text get over the wrap_length
+             * it automatically endline, if it is default = 0,
+             * then will only endline when use endline character
+             *
+             */
+            sdlgame::surface::Surface render(std::string text, int antialias, sdlgame::color::Color color, uint32_t wrap_length = 0, sdlgame::color::Color background = sdlgame::color::Color(0, 0, 0, 0))
+            {
+                SDL_Surface *surface;
+                if (!antialias)
+                {
+                    surface = TTF_RenderUTF8_Solid_Wrapped(font, text.c_str(), color.to_SDL_Color(), wrap_length);
+                }
+                else if (antialias == 1)
+                {
+                    surface = TTF_RenderUTF8_Shaded_Wrapped(font, text.c_str(), color.to_SDL_Color(), sdlgame::color::Color(0, 0, 0, 0).to_SDL_Color(), wrap_length);
+                }
+                else
+                {
+                    surface = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), color.to_SDL_Color(), wrap_length);
+                }
+                if (surface == NULL)
+                {
+                    printf("Error render font\n%s\n", TTF_GetError());
+                    exit(0);
+                }
+                sdlgame::surface::Surface res(surface->w, surface->h + underline * 2);
+                res.fill(background);
+                SDL_SetRenderTarget(sdlgame::display::renderer, res.texture);
+                if (SDL_RenderCopy(sdlgame::display::renderer,
+                                   SDL_CreateTextureFromSurface(sdlgame::display::renderer, surface), NULL, NULL))
+                {
+                    printf("Error create a rendered font\n%s\n", SDL_GetError());
+                    exit(0);
+                }
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+                if (underline)
+                {
+                    if (SDL_RenderDrawLine(sdlgame::display::renderer, 0, surface->h + 1, surface->w - 1, surface->h + 1))
+                    {
+                        printf("Error draw underline\n%s\n", SDL_GetError());
+                        exit(0);
+                    }
+                }
+                if (strikethrough)
+                {
+                    if (SDL_RenderDrawLine(sdlgame::display::renderer, 0, surface->h / 2, surface->w - 1, surface->h / 2))
+                    {
+                        printf("Error draw strikethorugh\n%s\n", SDL_GetError());
+                        exit(0);
+                    }
+                }
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
+                return res;
+            }
+        };
+
+        Font SysFont(std::string name, int size = 12)
+        {
+
+            return Font(window_font_path + name, size);
+        }
     }
 
     namespace random
     {
         /*
-        * return a random interger in range [l,r], if l > r, it automatically swap
-        * the range can be up to 2^30
-        */
-        int randint(int l,int r){
+         * return a random interger in range [l,r], if l > r, it automatically swap
+         * the range can be up to 2^30
+         */
+        int randint(int l, int r)
+        {
             srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-            if(l>r) std::swap(l,r);
-            return (rand()*rand())%(r-l+1)+l;
+            if (l > r)
+                std::swap(l, r);
+            return (rand() * rand()) % (r - l + 1) + l;
         }
 
         /**
          * return a random value between 0 and 1
-        */
-        float randf(){
-            return randint(0,1000000)/1000000.0;
+         */
+        float randf()
+        {
+            return randint(0, 1000000) / 1000000.0;
         }
     }
 };

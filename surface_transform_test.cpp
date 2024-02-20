@@ -9,24 +9,16 @@ using Surface = sdlgame::surface::Surface;
 using Color = sdlgame::color::Color;
 const int WIDTH = 1280, HEIGHT = 720, FPS=60;
 
-void draw()
-{
-
-}
-void update()
-{
-
-}
-
 int main(int argc, char *argv[])
 {
     sdlgame::init();
+    sdlgame::image::init();
     Surface window = sdlgame::display::set_mode(
         WIDTH, HEIGHT,
         sdlgame::RENDERER_ACCELERATED);
     sdlgame::time::Clock clock = sdlgame::time::Clock();
     std::string base_path = sdlgame::get_abs_path();
-    Surface image = sdlgame::image::load(base_path+"test.jpg");
+    Surface image = sdlgame::image::load(base_path+"/resources/test.jpg");
     Vector2 pos = Vector2(50,50);
     // Surface image = sdlgame::image::load(base_path+"test.png");
 
@@ -57,8 +49,6 @@ int main(int argc, char *argv[])
             // image = sdlgame::transform::rotate(image,30,image.getRect().getCenter());
             // image = sdlgame::transform::scale_by(image,1.1);
         }
-        update();
-        draw();
         sdlgame::display::flip();
         clock.tick(FPS);
     }
