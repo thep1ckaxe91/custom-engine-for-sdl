@@ -25,9 +25,9 @@ Surface window = sdlgame::display::set_mode(
     sdlgame::RENDERER_ACCELERATED
 );
 sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
-Sound testMusic(sdlgame::get_abs_path()+"/resources/test.mp3");
-// Sound testSFX(sdlgame::get_abs_path()+"/resources/test.ogg");
-Sound testSFX(sdlgame::get_abs_path()+"/resources/test.wav");
+Sound testMusic(sdlgame::get_base_path()+"/resources/test.mp3");
+// Sound testSFX(sdlgame::get_base_path()+"/resources/test.ogg");
+Sound testSFX(sdlgame::get_base_path()+"/resources/test.wav");
 void draw()
 {
     

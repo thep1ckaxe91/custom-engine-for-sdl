@@ -204,7 +204,6 @@ namespace sdlgame
         POPUP_MENU = SDL_WINDOW_POPUP_MENU,
         ALWAYS_ON_TOP = SDL_WINDOW_ALWAYS_ON_TOP,
         RENDERER_ACCELERATED = SDL_RENDERER_ACCELERATED
-        // const Uint32 DOUBLE_BUFFERING = SDL_GL_DOUBLEBUFFER; /**not working, pls dont use*/
     } Window_Flag;
 
     /*Texture flags ?*/
@@ -222,10 +221,11 @@ namespace sdlgame
         USEREVENT = SDL_USEREVENT,
     } Event_Code;
     /*Variable here*/
-    bool isInit = false;
 
-    bool get_init() { return isInit; }
-    std::string get_abs_path()
+    /**
+     * @return base path to the exe file that call this function
+    */
+    std::string get_base_path()
     {
         return std::string(SDL_GetBasePath());
     }
@@ -1240,6 +1240,7 @@ namespace sdlgame
                 flags = 0;
                 texture = NULL;
             }
+            
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
@@ -1255,11 +1256,19 @@ namespace sdlgame
                 SDL_RenderClear(sdlgame::display::renderer);
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
             }
+            
             Surface(const Surface &oth)
             {
-                flags = oth.flags;
-                texture = oth.texture;
-                size = oth.size;
+                int w, h;
+                SDL_QueryTexture(oth.texture, NULL, NULL, &w, &h);
+                texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
+                SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderTarget(sdlgame::display::renderer, texture);
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
+                SDL_RenderClear(sdlgame::display::renderer);
+                SDL_RenderCopy(sdlgame::display::renderer, oth.texture, NULL, NULL);
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
+                size = sdlgame::math::Vector2(w, h);
             }
 
             Surface(SDL_Texture *oth)
@@ -1275,6 +1284,7 @@ namespace sdlgame
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                 size = sdlgame::math::Vector2(w, h);
             }
+            
             Surface(SDL_Surface *surf)
             {
                 texture = SDL_CreateTextureFromSurface(sdlgame::display::renderer, surf);
@@ -1304,17 +1314,6 @@ namespace sdlgame
                     size = other.size;
                 }
                 return *this;
-            }
-            /**
-             * Return a copy of this surface,
-             */
-            Surface copy() const
-            {
-                sdlgame::surface::Surface res = sdlgame::surface::Surface((int)this->getWidth(), (int)this->getHeight());
-                SDL_SetRenderTarget(sdlgame::display::renderer, res.texture);
-                SDL_RenderCopy(sdlgame::display::renderer, texture, NULL, NULL);
-                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
-                return res;
             }
             /**
              * Return a copy of the surface rect
@@ -1390,12 +1389,8 @@ namespace sdlgame
             }
             ~Surface()
             {
-                try{
-                    if (texture != NULL)
-                        SDL_DestroyTexture(texture);
-                }catch(...){
-                    
-                }
+                if (texture != NULL)
+                    SDL_DestroyTexture(texture);
             }
         };
     }
@@ -1806,7 +1801,7 @@ namespace sdlgame
     {
         sdlgame::surface::Surface flip(sdlgame::surface::Surface surface, bool flip_x, bool flip_y)
         {
-            sdlgame::surface::Surface res = surface.copy();
+            sdlgame::surface::Surface res = surface;
             if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
             {
                 printf("Failed to set target: %s\n", SDL_GetError());
@@ -2285,7 +2280,6 @@ namespace sdlgame
             else
             {
                 printf("Font successfully initialized\n");
-                isInit = true;
                 return;
             }
         }
@@ -2363,23 +2357,6 @@ namespace sdlgame
                     printf("Error create a rendered font\n%s\n", SDL_GetError());
                     exit(0);
                 }
-                SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
-                if (underline)
-                {
-                    if (SDL_RenderDrawLine(sdlgame::display::renderer, 0, surface->h + 1, surface->w - 1, surface->h + 1))
-                    {
-                        printf("Error draw underline\n%s\n", SDL_GetError());
-                        exit(0);
-                    }
-                }
-                if (strikethrough)
-                {
-                    if (SDL_RenderDrawLine(sdlgame::display::renderer, 0, surface->h / 2, surface->w - 1, surface->h / 2))
-                    {
-                        printf("Error draw strikethorugh\n%s\n", SDL_GetError());
-                        exit(0);
-                    }
-                }
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                 return res;
             }
@@ -2422,12 +2399,10 @@ namespace sdlgame
         {
             printf("Error initializing SDL: %s\n", SDL_GetError());
             exit(0);
-            isInit = false;
         }
         else
         {
             printf("SDL successfully initialized\n");
-            isInit = true;
         }
         sdlgame::image::init();
     }

@@ -49,7 +49,7 @@ public:
     }
 };
 Player player(
-    sdlgame::transform::scale_by(sdlgame::image::load(sdlgame::get_abs_path()+"player.png"),3),
+    sdlgame::transform::scale_by(sdlgame::image::load(sdlgame::get_base_path()+"player.png"),3),
     Vector2(50,50)
 );
 sdlgame::sprite::GroupSingle player_group(&player);
