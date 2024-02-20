@@ -1240,6 +1240,7 @@ namespace sdlgame
                 flags = 0;
                 texture = NULL;
             }
+            
             Surface(int width, int height, Uint32 _flags = 0)
             {
                 flags = _flags;
@@ -1255,11 +1256,19 @@ namespace sdlgame
                 SDL_RenderClear(sdlgame::display::renderer);
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
             }
+            
             Surface(const Surface &oth)
             {
-                flags = oth.flags;
-                texture = oth.texture;
-                size = oth.size;
+                int w, h;
+                SDL_QueryTexture(oth.texture, NULL, NULL, &w, &h);
+                texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
+                SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderTarget(sdlgame::display::renderer, texture);
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
+                SDL_RenderClear(sdlgame::display::renderer);
+                SDL_RenderCopy(sdlgame::display::renderer, oth.texture, NULL, NULL);
+                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
+                size = sdlgame::math::Vector2(w, h);
             }
 
             Surface(SDL_Texture *oth)
@@ -1275,6 +1284,7 @@ namespace sdlgame
                 SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
                 size = sdlgame::math::Vector2(w, h);
             }
+            
             Surface(SDL_Surface *surf)
             {
                 texture = SDL_CreateTextureFromSurface(sdlgame::display::renderer, surf);
@@ -1304,17 +1314,6 @@ namespace sdlgame
                     size = other.size;
                 }
                 return *this;
-            }
-            /**
-             * Return a copy of this surface,
-             */
-            Surface copy() const
-            {
-                sdlgame::surface::Surface res = sdlgame::surface::Surface((int)this->getWidth(), (int)this->getHeight());
-                SDL_SetRenderTarget(sdlgame::display::renderer, res.texture);
-                SDL_RenderCopy(sdlgame::display::renderer, texture, NULL, NULL);
-                SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
-                return res;
             }
             /**
              * Return a copy of the surface rect
@@ -1390,12 +1389,8 @@ namespace sdlgame
             }
             ~Surface()
             {
-                try{
-                    if (texture != NULL)
-                        SDL_DestroyTexture(texture);
-                }catch(...){
-                    
-                }
+                if (texture != NULL)
+                    SDL_DestroyTexture(texture);
             }
         };
     }
@@ -1806,7 +1801,7 @@ namespace sdlgame
     {
         sdlgame::surface::Surface flip(sdlgame::surface::Surface surface, bool flip_x, bool flip_y)
         {
-            sdlgame::surface::Surface res = surface.copy();
+            sdlgame::surface::Surface res = surface;
             if (SDL_SetRenderTarget(sdlgame::display::renderer, res.texture))
             {
                 printf("Failed to set target: %s\n", SDL_GetError());
