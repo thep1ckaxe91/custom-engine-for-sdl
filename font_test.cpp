@@ -19,8 +19,7 @@ sdlgame::time::Clock sdlclock = sdlgame::time::Clock();
 int main(int argc, char *argv[])
 {
     sdlgame::font::init();
-    // Font minecraft_font(sdlgame::get_base_path()+"test.ttf");
-    Font minecraft_font = sdlgame::font::SysFont("Consolas");
+    Font minecraft_font(sdlgame::get_base_path()+"consolaz.ttf",32);
     while (true)
     {
         std::vector<Event> events = sdlgame::event::get();
@@ -33,7 +32,7 @@ int main(int argc, char *argv[])
             }
         }
         window.fill(Color("white"));
-        window.blit(minecraft_font.render("ur mom fat as hell i wish she sit on my face",0,Color("red"),100,Color("blue")),Vector2(50,50));
+        window.blit(minecraft_font.render(sdlclock.get_fps(),0,Color("black"),300,Color("none")),Vector2(50,50));
         sdlgame::display::flip();
         sdlclock.tick(FPS);
     }

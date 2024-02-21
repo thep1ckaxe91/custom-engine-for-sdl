@@ -1158,6 +1158,11 @@ namespace sdlgame
             Color(const char *c_name)
             {
                 std::string name = std::string(c_name);
+                if(name=="none"){
+                    r=0; g=0; b=0;
+                    a=0;
+                    return;
+                }
                 for (char &c : name)
                     c = std::tolower(c);
                 if (color_name.find(name) == color_name.end())
@@ -1172,6 +1177,11 @@ namespace sdlgame
             }
             Color(std::string name)
             {
+                if(name=="none"){
+                    r=0; g=0; b=0;
+                    a=0;
+                    return;
+                }
                 for (char &c : name)
                     c = std::tolower(c);
                 if (color_name.find(name) == color_name.end())
@@ -2276,7 +2286,7 @@ namespace sdlgame
 
     namespace font
     {
-        std::string window_font_path = "C:\\Windows\\Fonts\\";
+        // std::string window_font_path = "C:/Windows/Fonts/";
         /**
          * @brief initialize font, after call this function, you should be able to use other function and class
         */
@@ -2304,7 +2314,7 @@ namespace sdlgame
 
         public:
             TTF_Font *font;
-            
+
             Font(std::string path, int size = 12)
             {
                 height = size;
@@ -2347,7 +2357,7 @@ namespace sdlgame
                     printf("Error render font\n%s\n", TTF_GetError());
                     exit(0);
                 }
-                sdlgame::surface::Surface res(surface->w, surface->h + underline * 2);
+                sdlgame::surface::Surface res(surface->w, surface->h);
                 res.fill(background);
                 SDL_SetRenderTarget(sdlgame::display::renderer, res.texture);
                 if (SDL_RenderCopy(sdlgame::display::renderer,
@@ -2361,16 +2371,15 @@ namespace sdlgame
             }
         };
 
-        /**
-         * @return a Font object that is a font from system
-         * @param name name of the font, it is case-sensitive, you dont need add ".ttf"
-         * @param size height of the font in pixel
-        */
-        Font SysFont(std::string name, int size = 12)
-        {
-
-            return Font(window_font_path + name + ".ttf", size);
-        }
+        // /**
+        //  * @param path directory to the font
+        //  * @param size height of the font in pixel
+        //  * @return a Font object that is a font from system
+        // */
+        // Font SysFont(std::string path, int size = 12)
+        // {
+        //     return Font(window_font_path + path, size);
+        // }
     }
 
     namespace random
@@ -2395,7 +2404,6 @@ namespace sdlgame
             return randint(0, 1000000) / 1000000.0;
         }
     }
-
 
     void init()
     {
