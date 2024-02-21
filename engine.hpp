@@ -13,6 +13,8 @@
  *
  * @copyright if you want to use this file, please contact for permission, after that, feel free to use and modify this file
  */
+#ifndef ENGINE_HPP
+#define ENGINE_HPP
 #include <bits/stdc++.h>
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_audio.h"
@@ -51,18 +53,14 @@
 #include <windows.h>
 #define null NULL
 // request high performance gpu
-#ifdef __cplusplus
 extern "C"
 {
-#endif
-
     __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-
-#ifdef __cplusplus
 }
-#endif
-
+/**
+ * TODO: further find optimization, write all instruction for function and classes
+*/
 namespace sdlgame
 {
     typedef enum
@@ -1440,10 +1438,14 @@ namespace sdlgame
         sdlgame::surface::Surface win_surf;
         bool isInit = false;
 
+        /**
+         * @return hardware resolution, if you have a fullHD monitor
+         * this should return a vector2 (1920,1080)
+        */
         sdlgame::math::Vector2 get_desktop_size(){
-            SDL_DisplayMode mode;
-            SDL_GetCurrentDisplayMode(0,&mode);
-            return sdlgame::math::Vector2(mode.w,mode.h);
+            int w = GetSystemMetrics(SM_CXSCREEN);
+            int h = GetSystemMetrics(SM_CYSCREEN);
+            return sdlgame::math::Vector2(w,h);
         }
 
         sdlgame::surface::Surface &set_mode(int width = 0, int height = 0, Uint32 flags = 0)
@@ -2451,3 +2453,5 @@ namespace sdlgame
         SDL_Quit();
     }
 };
+
+#endif
