@@ -11,7 +11,7 @@ const int WIDTH = 1280, HEIGHT = 720, FPS=60;
 
 void draw()
 {
-
+    
 }
 void update()
 {
@@ -23,9 +23,9 @@ int main(int argc, char *argv[])
     sdlgame::init();
     Surface window = sdlgame::display::set_mode(
         WIDTH, HEIGHT,
-        sdlgame::RENDERER_ACCELERATED);
+        sdlgame::RENDERER_ACCELERATED | sdlgame::RESIZABLE);
     sdlgame::time::Clock clock = sdlgame::time::Clock();
-    Color bg_color = Color("white");
+    Color bg_color = Color("black");
     Rect test_rect = Rect(20,60,50,30);
     std::cout << bg_color.toString()<<std::endl;
     while (true)
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
         window.fill(bg_color);
         sdlgame::draw::rect(window,Color("red"),test_rect);
-        sdlgame::draw::draw_circle(window,Color("blue"),500,500,30);
+        sdlgame::draw::draw_circle(window,Color("blue"),500,500,300);
         sdlgame::draw::line(window,Color("black"),600,600,800,720);
         sdlgame::draw::draw_polygon(window,Color("green"),{{60,60},{60,80},{100,60}});
         update();
