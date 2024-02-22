@@ -1,5 +1,6 @@
 /**
  * @brief Test surface and transform namespace
+ * ATTENTION: ALL DRAW IS TESTED AND SHOULD WORK NORMALLY
  */
 #include "engine.hpp"
 using Event = sdlgame::event::Event;
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
         WIDTH, HEIGHT,
         sdlgame::RENDERER_ACCELERATED | sdlgame::RESIZABLE);
     sdlgame::time::Clock clock = sdlgame::time::Clock();
-    Color bg_color = Color("black");
+    Color bg_color = Color("white");
     Rect test_rect = Rect(20,60,50,30);
     std::cout << bg_color.toString()<<std::endl;
     while (true)
@@ -41,10 +42,10 @@ int main(int argc, char *argv[])
         }
 
         window.fill(bg_color);
-        sdlgame::draw::rect(window,Color("red"),test_rect);
-        sdlgame::draw::draw_circle(window,Color("blue"),500,500,300);
+        sdlgame::draw::rect(window,Color("red"),test_rect,3);
+        sdlgame::draw::circle(window,Color("blue"),1000,300,100);
         sdlgame::draw::line(window,Color("black"),600,600,800,720);
-        sdlgame::draw::draw_polygon(window,Color("green"),{{60,60},{60,80},{100,60}});
+        sdlgame::draw::polygon(window,Color("green"),{{60,60},{60,80},{100,60}});
         update();
         draw();
         sdlgame::display::flip();

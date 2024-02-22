@@ -37,6 +37,13 @@ void update()
         if(rect1.collidepoint(rect2.getBottomRight())) color1 = Color("gray");
     }
     else color1 = Color("red");
+
+    if(keys[sdlgame::K_o]){
+        rect1.inflate_ip(-1,-1);
+    }
+    else if(keys[sdlgame::K_p]){
+        rect1.inflate_ip(1,1);
+    }
 }
 
 int main(int argc, char *argv[])

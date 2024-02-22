@@ -1533,6 +1533,7 @@ namespace sdlgame
             SDL_RenderSetLogicalSize(renderer,width,height);
             // printf("Initialize window and renderer: %p %p\n",window,renderer);
             win_surf.texture = null; // THIS IS INTENDED!
+            win_surf.size = sdlgame::math::Vector2(width,height);
             return win_surf;
         }
         /**
@@ -1838,11 +1839,12 @@ namespace sdlgame
         void rect(sdlgame::surface::Surface &surface, sdlgame::color::Color color, sdlgame::rect::Rect rect, int width = 0)
         {
             // std::cout << surface.texture << " color: "<<color.toString() << " rect: "<<rect.toString()<<std::endl;
-            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
             if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
             {
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
+            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            
             if (width == 0)
             {
                 SDL_FRect tmp = rect.to_SDL_FRect();
@@ -1854,10 +1856,10 @@ namespace sdlgame
             }
             else if (width > 0)
             {
-                SDL_FRect top = rect.inflate(width - rect.getHeight(), 0.0).to_SDL_FRect();
-                SDL_FRect left = rect.inflate(0.0, width - rect.getWidth()).to_SDL_FRect();
-                SDL_FRect bottom = rect.inflate(width - rect.getHeight(), 0.0).move(0.0, rect.getHeight() - width).to_SDL_FRect();
-                SDL_FRect right = rect.inflate(0.0, width - rect.getWidth()).move(rect.getWidth() - width, 0.0).to_SDL_FRect();
+                SDL_FRect top    = rect.inflate(0.0,width - rect.getHeight()).to_SDL_FRect();
+                SDL_FRect left   = rect.inflate(width - rect.getWidth(),0.0).to_SDL_FRect();
+                SDL_FRect bottom = rect.inflate(0.0,width - rect.getHeight()).move(0.0, rect.getHeight() - width).to_SDL_FRect();
+                SDL_FRect right  = rect.inflate(width - rect.getWidth(),0.0).move(rect.getWidth() - width, 0.0).to_SDL_FRect();
                 if (SDL_RenderFillRectF(sdlgame::display::renderer, &top) or
                     SDL_RenderFillRectF(sdlgame::display::renderer, &left) or
                     SDL_RenderFillRectF(sdlgame::display::renderer, &bottom) or
@@ -1881,6 +1883,7 @@ namespace sdlgame
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
             SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            
             if (SDL_RenderDrawLineF(sdlgame::display::renderer, x1, y1, x2, y2))
             {
                 printf("Failed to draw a line: %s\n", SDL_GetError());
@@ -1898,6 +1901,7 @@ namespace sdlgame
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
             SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            
             if (SDL_RenderDrawLineF(sdlgame::display::renderer, start.x, start.y, end.x, end.y))
             {
                 printf("Failed to draw a line: %s\n", SDL_GetError());
@@ -1908,15 +1912,16 @@ namespace sdlgame
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
         }
-        void draw_circle(sdlgame::surface::Surface &surface, sdlgame::color::Color color, int centerX, int centerY, int radius, int width=0)
+        void circle(sdlgame::surface::Surface &surface, sdlgame::color::Color color, int centerX, int centerY, int radius, int width=0)
         {
             if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
             {
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
+            SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+            
             if(width!=0){
                 int quality = 90;
-                SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
                 sdlgame::math::Vector2 rad(radius,0);
                 for(int i=0;i<=quality;i++){
                     sdlgame::math::Vector2 next = rad.rotate(360/quality);
@@ -1932,7 +1937,7 @@ namespace sdlgame
                     SDL_RenderDrawLineF(
                         sdlgame::display::renderer,
                         x+centerX, i+centerY,
-                        x+centerX+(2*(x<centerX)-1)*abs(x-centerX),i+centerY
+                        centerX-x,i+centerY
                     );
                 }
 
@@ -1943,7 +1948,7 @@ namespace sdlgame
             }
         }
 
-        void draw_polygon(sdlgame::surface::Surface &surface, sdlgame::color::Color color, std::vector<std::pair<int, int>> points)
+        void polygon(sdlgame::surface::Surface &surface, sdlgame::color::Color color, std::vector<std::pair<int, int>> points)
         {
             if (points.size() < 3)
                 throw std::invalid_argument("can't draw polygon with only 2 vertices or less");

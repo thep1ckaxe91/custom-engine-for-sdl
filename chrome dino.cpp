@@ -1,4 +1,5 @@
 #include "engine.hpp"
+#include "Game.hpp"
 using Event = sdlgame::event::Event;
 using Rect = sdlgame::rect::Rect;
 using Vector2 = sdlgame::math::Vector2;
@@ -9,7 +10,7 @@ using Channel = sdlgame::mixer::Channel;
 using Font = sdlgame::font::Font;
 using namespace std;
 //If global declare is bad, i make MY OWN global declare :)
-class Game
+class ChromeDino : public Game
 {
 public:
     bool gameactive = true;
@@ -19,9 +20,9 @@ public:
         sdlgame::RENDERER_ACCELERATED | sdlgame::RESIZABLE | sdlgame::MAXIMIZED
     );
     sdlgame::time::Clock clock;
-
-    Game() = default;
-
+    std::vector<std::shared_ptr<Scene>> scene_list;
+    ChromeDino() = default;
+    
     void draw()
     {
 
@@ -30,21 +31,25 @@ public:
     {
 
     }
+    void handle_event(Event& event)
+    {
+        if(event.type == sdlgame::QUIT)
+        {
+            sdlgame::quit();
+            exit(0);
+        }
+        else if(event.type == sdlgame::WINDOWENTER){
+            if(event["event"] == sdlgame::WINDOWFOCUSLOST) gameactive = false;
+            else if(event["event"] == sdlgame::WINDOWFOCUSGAINED) gameactive = true;
+        }
+    }
     void run(){
         while(true)
         {
             auto events = sdlgame::event::get();
             for(auto &event : events)
             {
-                if(event.type == sdlgame::QUIT)
-                {
-                    sdlgame::quit();
-                    exit(0);
-                }
-                else if(event.type == sdlgame::WINDOWENTER){
-                    if(event["event"] == sdlgame::WINDOWFOCUSLOST) gameactive = false;
-                    else if(event["event"] == sdlgame::WINDOWFOCUSGAINED) gameactive = true;
-                }
+                handle_event(event);
             }
             if(gameactive)
             {
@@ -62,7 +67,7 @@ int main(int argc, char** argv)
     sdlgame::font::init();
     sdlgame::image::init();
     sdlgame::mixer::init();
-    Game game;
+    ChromeDino game;
     game.run();
     return 0;
 }

@@ -14,17 +14,25 @@ class Game
 public:
     bool gameactive = true;
     Vector2 desktop_size = sdlgame::display::get_desktop_size();
+    string base_path = sdlgame::get_base_path();
     Surface window = sdlgame::display::set_mode(
         desktop_size.x,desktop_size.y,
         sdlgame::RENDERER_ACCELERATED | sdlgame::RESIZABLE | sdlgame::MAXIMIZED
     );
     sdlgame::time::Clock clock;
 
-    Game() = default;
+    Surface bg_surf = sdlgame::image::load(base_path+"/resources/background.jpg");
+    Surface mask = Surface(500,500);
+    Game(){
+        mask.fill(Color("black"));
+        sdlgame::draw::rect(mask,Color(0,0,0,0),Rect(500/4,500/4,250,250));
+    }
 
     void draw()
     {
-
+        window.fill(Color("magenta"));
+        window.blit(bg_surf,Vector2(0,0));
+        window.blit(mask,Vector2(300,50));
     }
     void update()
     {
