@@ -279,6 +279,7 @@ namespace sdlgame
             Uint32 time;
             std::list<Uint32> elapsedTimes;
             const int MAX_FPS = 1000;
+            double bullet_time_multiplier = 1;
         public:
             Clock()
             {
@@ -317,7 +318,17 @@ namespace sdlgame
             */
             double delta_time() const
             {
-                return elapsedTimes.back() * 1.0 / 1000.0;
+                return elapsedTimes.back() * 1.0 / 1000.0 * bullet_time_multiplier;
+            }
+            /**
+             * function to set bullet time or slow motion by multiply deltatime with certain percentage,
+             * this only work if user use delta_time for movement instead of fixed fps with normal increment
+             * @param percentage the value is clamp to [1,100], is how much slower time should
+             * flow compare to real-time
+            */
+            void set_bullettime_multiplier(double percentage)
+            {
+                bullet_time_multiplier = (percentage < 1 ? 1 : (percentage > 100 ? 100 : percentage)) / 100.0;
             }
             /**
              * @return fps rely on 10 last delta time from tick function
@@ -1880,19 +1891,51 @@ namespace sdlgame
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
         }
-        void draw_circle(sdlgame::surface::Surface &surface, sdlgame::color::Color color, int centerX, int centerY, int radius)
+        void line(sdlgame::surface::Surface &surface, sdlgame::color::Color color, sdlgame::math::Vector2 start, sdlgame::math::Vector2 end)
         {
             if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
             {
                 printf("Failed to set target: %s\n", SDL_GetError());
             }
-            int quality = 90;
             SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
-            sdlgame::math::Vector2 rad(radius,0);
-            for(int i=0;i<=quality;i++){
-                sdlgame::math::Vector2 next = rad.rotate(360/quality);
-                SDL_RenderDrawLineF(sdlgame::display::renderer,centerX+rad.x,centerY+rad.y,centerX+next.x,centerY+next.y);
-                rad = next;
+            if (SDL_RenderDrawLineF(sdlgame::display::renderer, start.x, start.y, end.x, end.y))
+            {
+                printf("Failed to draw a line: %s\n", SDL_GetError());
+                exit(0);
+            }
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
+            }
+        }
+        void draw_circle(sdlgame::surface::Surface &surface, sdlgame::color::Color color, int centerX, int centerY, int radius, int width=0)
+        {
+            if (SDL_SetRenderTarget(sdlgame::display::renderer, surface.texture))
+            {
+                printf("Failed to set target: %s\n", SDL_GetError());
+            }
+            if(width!=0){
+                int quality = 90;
+                SDL_SetRenderDrawColor(sdlgame::display::renderer, color.r, color.g, color.b, color.a);
+                sdlgame::math::Vector2 rad(radius,0);
+                for(int i=0;i<=quality;i++){
+                    sdlgame::math::Vector2 next = rad.rotate(360/quality);
+                    SDL_RenderDrawLineF(sdlgame::display::renderer,centerX+rad.x,centerY+rad.y,centerX+next.x,centerY+next.y);
+                    rad = next;
+                }
+            }
+            else{
+                double x;
+                for(int i=-radius;i<=radius;i++)
+                {
+                    x = radius * std::cos(std::asin(i*1.0/radius));
+                    SDL_RenderDrawLineF(
+                        sdlgame::display::renderer,
+                        x+centerX, i+centerY,
+                        x+centerX+(2*(x<centerX)-1)*abs(x-centerX),i+centerY
+                    );
+                }
+
             }
             if (SDL_SetRenderTarget(sdlgame::display::renderer, NULL))
             {
