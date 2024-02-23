@@ -1559,7 +1559,7 @@ namespace sdlgame
             SDL_SetWindowFullscreen(window,SDL_WINDOW_FULLSCREEN_DESKTOP);
         }
         /**
-         *  return a Surface object that have reference SDL_surface to the window surface (NOT GARUANTEE IN ADVANCE ENGINE)
+         *  return a Surface object that have reference SDL_surface to the window surface
          */
         sdlgame::surface::Surface &get_surface()
         {

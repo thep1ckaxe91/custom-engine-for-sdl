@@ -12,31 +12,30 @@ using Channel = sdlgame::mixer::Channel;
 using Font = sdlgame::font::Font;
 using namespace std;
 class Game;
-typedef enum {
-    INZOOMCIRCLE = 1,
-    OUTZOOMCIRCLE = 2,
-    INSWIPEUP = 3,
-    OUTSWIPEUP = 4,
-    INSWIPEDOWN = 5,
-    OUTSWIPEDOWN = 6,
-} TransitionType;
 class TransitionEvent
 {
 public:
     int type;
     double time; //time in second, the length of the animation
     bool in;
+    Vector2 dir;
+    Surface window = sdlgame::display::get_surface();
+    void set_dir(Vector2 dir){this->dir = dir;}
     virtual void update() = 0;
     virtual void draw() = 0;
 };
 class InZoomCircle : public TransitionEvent
 {
-    const int type = 1;
+public:
+    InZoomCircle(Vector2 dir)
+    {
+        this->dir = dir;
+    }
     void update()
     {
 
     }
-    void draw()
+    void draw() 
     {
 
     }
@@ -125,8 +124,8 @@ class Scene
     virtual void handle_event(sdlgame::event::Event &event) = 0;
     private:
     std::shared_ptr<Game> game;
-    SceneTransition *in;
-    SceneTransition *out;
+    SceneTransition in;
+    SceneTransition out;
 };
 
 #endif
