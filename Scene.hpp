@@ -12,21 +12,36 @@ using Channel = sdlgame::mixer::Channel;
 using Font = sdlgame::font::Font;
 using namespace std;
 class Game;
-
-typedef struct InZoomCircle
+typedef enum {
+    INZOOMCIRCLE = 1,
+    OUTZOOMCIRCLE = 2,
+    INSWIPEUP = 3,
+    OUTSWIPEUP = 4,
+    INSWIPEDOWN = 5,
+    OUTSWIPEDOWN = 6,
+} TransitionType;
+class TransitionEvent
+{
+public:
+    int type;
+    double time; //time in second, the length of the animation
+    bool in;
+    virtual void update() = 0;
+    virtual void draw() = 0;
+};
+class InZoomCircle : public TransitionEvent
 {
     const int type = 1;
-    Surface window = sdlgame::display::get_surface();
     void update()
     {
-        
+
     }
     void draw()
     {
 
     }
-} InZoomCircle;
-typedef struct InZoomCircle
+};
+class OutZoomCircle : public TransitionEvent
 {
     const int type = 2;
     void update()
@@ -37,8 +52,8 @@ typedef struct InZoomCircle
     {
 
     }
-} InZoomCircle;
-typedef struct InZoomCircle
+};
+class InSwipeUp : public TransitionEvent
 {
     const int type = 3;
     void update()
@@ -49,8 +64,8 @@ typedef struct InZoomCircle
     {
 
     }
-} InZoomCircle;
-typedef struct InZoomCircle
+};
+class OutSwipeUp : public TransitionEvent
 {
     const int type = 4;
     void update()
@@ -61,15 +76,31 @@ typedef struct InZoomCircle
     {
 
     }
-} InZoomCircle;
-typedef union TransitionEvent
+};
+class InSwipeDown : public TransitionEvent
 {
-    int type;
-    double time; //time in second, the length of the animation
-    bool in;
-    InZoomCircle in_zoom_cicle;
+    const int type = 5;
+    void update()
+    {
 
-} TransitionEvent;
+    }
+    void draw()
+    {
+
+    }
+};
+class OutSwipeDown : public TransitionEvent
+{
+    const int type = 6;
+    void update()
+    {
+
+    }
+    void draw()
+    {
+
+    }
+};
 SDL_Event e;
 /**
  * class contain update and draw fucntion for unload and loadin transition animation

@@ -21,26 +21,26 @@ public:
     );
     sdlgame::time::Clock clock;
 
-    Surface bg_surf = sdlgame::image::load(base_path+"/resources/background.jpg");
-    Surface mask = Surface(500,500);
+    Game() = default;
+    Surface test_surf = Surface(500,500);
     Vector2 pos = Vector2(20,20);
-    Game(){
-        
-    }
-
+    Vector2 size = test_surf.get_size();
     void draw()
     {
-        window.fill(Color("magenta"));
-        window.blit(bg_surf,Vector2(0,0));
-        mask.fill(Color("black"));
-        sdlgame::draw::rect(mask,Color(0,0,0,0),Rect(500/4,500/4,250,250));
-        window.blit(mask,pos);
+        window.fill("white");
+        test_surf.fill(Color("black"));
+        sdlgame::draw::circle(
+            test_surf,
+            Color(255,0,0,0),
+            sin(sdlgame::time::get_ticks()/50)*50+size.x/2+pos.x,
+            cos(sdlgame::time::get_ticks()/50)*50+size.y/2+pos.y,
+            50
+        );
+        window.blit(test_surf,pos);
     }
     void update()
     {
-        auto keys = sdlgame::key::get_pressed();
-        pos.x += (keys[sdlgame::K_d]-keys[sdlgame::K_a])*5;
-        pos.y += (keys[sdlgame::K_s]-keys[sdlgame::K_w])*5;
+
     }
     void run(){
         while(true)

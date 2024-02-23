@@ -25,11 +25,10 @@ public:
     sdlgame::time::Clock clock;
     std::vector<std::shared_ptr<Scene>> scene_list;
     
-    Game() = default;
+    Game();
     ~Game(){sdlgame::quit();};
     virtual void draw()   =0;
     virtual void update() =0;
-    virtual void handle_event(sdlgame::event::Event &event) = 0;
     virtual void run()    =0;
     void add_scene(std::shared_ptr<Scene> scene){
         scene_list.push_back(scene);
