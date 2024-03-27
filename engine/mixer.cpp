@@ -1,6 +1,7 @@
 #include "mixer.hpp"
 #include "stdio.h"
 #include "string"
+std::map<Mix_Chunk*,int> sdlgame::mixer::__chunk_pool;
 void sdlgame::mixer::set_num_channels(int count)
 {
     Mix_AllocateChannels(count);
@@ -16,19 +17,19 @@ void sdlgame::mixer::set_num_channels(int count)
 void sdlgame::mixer::init(int freq, Uint16 size, int channels, int buffer)
 {
     size = (size == 16 ? AUDIO_S16SYS : AUDIO_F32SYS);
-    if (Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3 != MIX_INIT_MP3)
+    if ((Mix_Init(MIX_INIT_MP3) & MIX_INIT_MP3) != MIX_INIT_MP3)
     {
         printf("Failed to init mp3 type\nErr:%s\n", Mix_GetError());
     }
-    else if (Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG != MIX_INIT_OGG)
+    if ((Mix_Init(MIX_INIT_OGG) & MIX_INIT_OGG) != MIX_INIT_OGG)
     {
         printf("Failed to init ogg type\nErr:%s\n", Mix_GetError());
     }
-    else if (Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK != MIX_INIT_WAVPACK)
+    if ((Mix_Init(MIX_INIT_WAVPACK) & MIX_INIT_WAVPACK) != MIX_INIT_WAVPACK)
     {
         printf("Failed to init wav pack\nErr:%s\n", Mix_GetError());
     }
-    else if (Mix_OpenAudio(freq, size, channels, buffer))
+    if (Mix_OpenAudio(freq, size, channels, buffer))
     {
         printf("Failed to init mixer\nErr:%s\n", Mix_GetError());
         exit(0);
@@ -75,6 +76,15 @@ sdlgame::mixer::Sound::Sound(std::string path)
         printf("Cant load track\nErr:%s\n", Mix_GetError());
         exit(0);
     }
+    __chunk_pool[this->chunk]=1;
+}
+sdlgame::mixer::Sound &sdlgame::mixer::Sound::operator=(const Sound& oth)
+{
+    this->chunk = oth.chunk;
+    this->channels = oth.channels;
+    this->volume = oth.volume;
+    __chunk_pool[this->chunk]++;
+    return *this;
 }
 /**
  * @param loops -1 to loop infinitely, 0 is play once, 1 is twice...
@@ -84,11 +94,11 @@ sdlgame::mixer::Sound::Sound(std::string path)
 sdlgame::mixer::Channel sdlgame::mixer::Sound::play(int loops, int maxtime_ms, int fade_ms)
 {
     int channel = Mix_FadeInChannelTimed(-1, chunk, loops, fade_ms, maxtime_ms);
-    if (channel == -1)
-    {
-        printf("cant play sound for some reason\nErr:%s\n", Mix_GetError());
-        exit(0);
-    }
+    // if (channel == -1)//this code got commented since sound still play but got -1 returned
+    // {
+    //     printf("cant play sound correctly\nErr:%s\n", Mix_GetError());
+    //     // exit(0);
+    // }
     return Channel(channel);
 }
 void sdlgame::mixer::Sound::load(std::string path)
@@ -116,6 +126,11 @@ int sdlgame::mixer::Sound::get_volume() const
 }
 sdlgame::mixer::Sound::~Sound()
 {
-    if (chunk != NULL)
-        Mix_FreeChunk(chunk);
+    __chunk_pool[this->chunk]--;
+    if(__chunk_pool.at(this->chunk)<=0)
+    {
+        if (chunk != NULL)
+            Mix_FreeChunk(chunk);
+    }
+    this->chunk = 0;
 }

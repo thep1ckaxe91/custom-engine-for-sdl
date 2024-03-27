@@ -10,7 +10,10 @@ double sdlgame::math::radian_to_degree(double rad)
 {
     return rad * 180.0 / M_PI;
 }
-
+double sdlgame::math::clamp(double val, double l, double r)
+{
+    return (val < l ? l : (val > r ? r : val));
+}
 sdlgame::math::Vector2::Vector2()
 {
     x = 0;
@@ -58,10 +61,8 @@ sdlgame::math::Vector2 &sdlgame::math::Vector2::operator-=(const sdlgame::math::
     }
     return *this;
 }
-template <class T>
-sdlgame::math::Vector2 &sdlgame::math::Vector2::operator*=(const T &scalar)
+sdlgame::math::Vector2 &sdlgame::math::Vector2::operator*=(const double &scalar)
 {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
     x *= scalar;
     y *= scalar;
     return *this;
@@ -78,16 +79,14 @@ sdlgame::math::Vector2 sdlgame::math::Vector2::operator-(const sdlgame::math::Ve
 {
     return sdlgame::math::Vector2(x - oth.x, y - oth.y);
 }
-template <class T>
-sdlgame::math::Vector2 sdlgame::math::Vector2::operator*(const T &scalar) const
+sdlgame::math::Vector2 sdlgame::math::Vector2::operator*(const double &scalar) const
 {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
     return sdlgame::math::Vector2(scalar * x, scalar * y);
 }
 
 bool sdlgame::math::Vector2::operator==(const sdlgame::math::Vector2 &oth) const
 {
-    return x==oth.x and y==oth.y;
+    return x == oth.x and y == oth.y;
 }
 /**
  * @return length of the vector
@@ -162,7 +161,6 @@ double sdlgame::math::Vector2::distance_to(const sdlgame::math::Vector2 &oth) co
  */
 sdlgame::math::Vector2 sdlgame::math::Vector2::reflect(const sdlgame::math::Vector2 &normal) const
 {
-    double dotProduct = this->dot(normal);
     return (*this) - normal * 2 * (this->dot(normal));
 }
 /**
@@ -191,9 +189,7 @@ std::string sdlgame::math::Vector2::toString() const
     return "Vector2<" + std::to_string(x) + " , " + std::to_string(y) + ">";
 }
 
-template <class T>
-sdlgame::math::Vector2 operator*(const T &scalar, const sdlgame::math::Vector2 &v)
+sdlgame::math::Vector2 operator*(const double &scalar, const sdlgame::math::Vector2 &v)
 {
-    static_assert(std::is_arithmetic<T>::value, "Invalid type to multiply with vector");
     return sdlgame::math::Vector2(scalar * v.x, scalar * v.y);
 }
