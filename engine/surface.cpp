@@ -17,7 +17,7 @@ sdlgame::surface::Surface::Surface(int width, int height)
         exit(0);
     }
     size.x=width; size.y=height;
-    if(SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND));
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     SDL_SetRenderTarget(sdlgame::display::renderer, texture);
     SDL_SetRenderDrawColor(sdlgame::display::renderer, 0, 0, 0, 0);
     SDL_RenderClear(sdlgame::display::renderer);
@@ -42,7 +42,7 @@ sdlgame::surface::Surface::Surface(SDL_Texture *oth)
 {
     int w, h;
     SDL_QueryTexture(oth, NULL, NULL, &w, &h);
-    texture = oth;
+    this->texture = oth;
     // texture = SDL_CreateTexture(sdlgame::display::renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, w, h);
     // SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
     // SDL_SetRenderTarget(sdlgame::display::renderer, texture);
@@ -50,6 +50,9 @@ sdlgame::surface::Surface::Surface(SDL_Texture *oth)
     // SDL_RenderClear(sdlgame::display::renderer);
     // SDL_RenderCopy(sdlgame::display::renderer, oth, NULL, NULL);
     // SDL_SetRenderTarget(sdlgame::display::renderer, NULL);
+
+    // SDL_DestroyTexture(oth);
+
     size.x=w; size.y=h;
 }
 
@@ -88,13 +91,13 @@ sdlgame::surface::Surface &sdlgame::surface::Surface::operator=(const sdlgame::s
  */
 sdlgame::rect::Rect sdlgame::surface::Surface::getRect() const
 {
-    return sdlgame::rect::Rect(0.0, 0.0, size.x, size.y);
+    return sdlgame::rect::Rect(0, 0,size.x, size.y);
 }
 /**
  * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
  * the surface or image will stretch or shrink acoording to the size
  */
-void sdlgame::surface::Surface::blit(const Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size, sdlgame::rect::Rect area)
+void sdlgame::surface::Surface::blit(Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size, sdlgame::rect::Rect area)
 {
     if (area == sdlgame::rect::Rect())
     {

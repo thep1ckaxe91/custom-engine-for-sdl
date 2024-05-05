@@ -13,9 +13,10 @@ void sdlgame::music::load(std::string path)
         exit(0);
     }
 }
-void sdlgame::music::play(int loop)
+void sdlgame::music::play(int loop, int fadein_ms)
 {
-    if (Mix_PlayMusic(music, loop))
+    
+    if(Mix_FadeInMusic(music, loop, fadein_ms))
     {
         printf("Cant play music\nErr:%s\n", Mix_GetError());
         exit(0);
@@ -32,6 +33,10 @@ void sdlgame::music::resume()
 void sdlgame::music::stop()
 {
     Mix_HaltMusic();
+}
+bool sdlgame::music::is_playing()
+{
+    return Mix_PlayingMusic();
 }
 // Return duration of the music in second
 double sdlgame::music::duration()

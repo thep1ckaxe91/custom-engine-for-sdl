@@ -49,21 +49,32 @@ sdlgame::surface::Surface &sdlgame::display::set_mode(int width, int height, Uin
 
 void sdlgame::display::maximize()
 {
+    SDL_SetWindowFullscreen(window,0);
     SDL_MaximizeWindow(window);
 }
 
 void sdlgame::display::minimize()
 {
+    SDL_SetWindowFullscreen(window,0);
     SDL_MinimizeWindow(window);
+}
+void sdlgame::display::restore()
+{
+    SDL_SetWindowFullscreen(window,0);
+    SDL_RestoreWindow(window);
 }
 void sdlgame::display::fullscreen()
 {
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 }
-
+bool sdlgame::display::is_fullscreen()
+{
+    return (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) or (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN);
+}
 sdlgame::math::Vector2 sdlgame::display::get_window_size(){
     int w,h;
     SDL_GetWindowSize(sdlgame::display::window,&w,&h);
+    // SDL_GetWindowSurface(sdlgame::display::window);
     return win_surf.size = sdlgame::math::Vector2(w,h);
 }
 
