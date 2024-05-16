@@ -12,6 +12,7 @@ double sdlgame::math::radian_to_degree(double rad)
 }
 double sdlgame::math::clamp(double val, double l, double r)
 {
+    if(l>r) std::swap(l,r);
     return (val < l ? l : (val > r ? r : val));
 }
 sdlgame::math::Vector2::Vector2()
@@ -192,4 +193,9 @@ std::string sdlgame::math::Vector2::toString() const
 sdlgame::math::Vector2 operator*(const double &scalar, const sdlgame::math::Vector2 &v)
 {
     return sdlgame::math::Vector2(scalar * v.x, scalar * v.y);
+}
+SDL_FPoint sdlgame::math::Vector2::to_SDL_FPoint() const
+{
+    SDL_FPoint res = {(float)this->x,(float)this->y};
+    return res;
 }

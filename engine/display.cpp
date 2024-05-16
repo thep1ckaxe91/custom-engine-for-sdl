@@ -19,21 +19,25 @@ sdlgame::math::Vector2 sdlgame::display::resolution;
  */
 sdlgame::surface::Surface &sdlgame::display::set_mode(int width, int height, Uint32 flags)
 {
-    if (width == 0 or height == 0)
+    if (width == 0 || height == 0)
     {
         SDL_DisplayMode DM;
         SDL_GetDesktopDisplayMode(0, &DM);
         width = DM.w;
         height = DM.h;
     }
-    resolution = sdlgame::math::Vector2(width,height);
+    resolution = sdlgame::math::Vector2(width, height);
+    if(!SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER,"direct3d11",SDL_HINT_OVERRIDE))
+    {
+        printf("Set renderer driver hint failed\n");
+    }
     window = SDL_CreateWindow("SDLgame Custom Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
     if (window == nullptr)
     {
         printf("Failed to create a window object\nErr: %s\n", SDL_GetError());
         exit(0);
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     if (renderer == nullptr)
     {
         printf("Failed to create a renderer\nErr: %s\n", SDL_GetError());
@@ -43,24 +47,30 @@ sdlgame::surface::Surface &sdlgame::display::set_mode(int width, int height, Uin
     SDL_RenderSetLogicalSize(renderer, width, height);
     // printf("Initialize window and renderer: %p %p\n",window,renderer);
     win_surf.texture = NULL; // THIS IS INTENDED!
-    win_surf.size.x=width; win_surf.size.y=height;
+    win_surf.size.x = width;
+    win_surf.size.y = height;
     return win_surf;
 }
-
+bool sdlgame::display::set_render_scale_quality(bool linear)
+{
+    if (linear)
+        return SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY, "linear", SDL_HINT_OVERRIDE);
+    return SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
+}
 void sdlgame::display::maximize()
 {
-    SDL_SetWindowFullscreen(window,0);
+    SDL_SetWindowFullscreen(window, 0);
     SDL_MaximizeWindow(window);
 }
 
 void sdlgame::display::minimize()
 {
-    SDL_SetWindowFullscreen(window,0);
+    SDL_SetWindowFullscreen(window, 0);
     SDL_MinimizeWindow(window);
 }
 void sdlgame::display::restore()
 {
-    SDL_SetWindowFullscreen(window,0);
+    SDL_SetWindowFullscreen(window, 0);
     SDL_RestoreWindow(window);
 }
 void sdlgame::display::fullscreen()
@@ -69,13 +79,29 @@ void sdlgame::display::fullscreen()
 }
 bool sdlgame::display::is_fullscreen()
 {
-    return (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) or (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN);
+    return (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) || (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN);
 }
-sdlgame::math::Vector2 sdlgame::display::get_window_size(){
-    int w,h;
-    SDL_GetWindowSize(sdlgame::display::window,&w,&h);
+void sdlgame::display::set_window_size(int w,int h)
+{
+    SDL_SetWindowSize(sdlgame::display::window,w,h);
+}
+//set position of window, use sdlgame::WINDOWPOS_CENTERED if you need center
+void sdlgame::display::set_window_pos(int x,int y)
+{
+    SDL_SetWindowPosition(sdlgame::display::window,x,y);
+}
+std::pair<int,int> sdlgame::display::get_window_pos()
+{
+    int x,y;
+    SDL_GetWindowPosition(sdlgame::display::window,&x,&y);
+    return {x,y};
+}
+sdlgame::math::Vector2 sdlgame::display::get_window_size()
+{
+    int w, h;
+    SDL_GetWindowSize(sdlgame::display::window, &w, &h);
     // SDL_GetWindowSurface(sdlgame::display::window);
-    return win_surf.size = sdlgame::math::Vector2(w,h);
+    return win_surf.size = sdlgame::math::Vector2(w, h);
 }
 
 void sdlgame::display::fullscreen_desktop()

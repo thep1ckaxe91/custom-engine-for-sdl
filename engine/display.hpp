@@ -39,8 +39,20 @@ namespace sdlgame
         sdlgame::surface::Surface &get_surf();
         //get the actual size in pixel of the window
         sdlgame::math::Vector2 get_window_size();
+        //set client window area, not resolution
+        void set_window_size(int w,int h);
+        void set_window_pos(int x,int y);
+        std::pair<int,int> get_window_pos();
         double get_width();
         double get_height();
+        /**
+         * @brief Set the render scale quality object
+         * 
+         * @param linear if true, set the scale quality to linear, and nearest if false
+         * @return true set success
+         * @return false set failed
+         */
+        bool set_render_scale_quality(bool linear);
         /**
          *  if set to true, the mouse will be confine to the window
          * this function get or set the state of mouse being confine or not

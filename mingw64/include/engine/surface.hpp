@@ -5,6 +5,7 @@
 #include "color.hpp"
 #include "rect.hpp"
 #include "math.hpp"
+#define SURFACE_TYPE SDL_TEXTUREACCESS_TARGET
 namespace sdlgame
 {
     namespace surface
@@ -37,7 +38,7 @@ namespace sdlgame
              * Blit a surface onto this surface with position and size, leave size be -1,-1 will be its original size
              * the surface or image will stretch or shrink acoording to the size
              */
-            void blit(const Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1, -1), sdlgame::rect::Rect area = sdlgame::rect::Rect());
+            void blit(Surface &source, sdlgame::math::Vector2 pos, sdlgame::math::Vector2 size = sdlgame::math::Vector2(-1, -1), sdlgame::rect::Rect area = sdlgame::rect::Rect());
             void fill(sdlgame::color::Color color);
             sdlgame::math::Vector2 get_size() const;
             double getWidth() const;
